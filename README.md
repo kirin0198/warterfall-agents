@@ -7,12 +7,12 @@ Claude Code のカスタムエージェント定義集です。
 
 ```
 [新規開発（UIあり）]
-  planner → designer → architect → developer → test-designer → tester → reviewer
+  spec-designer → ux-designer → architect → developer → test-designer → tester → reviewer
        ↑                                                                        |
        └──────────────────────── PM が全体を管理 ──────────────────────────┘
 
 [新規開発（UIなし）]
-  planner → architect → developer → test-designer → tester → reviewer
+  spec-designer → architect → developer → test-designer → tester → reviewer
 
 [既存プロジェクトへの変更]
   analyst → architect → developer → test-designer → tester → reviewer
@@ -24,8 +24,8 @@ Claude Code のカスタムエージェント定義集です。
 
 | エージェント | 役割 | 主な成果物 |
 |---|---|---|
-| **planner** | 要件から仕様書を策定 | `SPEC.md` |
-| **designer** | UI仕様・デザインプロンプトを作成 | `UI_SPEC.md` |
+| **spec-designer** | 要件から仕様書を策定 | `SPEC.md` |
+| **ux-designer** | UI仕様・デザインプロンプトを作成 | `UI_SPEC.md` |
 | **architect** | 仕様から技術設計書を作成 | `ARCHITECTURE.md` |
 | **developer** | 設計に従いコードを実装 | 実装コード, `TASK.md` |
 | **test-designer** | テスト計画を策定 | `TEST_PLAN.md` |
@@ -72,8 +72,8 @@ Claude Code 上で以下のように使用します。
 **個別エージェントの直接起動:**
 
 ```
-「仕様を作って」         → planner
-「UIを設計して」         → designer
+「仕様を作って」         → spec-designer
+「UIを設計して」         → ux-designer
 「設計書を作って」       → architect
 「実装して」             → developer
 「テスト計画を作って」   → test-designer
@@ -89,8 +89,8 @@ waterfall-agents/
 ├── CLAUDE.md                          # 全エージェント共通ルール
 ├── README.md
 └── agents/
-    ├── planner.md                  # 仕様策定
-    ├── designer.md                 # UIデザイン
+    ├── spec-designer.md                  # 仕様策定
+    ├── ux-designer.md                 # UIデザイン
     ├── architect.md                # アーキテクチャ設計
     ├── developer.md                # 実装
     ├── test-designer.md            # テスト設計

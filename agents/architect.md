@@ -3,7 +3,7 @@ name: architect
 description: |
   SPEC.mdを読み込み、実装可能なアーキテクチャ設計ドキュメントを生成するアーキテクトエージェント。
   以下の場面で使用:
-  - planner によって SPEC.md が生成された後
+  - spec-designer によって SPEC.md が生成された後
   - "アーキテクチャを設計して" "設計書を作って" と言われたとき
   - developer を起動する前の準備ステップとして
   出力物: ARCHITECTURE.md（技術設計書・developerが参照する）
@@ -25,7 +25,7 @@ model: opus
 
 作業開始前に以下を確認してください:
 
-1. `SPEC.md` が存在するか → なければ `planner` の実行を促す
+1. `SPEC.md` が存在するか → なければ `spec-designer` の実行を促す
 2. `UI_SPEC.md` が存在するか → フロントエンドの場合は参照する
 3. 既存コードベースがある場合 → ディレクトリ構造を `Glob` で把握する
 

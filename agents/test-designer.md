@@ -27,7 +27,7 @@ model: opus
 
 作業開始前に以下を確認してください：
 
-1. `SPEC.md` が存在するか → なければ `planner` の実行を促す
+1. `SPEC.md` が存在するか → なければ `spec-designer` の実行を促す
 2. `ARCHITECTURE.md` が存在するか → なければ `architect` の実行を促す
 3. 実装コードが存在するか → `Glob` で把握する
 4. 既存の `TEST_PLAN.md` があるか → 存在する場合は差分更新を提案する

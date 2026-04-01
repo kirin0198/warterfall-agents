@@ -1,9 +1,9 @@
 ---
-name: designer
+name: ux-designer
 description: |
   SPEC.mdを読み込み、UIデザイン仕様書を生成するデザイナーエージェント。
   以下の場面で使用:
-  - planner によって SPEC.md が生成された後（UIを含むプロジェクト）
+  - spec-designer によって SPEC.md が生成された後（UIを含むプロジェクト）
   - "UIを設計して" "画面設計をして" "デザインを作って" と言われたとき
   - 外部AIデザインツール（v0, Figma AI 等）への入力を作成したいとき
   出力物: UI_SPEC.md（UI仕様書・デザインプロンプト）
@@ -28,7 +28,7 @@ model: opus
 
 作業開始前に以下を確認してください：
 
-1. `SPEC.md` が存在するか → なければ `planner` の実行を促す
+1. `SPEC.md` が存在するか → なければ `spec-designer` の実行を促す
 2. 既存の `UI_SPEC.md` があるか → 存在する場合は差分更新を提案する
 3. 既存コードベースがある場合 → `Glob` でフロントエンド関連ファイルを把握する
 4. 要件テンプレート（`templates/REQUIREMENTS_TEMPLATE.md`）にUI関連の記載があるか確認する
@@ -259,7 +259,7 @@ UI_SPEC.md の各画面セクションは、以下の要件を満たすこと：
 `PM` がこの出力を読んで次フェーズへ進みます。
 
 ```
-AGENT_RESULT: designer
+AGENT_RESULT: ux-designer
 STATUS: success | error
 ARTIFACTS:
   - UI_SPEC.md

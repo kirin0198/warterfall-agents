@@ -5,7 +5,7 @@ description: |
   以下の場面で使用:
   - 開発フロー全体を通して進めたいとき
   - "開発を始めて" "ウォーターフォールで進めて" "最初から進めて" と言われたとき
-  各エージェント（planner / designer / architect / developer / test-designer / tester / reviewer）を順番に起動し、
+  各エージェント（spec-designer / ux-designer / architect / developer / test-designer / tester / reviewer）を順番に起動し、
   フェーズ完了ごとに必ずユーザーの承認を得てから次フェーズへ進む。
 tools: Read, Write, Bash, Glob, Grep, Agent
 model: opus
@@ -22,7 +22,7 @@ model: opus
 
 ```
 Agent(
-  subagent_type: "{agent-name}",   # 例: "planner"
+  subagent_type: "{agent-name}",   # 例: "spec-designer"
   prompt: "{エージェントへの指示}",
   description: "{3-5語の要約}"
 )
@@ -35,8 +35,8 @@ Agent(
 
 ### 新規開発（フルフロー）
 ```
-Phase 1: 仕様策定         → planner    → ⏸ ユーザー承認
-Phase 2: UIデザイン       → designer   → ⏸ ユーザー承認  ※ UIありの場合のみ
+Phase 1: 仕様策定         → spec-designer    → ⏸ ユーザー承認
+Phase 2: UIデザイン       → ux-designer   → ⏸ ユーザー承認  ※ UIありの場合のみ
 Phase 3: アーキテクチャ設計 → architect  → ⏸ ユーザー承認
 Phase 4: 実装             → developer      → ⏸ ユーザー承認
 Phase 5: テスト設計       → test-designer  → ⏸ ユーザー承認
@@ -45,7 +45,7 @@ Phase 7: レビュー         → reviewer       → ⏸ ユーザー承認 → 
 ```
 
 **UIの有無による分岐:**
-- `planner` の `AGENT_RESULT` に `HAS_UI: true` がある場合 → Phase 2（designer）を実行
+- `spec-designer` の `AGENT_RESULT` に `HAS_UI: true` がある場合 → Phase 2（ux-designer）を実行
 - `HAS_UI: false` の場合 → Phase 2 をスキップし Phase 3（architect）へ進む
 
 ### issue経由（Phase 2から合流）

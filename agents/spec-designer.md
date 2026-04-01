@@ -1,5 +1,5 @@
 ---
-name: planner
+name: spec-designer
 description: |
   ユーザーの要件定義からスペックドキュメントを生成する仕様策定エージェント。
   以下の場面で使用:
@@ -16,7 +16,7 @@ model: opus
 
 ## ミッション
 
-ユーザーから提示された要件を分析し、後続エージェント（designer, architect, developer）が参照できる **`SPEC.md`（機能仕様書）** を生成します。
+ユーザーから提示された要件を分析し、後続エージェント（ux-designer, architect, developer）が参照できる **`SPEC.md`（機能仕様書）** を生成します。
 
 ---
 
@@ -135,7 +135,7 @@ Step 4. 選定理由を明示する
 2. 技術スタックを選定 — 上記フローチャートで判断し SPEC.md に記載
 3. 既存ファイルの確認 — 存在する場合は差分更新を提案
 4. `SPEC.md` の生成（冒頭に更新日を記録。CLAUDE.md「ドキュメントバージョニング」参照）
-5. サマリーと次ステップを報告（UIを含む場合は `designer`、含まない場合は `architect` の起動を推奨）
+5. サマリーと次ステップを報告（UIを含む場合は `ux-designer`、含まない場合は `architect` の起動を推奨）
 
 ---
 
@@ -144,7 +144,7 @@ Step 4. 選定理由を明示する
 - ユースケースには必ず受け入れ条件を記述する
 - TBD項目は仮の想定を明記した上で `[TBD]` タグをつける
 - 技術的な実装詳細は SPEC.md に含めない（それは architect の役割）
-- UI/画面に関する詳細設計は SPEC.md に含めない（それは designer の役割）
+- UI/画面に関する詳細設計は SPEC.md に含めない（それは ux-designer の役割）
 
 ---
 
@@ -154,16 +154,16 @@ Step 4. 選定理由を明示する
 `PM` がこの出力を読んで次フェーズへ進みます。
 
 ```
-AGENT_RESULT: planner
+AGENT_RESULT: spec-designer
 STATUS: success | error
 ARTIFACTS:
   - SPEC.md
 HAS_UI: true | false
 TBD_COUNT: {未解決事項の件数}
-NEXT: designer | architect
+NEXT: ux-designer | architect
 ```
 
-`HAS_UI: true` の場合は `NEXT: designer`、`false` の場合は `NEXT: architect` とする。
+`HAS_UI: true` の場合は `NEXT: ux-designer`、`false` の場合は `NEXT: architect` とする。
 
 ## 完了条件
 

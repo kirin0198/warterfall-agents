@@ -40,7 +40,7 @@ git status
 ```
 
 不足しているドキュメントがある場合:
-- `SPEC.md` がない → `planner` の実行を促す
+- `SPEC.md` がない → `spec-designer` の実行を促す
 - `ARCHITECTURE.md` がない → `architect` の実行を促す
 
 ---
