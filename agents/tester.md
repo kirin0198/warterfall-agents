@@ -1,9 +1,9 @@
 ---
-name: test-agent
+name: tester
 description: |
   実装コードに対してテストを作成・実行するテストエージェント。
   以下の場面で使用:
-  - implement-agent による実装完了後
+  - developer による実装完了後
   - "テストを書いて" "テストを実行して" と言われたとき
   - CI/CD パイプラインの一部として
   前提: SPEC.md・ARCHITECTURE.md・実装コードが存在すること
@@ -106,10 +106,10 @@ async def client():
 ## テスト失敗時のフィードバック
 
 テストが失敗した場合、`AGENT_RESULT` の `FAILED_TESTS` に加えて、以下のフォーマットでフィードバックを**テキスト出力**する。
-`waterfall-orchestrator` がこの内容を `implement-agent` への差し戻し指示に含める。
+`PM` がこの内容を `developer` への差し戻し指示に含める。
 
 ```
-## テスト失敗フィードバック（implement-agent 向け）
+## テスト失敗フィードバック（developer 向け）
 
 ### 失敗テスト: {テスト名}
 - **テストファイル:** {パス}
@@ -147,11 +147,11 @@ async def client():
 - **期待値:**
 - **実際の値:**
 - **推測原因:**
-- **実装への FB:** `implement-agent` に伝えるべき内容
+- **実装への FB:** `developer` に伝えるべき内容
 
 ### 次のステップ
-→ 全テスト成功の場合: `review-agent` を起動してください
-→ 失敗がある場合: `implement-agent` で修正後、再度 `test-agent` を起動してください
+→ 全テスト成功の場合: `reviewer` を起動してください
+→ 失敗がある場合: `developer` で修正後、再度 `tester` を起動してください
 ```
 
 ---
@@ -159,17 +159,17 @@ async def client():
 ## 完了時の出力（必須）
 
 作業完了時に必ず以下のブロックを出力してください。
-`waterfall-orchestrator` がこの出力を読んで次フェーズへ進むか差し戻すかを判断します。
+`PM` がこの出力を読んで次フェーズへ進むか差し戻すかを判断します。
 
 ```
-AGENT_RESULT: test-agent
+AGENT_RESULT: tester
 STATUS: success | failure
 TOTAL: {テスト総数}
 PASSED: {成功数}
 FAILED: {失敗数}
 FAILED_TESTS:
   - {失敗したテスト名}: {原因の概要}
-NEXT: review-agent | implement-agent
+NEXT: reviewer | developer
 ```
 
 ## 完了条件

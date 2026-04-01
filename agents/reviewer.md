@@ -1,9 +1,9 @@
 ---
-name: review-agent
+name: reviewer
 description: |
   コードの品質・仕様適合・セキュリティをレビューするレビューエージェント。
   以下の場面で使用:
-  - test-agent による全テスト成功後
+  - tester による全テスト成功後
   - "レビューして" "コードレビューを行って" と言われたとき
   - PRマージ前の最終確認として
   前提: SPEC.md・ARCHITECTURE.md・実装コード・テスト結果が存在すること
@@ -135,8 +135,8 @@ model: opus
 ---
 
 ### 次のステップ
-→ CRITICAL がある場合: `implement-agent` で修正 → `test-agent` → `review-agent` の順に再実行
-→ WARNING のみの場合: 修正推奨。対応後に `review-agent` を再実行
+→ CRITICAL がある場合: `developer` で修正 → `tester` → `reviewer` の順に再実行
+→ WARNING のみの場合: 修正推奨。対応後に `reviewer` を再実行
 → SUGGESTION のみ / 指摘なし: ✅ マージ可能
 ```
 
@@ -145,17 +145,17 @@ model: opus
 ## 完了時の出力（必須）
 
 作業完了時に必ず以下のブロックを出力してください。
-`waterfall-orchestrator` がこの出力を読んで完了とするか差し戻すかを判断します。
+`PM` がこの出力を読んで完了とするか差し戻すかを判断します。
 
 ```
-AGENT_RESULT: review-agent
+AGENT_RESULT: reviewer
 STATUS: approved | conditional | rejected
 CRITICAL_COUNT: {🔴件数}
 WARNING_COUNT: {🟡件数}
 SUGGESTION_COUNT: {🟢件数}
 CRITICAL_ITEMS:
   - {指摘ID}: {ファイルパス} - {概要}
-NEXT: done | implement-agent
+NEXT: done | developer
 ```
 
 ## 完了条件

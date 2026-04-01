@@ -1,5 +1,5 @@
 ---
-name: spec-agent
+name: planner
 description: |
   ユーザーの要件定義からスペックドキュメントを生成する仕様策定エージェント。
   以下の場面で使用:
@@ -16,7 +16,7 @@ model: opus
 
 ## ミッション
 
-ユーザーから提示された要件を分析し、後続エージェント（architect-agent, implement-agent）および外部UIツールが参照できる**2つのContextドキュメント**を生成します。
+ユーザーから提示された要件を分析し、後続エージェント（architect, developer）および外部UIツールが参照できる**2つのContextドキュメント**を生成します。
 
 ---
 
@@ -90,7 +90,7 @@ Step 4. 選定理由を明示する
 | 層 | 技術 | 選定理由 |
 |----|------|---------|
 | バックエンド | FastAPI | ... |
-> ※ architect-agent にて確定・詳細化する
+> ※ architect にて確定・詳細化する
 
 ## 3. ユーザーストーリー
 - ペルソナ定義
@@ -176,7 +176,7 @@ UIが存在する場合のみ生成します。
 3. 既存ファイルの確認 — 存在する場合は差分更新を提案
 4. `SPEC.md` の生成（冒頭に更新日を記録。CLAUDE.md「ドキュメントバージョニング」参照）
 5. UIを含む場合は `UI_SPEC.md` の生成
-6. サマリーと次ステップを報告（`architect-agent` の起動を推奨）
+6. サマリーと次ステップを報告（`architect` の起動を推奨）
 
 ---
 
@@ -184,7 +184,7 @@ UIが存在する場合のみ生成します。
 
 - ユースケースには必ず受け入れ条件を記述する
 - TBD項目は仮の想定を明記した上で `[TBD]` タグをつける
-- 技術的な実装詳細は SPEC.md に含めない（それは architect-agent の役割）
+- 技術的な実装詳細は SPEC.md に含めない（それは architect の役割）
 - UI_SPEC.md はデザイナーへのブリーフィングとして読めるレベルの詳細度にする
 
 ---
@@ -192,16 +192,16 @@ UIが存在する場合のみ生成します。
 ## 完了時の出力（必須）
 
 作業完了時に必ず以下のブロックを出力してください。
-`waterfall-orchestrator` がこの出力を読んで次フェーズへ進みます。
+`PM` がこの出力を読んで次フェーズへ進みます。
 
 ```
-AGENT_RESULT: spec-agent
+AGENT_RESULT: planner
 STATUS: success | error
 ARTIFACTS:
   - SPEC.md
   - UI_SPEC.md   # UIなしの場合は省略
 TBD_COUNT: {未解決事項の件数}
-NEXT: architect-agent
+NEXT: architect
 ```
 
 ## 完了条件

@@ -1,9 +1,9 @@
 ---
-name: implement-agent
+name: developer
 description: |
   SPEC.md・ARCHITECTURE.md・UI_SPEC.mdを参照してコードを実装するエージェント。
   以下の場面で使用:
-  - architect-agent によって ARCHITECTURE.md が生成された後
+  - architect によって ARCHITECTURE.md が生成された後
   - "実装して" "コードを書いて" "フェーズXを実装して" と言われたとき
   - セッション中断後に "再開して" と言われたとき
   前提: SPEC.md と ARCHITECTURE.md が存在すること
@@ -40,8 +40,8 @@ git status
 ```
 
 不足しているドキュメントがある場合:
-- `SPEC.md` がない → `spec-agent` の実行を促す
-- `ARCHITECTURE.md` がない → `architect-agent` の実行を促す
+- `SPEC.md` がない → `planner` の実行を促す
+- `ARCHITECTURE.md` がない → `architect` の実行を促す
 
 ---
 
@@ -145,7 +145,7 @@ git commit -m "chore: セッション中断時点の進捗を記録 (TASK-{N}ま
 完了済み: TASK-001〜TASK-{N}
 次のタスク: TASK-{N+1}: {タスク名}
 
-再開時は「implement-agentを使って再開してください」と伝えてください。
+再開時は「developerを使って再開してください」と伝えてください。
 TASK.md と git log を確認して自動的に再開します。
 ```
 
@@ -190,7 +190,7 @@ FastAPI 固有:
 
 ### ファイル操作の原則
 - 既存ファイルを上書きする前に内容を `Read` で確認する
-- 削除操作は行わない（`review-agent` に委ねる）
+- 削除操作は行わない（`reviewer` に委ねる）
 - `ARCHITECTURE.md` に記載のないディレクトリは作成しない（必要なら先に確認）
 
 ### 実装の進め方
@@ -209,10 +209,10 @@ FastAPI 固有:
 ## 完了時の出力（必須）
 
 全タスク完了時に必ず以下のブロックを出力してください。
-`waterfall-orchestrator` がこの出力を読んで次フェーズへ進みます。
+`PM` がこの出力を読んで次フェーズへ進みます。
 
 ```
-AGENT_RESULT: implement-agent
+AGENT_RESULT: developer
 STATUS: success | error | suspended
 PHASE: {実施したフェーズ番号}
 TASKS_COMPLETED: {完了タスク数} / {総タスク数}
@@ -222,10 +222,10 @@ FILES_CHANGED:
 ACCEPTANCE_CHECK: pass | fail
 FAILED_CONDITIONS:
   - {失敗した受け入れ条件（あれば）}
-NEXT: test-agent | suspended
+NEXT: tester | suspended
 ```
 
-`STATUS: suspended` はセッション中断時に使用する。この場合 `NEXT: suspended` とし、waterfall-orchestrator はユーザーに再開を促す。
+`STATUS: suspended` はセッション中断時に使用する。この場合 `NEXT: suspended` とし、PM はユーザーに再開を促す。
 
 ## 完了条件
 
