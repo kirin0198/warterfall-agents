@@ -42,11 +42,16 @@ Claude Code のカスタムエージェント定義集です。
 
 ### セットアップ
 
-`agents/` ディレクトリをプロジェクトの `.claude/agents/` にコピーします。
+`agents/` ディレクトリと `.claude/commands/` ディレクトリをプロジェクトにコピーします。
 
 ```bash
+# エージェント定義をコピー
 mkdir -p .claude/agents
 cp agents/*.md .claude/agents/
+
+# スラッシュコマンドをコピー
+mkdir -p .claude/commands
+cp .claude/commands/*.md /path/to/your-project/.claude/commands/
 ```
 
 `CLAUDE.md` はプロジェクトルートにコピーします。
@@ -58,29 +63,38 @@ cp CLAUDE.md /path/to/your-project/CLAUDE.md
 
 ### 実行
 
-Claude Code 上で以下のように使用します。
+Claude Code 上でスラッシュコマンドを使って各エージェントを起動できます。
 
 **新規開発（フルフロー）:**
 
-ウォーターフォールオーケストレーターを起動すると、仕様策定からレビューまで順番に進みます。
-
 ```
-「ウォーターフォールで開発を始めて」
-「TODOアプリを作りたい。最初から進めて」
+/pm TODOアプリを作りたい
 ```
 
 **個別エージェントの直接起動:**
 
+| コマンド | エージェント | 用途 |
+|---------|------------|------|
+| `/pm` | PM | ウォーターフォールフロー全体を管理 |
+| `/analyst` | analyst | バグ/機能追加/リファクタの方針決定 |
+| `/spec-designer` | spec-designer | 要件から仕様書を策定 |
+| `/ux-designer` | ux-designer | UI仕様・デザインプロンプトを作成 |
+| `/architect` | architect | 仕様から技術設計書を作成 |
+| `/developer` | developer | 設計に従いコードを実装 |
+| `/test-designer` | test-designer | テスト計画を策定 |
+| `/tester` | tester | テストコードを作成・実行 |
+| `/reviewer` | reviewer | コード品質・仕様適合をレビュー |
+
+**使用例:**
+
 ```
-「仕様を作って」         → spec-designer
-「UIを設計して」         → ux-designer
-「設計書を作って」       → architect
-「実装して」             → developer
-「テスト計画を作って」   → test-designer
-「テストを実行して」     → tester
-「レビューして」         → reviewer
-「バグを修正したい」     → analyst
+/spec-designer ブログ管理システムの仕様を作って
+/architect
+/developer フェーズ1を実装して
+/analyst ログイン時に500エラーが発生するバグ
 ```
+
+引数なしで実行した場合は、エージェントが前提ドキュメントを確認して作業を開始します。
 
 ## ファイル構成
 
@@ -88,16 +102,27 @@ Claude Code 上で以下のように使用します。
 waterfall-agents/
 ├── CLAUDE.md                          # 全エージェント共通ルール
 ├── README.md
+├── .claude/
+│   └── commands/                      # スラッシュコマンド定義
+│       ├── pm.md                      # /pm
+│       ├── analyst.md                 # /analyst
+│       ├── spec-designer.md           # /spec-designer
+│       ├── ux-designer.md             # /ux-designer
+│       ├── architect.md               # /architect
+│       ├── developer.md               # /developer
+│       ├── test-designer.md           # /test-designer
+│       ├── tester.md                  # /tester
+│       └── reviewer.md               # /reviewer
 └── agents/
-    ├── spec-designer.md                  # 仕様策定
+    ├── spec-designer.md               # 仕様策定
     ├── ux-designer.md                 # UIデザイン
-    ├── architect.md                # アーキテクチャ設計
-    ├── developer.md                # 実装
-    ├── test-designer.md            # テスト設計
-    ├── tester.md                   # テスト実行
-    ├── reviewer.md                # レビュー
-    ├── PM.md      # オーケストレーター
-    └── analyst.md                 # Issue対応
+    ├── architect.md                   # アーキテクチャ設計
+    ├── developer.md                   # 実装
+    ├── test-designer.md               # テスト設計
+    ├── tester.md                      # テスト実行
+    ├── reviewer.md                    # レビュー
+    ├── PM.md                          # オーケストレーター
+    └── analyst.md                     # Issue対応
 ```
 
 ## 主な特徴
