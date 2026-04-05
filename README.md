@@ -231,6 +231,19 @@ telescope-agents/
 - **多言語対応**: Python (FastAPI) をデフォルトとしつつ、TypeScript / Go / Rust にも対応
 - **ドキュメント駆動**: 領域間は `.md` ファイルのハンドオフでトレーサビリティを確保
 
+## CI/CD との関係
+
+Telescope は**開発時ワークフロー**であり、CI/CD ランタイムではありません。
+
+- `infra-builder` エージェントが GitHub Actions 等の CI/CD パイプライン定義を生成します
+- `scripts/verify-sync.sh` を CI に組み込むことで、`agents/` と `.claude/agents/` のドリフトを検出できます
+
+```yaml
+# .github/workflows/ci.yml の例
+- name: Verify agent sync
+  run: bash scripts/verify-sync.sh
+```
+
 ## ライセンス
 
 MIT

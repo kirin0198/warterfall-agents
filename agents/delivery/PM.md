@@ -104,16 +104,24 @@ Phase 10: ドキュメント     → doc-writer       → ⏸ ユーザー承認
 - `spec-designer` の `AGENT_RESULT` に `HAS_UI: true` がある場合 → Phase 2（ux-designer）を実行
 - `HAS_UI: false` の場合 → Phase 2 をスキップし Phase 3（architect）へ進む
 
-### issue経由（analyst から合流）
+### サイドエントリー: analyst（issue 経由での合流）
+
+`analyst` はトリアージで選択されるエージェントではなく、**既存プロジェクトへのバグ報告・機能追加・リファクタリング要求**を起点とするサイドエントリーです。
+ユーザーが `/analyst` で直接起動し、完了後に Delivery PM が Phase 3 から合流します。
+
 ```
-[analyst が完了・ユーザー承認済み]
+ユーザーが /analyst を起動
          ↓
+analyst: issue 分析 → ISSUE.md + ARCHITECT_BRIEF 生成 → ⏸ ユーザー承認
+         ↓
+Delivery PM が Phase 3 から開始:
 Phase 3: アーキテクチャ設計 → architect      → ⏸ ユーザー承認
 （以降は通常フロー）
 ```
 
 `analyst` の `AGENT_RESULT` ブロックを受け取った場合は Phase 3 から開始する。
-その際 `ARCHITECT_BRIEF` の内容を `architect` への入力に必ず含める。
+その際 `ISSUE.md` と `ARCHITECT_BRIEF` の内容を `architect` への入力に必ず含める。
+トリアージは通常通り実施するが、analyst が事前分析した情報を考慮してプランを選択する。
 
 ---
 

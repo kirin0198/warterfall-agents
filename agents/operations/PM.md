@@ -77,6 +77,8 @@ Agent(
 | Standard | API + DB 構成 | infra-builder → db-ops → ops-planner |
 | Full | 可用性が重要・外部ユーザー向け | infra-builder → db-ops → observability → ops-planner |
 
+> **Minimal プランがない理由:** サービスのデプロイには最低限インフラ定義と運用計画が必要であるため、Operations は Light を最小プランとする。
+
 ### トリアージ結果の報告
 
 プランを決定したら、以下のフォーマットでユーザーに報告し、承認を得る:
