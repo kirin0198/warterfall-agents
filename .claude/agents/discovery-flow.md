@@ -1,5 +1,5 @@
 ---
-name: discovery-PM
+name: discovery-flow
 description: |
   Orchestrator for the Discovery domain. Manages the entire requirements exploration flow.
   Use in the following situations:
@@ -184,7 +184,7 @@ Then request approval via `AskUserQuestion`:
 ### Minimal Plan
 ```
 Phase 1: 要件ヒアリング    → interviewer       → ⏸ ユーザー承認
-→ DISCOVERY_RESULT.md 生成（PM が interviewer の結果をもとに作成）
+→ DISCOVERY_RESULT.md 生成（Flow が interviewer の結果をもとに作成）
 ```
 
 ### Light Plan
@@ -375,7 +375,7 @@ scope-planner
 ### After Final Phase Completion
 
 1. Confirm that `scope-planner` has generated `DISCOVERY_RESULT.md`
-2. For the Minimal plan, the PM generates `DISCOVERY_RESULT.md` itself (based on the interviewer's results)
+2. For the Minimal plan, the flow orchestrator generates `DISCOVERY_RESULT.md` itself (based on the interviewer's results)
 3. Perform a final review of the DISCOVERY_RESULT.md content
 4. Output the completion summary
 
@@ -383,7 +383,7 @@ scope-planner
 
 ## DISCOVERY_RESULT.md (Final Output Template)
 
-For the Minimal plan, the PM generates this directly. For Light and above, scope-planner generates it.
+For the Minimal plan, the flow orchestrator generates this directly. For Light and above, scope-planner generates it.
 
 ```markdown
 # Discovery Result: {プロジェクト名}
@@ -444,7 +444,7 @@ Discovery 完了
   SCOPE_PLAN.md        ✅ / （該当なし）
 
 次のステップ:
-  Delivery PM を起動して DISCOVERY_RESULT.md を入力してください。
+  Delivery Flow を起動して DISCOVERY_RESULT.md を入力してください。
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 

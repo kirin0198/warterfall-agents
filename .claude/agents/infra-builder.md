@@ -28,7 +28,7 @@ Read `DELIVERY_RESULT.md` and `ARCHITECTURE.md` thoroughly, and generate the fol
 
 Verify the following before starting work:
 
-1. Does `DELIVERY_RESULT.md` exist? → If not, prompt the user to complete Delivery PM first
+1. Does `DELIVERY_RESULT.md` exist? → If not, prompt the user to complete Delivery Flow first
 2. Does `ARCHITECTURE.md` exist? → If not, prompt the user to run `architect` first
 3. Does implementation code exist? → Verify with `Glob` and identify the tech stack
 4. Do existing Dockerfile / docker-compose.yml / CI configurations exist? → If so, `Read` their contents
@@ -248,7 +248,7 @@ If Docker Desktop is not available in the environment, perform only syntax check
 ## Completion Output (Required)
 
 You must output the following block upon work completion.
-`operations-PM` reads this output to proceed to the next phase.
+`operations-flow` reads this output to proceed to the next phase.
 
 ```
 AGENT_RESULT: infra-builder

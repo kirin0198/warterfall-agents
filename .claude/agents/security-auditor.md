@@ -226,7 +226,7 @@ Select and inspect CWE (Common Weakness Enumeration) items appropriate for the t
 ## Required Output on Completion
 
 Upon completion, you must output the following block.
-The `PM` reads this output to determine the next step in the flow.
+The flow orchestrator reads this output to determine the next step in the flow.
 
 ```
 AGENT_RESULT: security-auditor

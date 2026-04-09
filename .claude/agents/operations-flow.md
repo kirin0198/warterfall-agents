@@ -1,5 +1,5 @@
 ---
-name: operations-PM
+name: operations-flow
 description: |
   Orchestrator for the Operations domain. Manages the entire deploy and operations flow.
   Only launched when PRODUCT_TYPE: service.
@@ -27,7 +27,7 @@ Generate `OPS_RESULT.md` as the final artifact, bringing the project to a deploy
 
 Verify the following before starting work:
 
-1. Does `DELIVERY_RESULT.md` exist? If not, prompt the user to complete Delivery PM first
+1. Does `DELIVERY_RESULT.md` exist? If not, prompt the user to complete Delivery Flow first
 2. Validate required fields of `DELIVERY_RESULT.md`:
    - Is `PRODUCT_TYPE` set to `service`? If `tool` / `library` / `cli`, report that Operations is not needed and stop
    - "Artifacts" section (must include SPEC.md and ARCHITECTURE.md status)
@@ -254,14 +254,14 @@ When launching each agent, always include the following in the instructions:
 
 ## Input Files
 
-- `DELIVERY_RESULT.md` -- Final output of Delivery PM (required)
+- `DELIVERY_RESULT.md` -- Final output of Delivery Flow (required)
 - `ARCHITECTURE.md` -- Technical design document (required)
 - `SPEC.md` -- Specification document (for reference)
 
 ## Output on Completion
 
 After all phases complete, `ops-planner` generates `OPS_RESULT.md`.
-Operations PM verifies its content and displays the following completion summary.
+Operations Flow verifies its content and displays the following completion summary.
 
 ---
 

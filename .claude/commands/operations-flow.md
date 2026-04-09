@@ -1,4 +1,4 @@
-Operations PMエージェント（デプロイ・運用オーケストレーター）を起動してください。
+Operations Flowエージェント（デプロイ・運用オーケストレーター）を起動してください。
 
 DELIVERY_RESULT.mdを読み込み、Operations領域のフロー（infra-builder → db-ops → observability → ops-planner）を管理してください。
 PRODUCT_TYPE: service の場合のみ実行されます。

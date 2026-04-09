@@ -164,7 +164,7 @@ If there is a **major change** from the "Recommended Tech Stack" in SPEC.md (e.g
 
 1. Record the reason for the change as an ADR in ARCHITECTURE.md
 2. Add `TECH_STACK_CHANGED: true` to the AGENT_RESULT
-3. Request user approval for the change via `PM`
+3. Request user approval for the change via the flow orchestrator
 
 No feedback is needed for minor additions or version specifications only.
 

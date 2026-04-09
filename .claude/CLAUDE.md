@@ -7,20 +7,20 @@ Agent-specific rules are documented in the individual files under `.claude/agent
 
 ## Telescope Workflow Model
 
-Telescope divides the entire project lifecycle into three domains — **Discovery (requirements exploration) → Delivery (design & implementation) → Operations (deploy & operations)** — each managed by an independent orchestrator (PM).
+Telescope divides the entire project lifecycle into three domains — **Discovery (requirements exploration) → Delivery (design & implementation) → Operations (deploy & operations)** — each managed by an independent orchestrator (flow).
 
 ### Design Principles
 
 - **Domain separation**: Each domain runs in an independent session
 - **File handoff**: Domains are connected via `.md` files (DISCOVERY_RESULT.md, DELIVERY_RESULT.md). No automatic chaining
-- **Session isolation**: Each PM runs in its own session to prevent context window bloat
-- **Triage adaptation**: Each PM assesses project characteristics at flow start and selects from 4 tiers: Minimal / Light / Standard / Full
+- **Session isolation**: Each flow orchestrator runs in its own session to prevent context window bloat
+- **Triage adaptation**: Each flow orchestrator assesses project characteristics at flow start and selects from 4 tiers: Minimal / Light / Standard / Full
 - **Independent invocation**: Any agent can be invoked standalone as long as its input files are available
 
 ### Domain and Flow Overview
 
 ```
-Discovery PM ──[DISCOVERY_RESULT.md]──▶ Delivery PM ──[DELIVERY_RESULT.md]──▶ Operations PM
+Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
  (requirements)                         (design & impl)                       (deploy & ops)
  5 agents                               12 agents                              4 agents
 ```
@@ -40,13 +40,13 @@ Agent definitions are stored in `.claude/agents/` (the standard Claude Code loca
 
 ```
 .claude/agents/
-├── discovery-PM.md       # Discovery PM (orchestrator)
+├── discovery-flow.md       # Discovery Flow (orchestrator)
 ├── interviewer.md
 ├── researcher.md
 ├── poc-engineer.md
 ├── concept-validator.md
 ├── scope-planner.md
-├── delivery-PM.md        # Delivery PM (orchestrator)
+├── delivery-flow.md        # Delivery Flow (orchestrator)
 ├── spec-designer.md
 ├── ux-designer.md
 ├── architect.md
@@ -59,7 +59,7 @@ Agent definitions are stored in `.claude/agents/` (the standard Claude Code loca
 ├── doc-writer.md
 ├── releaser.md
 ├── analyst.md
-├── operations-PM.md      # Operations PM (orchestrator)
+├── operations-flow.md      # Operations Flow (orchestrator)
 ├── infra-builder.md
 ├── db-ops.md
 ├── observability.md
@@ -70,7 +70,7 @@ Agent definitions are stored in `.claude/agents/` (the standard Claude Code loca
 
 ## Triage System
 
-### Discovery PM Triage
+### Discovery Flow Triage
 
 | Plan | Condition | Agents to Launch |
 |------|-----------|-----------------|
@@ -79,7 +79,7 @@ Agent definitions are stored in `.claude/agents/` (the standard Claude Code loca
 | Standard | External dependencies / existing system integration | interviewer → researcher → poc-engineer → scope-planner |
 | Full | Regulated / large-scale / complex | interviewer → researcher → poc-engineer → concept-validator → scope-planner |
 
-### Delivery PM Triage
+### Delivery Flow Triage
 
 | Plan | Condition | Agents to Launch |
 |------|-----------|-----------------|
@@ -90,9 +90,9 @@ Agent definitions are stored in `.claude/agents/` (the standard Claude Code loca
 
 `security-auditor` **must run on all plans**. `ux-designer` runs only for projects with UI.
 
-> **About analyst:** `analyst` is a side-entry agent outside the triage flow. It is triggered by bug reports, feature requests, or refactoring requests for existing projects. After completion, Delivery PM joins from Phase 3 (architect).
+> **About analyst:** `analyst` is a side-entry agent outside the triage flow. It is triggered by bug reports, feature requests, or refactoring requests for existing projects. After completion, Delivery Flow joins from Phase 3 (architect).
 
-### Operations PM Triage
+### Operations Flow Triage
 
 | Plan | Condition | Agents to Launch |
 |------|-----------|-----------------|
@@ -107,11 +107,11 @@ Agent definitions are stored in `.claude/agents/` (the standard Claude Code loca
 ## Handoff File Specification
 
 Common format for handoff files used to connect domains.
-Each file is read by the next domain's PM at startup to verify prerequisites are met.
+Each file is read by the next domain's flow orchestrator at startup to verify prerequisites are met.
 
 ### Validation Rules
 
-Each PM validates required fields of the handoff file at startup. If any are missing, report with `STATUS: error` and ask the user to fix them.
+Each flow orchestrator validates required fields of the handoff file at startup. If any are missing, report with `STATUS: error` and ask the user to fix them.
 
 **DISCOVERY_RESULT.md required fields:**
 - `PRODUCT_TYPE` (one of: service / tool / library / cli)
@@ -131,7 +131,7 @@ Each PM validates required fields of the handoff file at startup. If any are mis
 
 ### DISCOVERY_RESULT.md
 
-Final output of Discovery PM. Input for Delivery PM's `spec-designer`.
+Final output of Discovery Flow. Input for Delivery Flow's `spec-designer`.
 
 ```markdown
 # Discovery Result: {プロジェクト名}
@@ -162,7 +162,7 @@ PRODUCT_TYPE: {service | tool | library | cli}
 
 ### DELIVERY_RESULT.md
 
-Final output of Delivery PM. Input for Operations PM (for service type).
+Final output of Delivery Flow. Input for Operations Flow (for service type).
 
 ```markdown
 # Delivery Result: {プロジェクト名}
@@ -194,7 +194,7 @@ Final output of Delivery PM. Input for Operations PM (for service type).
 
 ### OPS_RESULT.md
 
-Final output of Operations PM. Used for final deployment readiness confirmation.
+Final output of Operations Flow. Used for final deployment readiness confirmation.
 
 ```markdown
 # Operations Result: {プロジェクト名}
@@ -244,9 +244,9 @@ Final output of Operations PM. Used for final deployment readiness confirmation.
 ### AGENT_RESULT Block (Required)
 
 All agents must output an `AGENT_RESULT` block upon work completion.
-Each domain's PM parses this output to determine next-phase decisions.
+Each domain's flow orchestrator parses this output to determine next-phase decisions.
 
-> **PM (orchestrator) exception:** Discovery PM / Delivery PM / Operations PM themselves do not output `AGENT_RESULT`. The PM's final artifact is the handoff file (e.g., DISCOVERY_RESULT.md), and completion is reported via the approval gate.
+> **Flow orchestrator exception:** Discovery Flow / Delivery Flow / Operations Flow themselves do not output `AGENT_RESULT`. The flow orchestrator's final artifact is the handoff file (e.g., DISCOVERY_RESULT.md), and completion is reported via the approval gate.
 
 ```
 AGENT_RESULT: {agent-name}
@@ -263,7 +263,7 @@ NEXT: {next-agent-name | done | suspended}
 | `error` | Failed to complete due to error | Report to user and ask for decision |
 | `failure` | Quality issue (e.g., test failure) | Follow rollback rules |
 | `suspended` | Session interrupted | Prompt user to resume |
-| `blocked` | Cannot continue due to design ambiguity | PM launches lightweight query to the target agent |
+| `blocked` | Cannot continue due to design ambiguity | Flow orchestrator launches lightweight query to the target agent |
 | `approved` / `conditional` / `rejected` | Review result | Rollback or completion decision |
 
 ### blocked STATUS Usage
@@ -307,7 +307,7 @@ When an agent returns `STATUS: error`, the orchestrator must:
 
 ## Approval Gate
 
-Common approval gate format shared by all PMs. After each phase completion, the PM must stop and request user approval.
+Common approval gate format shared by all flow orchestrators. After each phase completion, the orchestrator must stop and request user approval.
 
 ### Approval Gate Procedure
 
@@ -342,7 +342,7 @@ Phase {N} 完了: {エージェント名}
 
 ### Approval Gate Response Handling
 
-| User Selection | PM Action |
+| User Selection | Orchestrator Action |
 |---------------|-----------|
 | "承認して続行" | Proceed to next phase |
 | "修正を指示" | Re-execute current phase agent based on modification instructions from the Other field |
@@ -399,7 +399,7 @@ When updating any design document (SPEC.md, ARCHITECTURE.md, UI_SPEC.md, TEST_PL
 
 - `architect` records which version of SPEC.md was used as the basis for design at the top of `ARCHITECTURE.md`
 - `developer` records which version of ARCHITECTURE.md was used as the basis for implementation in `TASK.md`
-- Each PM records the artifact version from the previous domain in the handoff file
+- Each flow orchestrator records the artifact version from the previous domain in the handoff file
 
 ### TASK.md Format
 
@@ -510,7 +510,7 @@ If lint/format tools are not installed, run syntax checks only and note this in 
 
 ## Rollback Rules
 
-Test failures and review CRITICAL findings are automatically rolled back by the PM.
+Test failures and review CRITICAL findings are automatically rolled back by the flow orchestrator.
 Rollbacks are limited to **3 times maximum**. If exceeded, report the situation to the user and ask for their decision.
 
 **Test failure determination:** tester returns `STATUS: failure` if there is 1 or more failure. Partial success (only some tests passing) is treated as failure.

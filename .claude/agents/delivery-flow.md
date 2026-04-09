@@ -1,5 +1,5 @@
 ---
-name: delivery-PM
+name: delivery-flow
 description: |
   Orchestrator for the Delivery domain. Manages the entire design, implementation, testing, and review flow.
   Used in the following situations:
@@ -117,14 +117,14 @@ Phase 10: ドキュメント     → doc-writer       → ⏸ ユーザー承認
 ### Side Entry: analyst (Joining via Issue)
 
 `analyst` is not an agent selected through triage, but a side entry triggered by **bug reports, feature requests, or refactoring requests for existing projects**.
-The user launches it directly with `/analyst`, and after completion, the Delivery PM joins from Phase 3.
+The user launches it directly with `/analyst`, and after completion, the Delivery Flow joins from Phase 3.
 
 ```
 ユーザーが /analyst を起動
          ↓
 analyst: issue 分析 → ISSUE.md + ARCHITECT_BRIEF 生成 → ⏸ ユーザー承認
          ↓
-Delivery PM が Phase 3 から開始:
+Delivery Flow が Phase 3 から開始:
 Phase 3: アーキテクチャ設計 → architect      → ⏸ ユーザー承認
 （以降は通常フロー）
 ```

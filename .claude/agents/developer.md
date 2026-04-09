@@ -253,14 +253,14 @@ CURRENT_TASK: TASK-005
 NEXT: suspended
 ```
 
-The PM launches the agent specified in `BLOCKED_TARGET` in lightweight mode, obtains an answer, and then resumes `developer`.
+The flow orchestrator launches the agent specified in `BLOCKED_TARGET` in lightweight mode, obtains an answer, and then resumes `developer`.
 
 ---
 
 ## Output on Completion (Required)
 
 Upon completion of all tasks, always output the following block.
-`PM` reads this output to proceed to the next phase.
+The flow orchestrator reads this output to proceed to the next phase.
 
 ```
 AGENT_RESULT: developer
@@ -277,7 +277,7 @@ FAILED_CONDITIONS:
 NEXT: test-designer | suspended
 ```
 
-`STATUS: suspended` is used for session interruption. In this case, set `NEXT: suspended` and PM prompts the user to resume.
+`STATUS: suspended` is used for session interruption. In this case, set `NEXT: suspended` and the flow orchestrator prompts the user to resume.
 
 ## Completion Conditions
 

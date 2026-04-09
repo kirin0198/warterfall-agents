@@ -95,7 +95,7 @@ async def client():
 ## Reporting on Test Failures
 
 When tests fail, in addition to `FAILED_TESTS` in the `AGENT_RESULT`, output the following format as a failure report via **text output**.
-The `PM` includes this content in the rollback instructions to `test-designer`.
+The flow orchestrator includes this content in the rollback instructions to `test-designer`.
 
 ```
 ## テスト失敗レポート（test-designer 向け）

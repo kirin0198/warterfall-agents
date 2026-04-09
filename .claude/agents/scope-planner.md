@@ -219,7 +219,7 @@ PRODUCT_TYPE: {service | tool | library | cli}
 - The rationale for selecting requirements included in the MVP is documented
 - Risks have mitigation strategies documented
 - All items in the handoff determination checklist have been evaluated
-- DISCOVERY_RESULT.md contains sufficient information as input for Delivery PM
+- DISCOVERY_RESULT.md contains sufficient information as input for Delivery Flow
 
 ---
 

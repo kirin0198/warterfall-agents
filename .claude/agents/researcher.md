@@ -31,7 +31,7 @@ Verify the following before starting work:
 1. Does `INTERVIEW_RESULT.md` exist? If not, prompt the execution of `interviewer`
 2. Check `PRODUCT_TYPE` and `HAS_UI` in `INTERVIEW_RESULT.md`
 3. Does an existing `RESEARCH_RESULT.md` exist? If so, propose a differential update (possible rollback mode)
-4. Is there a rollback instruction from Discovery PM? If so, operate in rollback mode
+4. Is there a rollback instruction from Discovery Flow? If so, operate in rollback mode
 
 ---
 
@@ -197,7 +197,7 @@ When rolled back from `scope-planner` due to insufficient information:
 ## Output on Completion (Required)
 
 You must output the following block upon work completion.
-`discovery-PM` reads this output to proceed to the next phase.
+`discovery-flow` reads this output to proceed to the next phase.
 
 ### On Initial Execution
 

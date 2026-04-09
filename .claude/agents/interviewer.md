@@ -29,7 +29,7 @@ Verify the following before starting work:
 
 1. Check the user's input — has a requirements overview been provided?
 2. Does an existing `INTERVIEW_RESULT.md` exist? If so, propose a differential update (possible rollback mode)
-3. Is there a rollback instruction from Discovery PM? If so, operate in rollback mode
+3. Is there a rollback instruction from Discovery Flow? If so, operate in rollback mode
 
 ---
 
@@ -251,7 +251,7 @@ HAS_UI: {true | false}
 ## Output on Completion (Required)
 
 You must output the following block upon work completion.
-`discovery-PM` reads this output to proceed to the next phase.
+`discovery-flow` reads this output to proceed to the next phase.
 
 ### On Initial Execution
 

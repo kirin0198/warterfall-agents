@@ -244,7 +244,7 @@ Generate `DB_OPS.md` from the above analysis results following the template belo
 ## Completion Output (Required)
 
 You must output the following block upon work completion.
-`operations-PM` reads this output to proceed to the next phase.
+`operations-flow` reads this output to proceed to the next phase.
 
 ```
 AGENT_RESULT: db-ops

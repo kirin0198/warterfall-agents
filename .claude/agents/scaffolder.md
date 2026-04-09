@@ -147,7 +147,7 @@ git commit -m "chore: プロジェクト初期化 (scaffolder)
 ## Output on Completion (Required)
 
 Upon work completion, always output the following block.
-`PM` reads this output to proceed to the next phase.
+The flow orchestrator reads this output to proceed to the next phase.
 
 ```
 AGENT_RESULT: scaffolder

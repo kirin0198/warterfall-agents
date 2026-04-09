@@ -159,7 +159,7 @@ git commit -m "docs: プロジェクトドキュメントを作成
 ## Required Output on Completion
 
 Upon completion, you must output the following block.
-The `PM` reads this output to proceed to the next phase.
+The flow orchestrator reads this output to proceed to the next phase.
 
 ```
 AGENT_RESULT: doc-writer

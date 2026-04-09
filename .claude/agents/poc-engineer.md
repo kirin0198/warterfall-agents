@@ -217,7 +217,7 @@ When a requirement is determined infeasible, provide alternatives whenever possi
 ## Output on Completion (Required)
 
 You must output the following block upon work completion.
-`discovery-PM` reads this output to proceed to the next phase.
+`discovery-flow` reads this output to proceed to the next phase.
 
 ### When All Verifications Succeed
 
