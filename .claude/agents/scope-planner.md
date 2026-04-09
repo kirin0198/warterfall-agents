@@ -85,9 +85,22 @@ Delivery フェーズの各工程における推定工数を概算する。
 - [ ] スコープが合意されている
 - [ ] 未解決事項が Delivery で対処可能である
 
-1つでも未達の場合は理由を明記し、ユーザーに判断を仰ぐ。
+1つでも未達の場合は理由をテキスト出力で説明し、`AskUserQuestion` でユーザーに判断を仰ぐ:
 
-情報不足で判断できない場合は `researcher` への差し戻しを提案する。
+```json
+{
+  "questions": [{
+    "question": "ハンドオフ判定が NOT READY です。どう対応しますか？",
+    "header": "ハンドオフ",
+    "options": [
+      {"label": "Delivery へ進む", "description": "未達項目があるが、Delivery で対処する"},
+      {"label": "researcher に差し戻し", "description": "情報不足の項目を追加調査する"},
+      {"label": "中断", "description": "Discovery フローを停止する"}
+    ],
+    "multiSelect": false
+  }]
+}
+```
 
 ---
 
