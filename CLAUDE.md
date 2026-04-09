@@ -1,7 +1,7 @@
 # CLAUDE.md — Telescope Workflow Common Rules
 
 This file defines the common rules referenced by all agents in the Telescope workflow.
-Agent-specific rules are documented in the individual files under `agents/`.
+Agent-specific rules are documented in the individual files under `.claude/agents/`.
 
 ---
 
@@ -36,45 +36,35 @@ Discovery PM ──[DISCOVERY_RESULT.md]──▶ Delivery PM ──[DELIVERY_RE
 
 ## Directory Structure
 
+Agent definitions are stored in `.claude/agents/` (the standard Claude Code location).
+
 ```
-agents/
-├── discovery/          # Discovery domain
-│   ├── PM.md           # Discovery PM (orchestrator)
-│   ├── interviewer.md
-│   ├── researcher.md
-│   ├── poc-engineer.md
-│   ├── concept-validator.md
-│   └── scope-planner.md
-├── delivery/           # Delivery domain
-│   ├── PM.md           # Delivery PM (orchestrator)
-│   ├── spec-designer.md
-│   ├── ux-designer.md
-│   ├── architect.md
-│   ├── scaffolder.md
-│   ├── developer.md
-│   ├── test-designer.md
-│   ├── tester.md
-│   ├── reviewer.md
-│   ├── security-auditor.md
-│   ├── doc-writer.md
-│   ├── releaser.md
-│   └── analyst.md
-└── operations/         # Operations domain (service only)
-    ├── PM.md           # Operations PM (orchestrator)
-    ├── infra-builder.md
-    ├── db-ops.md
-    ├── observability.md
-    └── ops-planner.md
+.claude/agents/
+├── discovery-PM.md       # Discovery PM (orchestrator)
+├── interviewer.md
+├── researcher.md
+├── poc-engineer.md
+├── concept-validator.md
+├── scope-planner.md
+├── delivery-PM.md        # Delivery PM (orchestrator)
+├── spec-designer.md
+├── ux-designer.md
+├── architect.md
+├── scaffolder.md
+├── developer.md
+├── test-designer.md
+├── tester.md
+├── reviewer.md
+├── security-auditor.md
+├── doc-writer.md
+├── releaser.md
+├── analyst.md
+├── operations-PM.md      # Operations PM (orchestrator)
+├── infra-builder.md
+├── db-ops.md
+├── observability.md
+└── ops-planner.md
 ```
-
-### Agent Definition Sync
-
-`agents/` is the **source of truth**; `.claude/agents/` is a flat deploy copy.
-
-- Edit agent definitions in `agents/`
-- After editing, run `bash scripts/sync-agents.sh` to sync to `.claude/agents/`
-- Run `bash scripts/verify-sync.sh` to confirm no drift
-- PM.md is renamed to `{phase}-PM.md` (e.g., `discovery-PM.md`) during sync
 
 ---
 
