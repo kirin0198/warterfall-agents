@@ -1,14 +1,14 @@
 # Telescope Agents
 
 A collection of custom agent definitions for Claude Code.
-Divides the entire project lifecycle into **Discovery (requirements) → Delivery (design & implementation) → Operations (deploy & ops)**, automated by 25 specialized agents.
+Divides the entire project lifecycle into **Discovery (requirements) → Delivery (design & implementation) → Operations (deploy & ops)**, automated by 26 specialized agents.
 
 **[日本語版 README はこちら](README.ja.md)**
 
 ```
 Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
  (requirements)                         (design & impl)                        (deploy & ops)
- 5 agents                               12 agents                              4 agents
+ 6 agents                               12 agents                              4 agents
 ```
 
 User approval is required at each phase completion before proceeding. Non-`service` types (`tool` / `library` / `cli`) skip Operations.
@@ -95,7 +95,7 @@ Reverse-engineer spec and architecture docs from existing code first.
 
 Each domain runs in an independent session, handing off via `.md` files (no automatic chaining).
 
-**Discovery** (requirements) — interviewer → researcher → poc-engineer → concept-validator → scope-planner
+**Discovery** (requirements) — interviewer → researcher → poc-engineer → concept-validator → rules-designer → scope-planner
 
 **Delivery** (design & impl) — spec-designer → ux-designer → architect → scaffolder → developer → test-designer → tester → security-auditor → reviewer → doc-writer → releaser
 
@@ -110,7 +110,7 @@ At flow start, project scale is assessed and agents are selected from 4 tiers au
 | Plan | Discovery | Delivery | Operations |
 |--------|-----------|----------|------------|
 | **Minimal** | interviewer only | minimal (5 agents) | — |
-| **Light** | + scope-planner | + reviewer, test-designer | infra + ops-planner |
+| **Light** | + rules-designer, scope-planner | + reviewer, test-designer | infra + ops-planner |
 | **Standard** | + researcher, poc-engineer | + scaffolder, doc-writer | + db-ops |
 | **Full** | + concept-validator | + releaser | + observability |
 
@@ -136,7 +136,7 @@ At flow start, project scale is assessed and agents are selected from 4 tiers au
 ```
 .claude/
 ├── CLAUDE.md              # Common rules for all agents
-├── agents/*.md            # Agent definitions (25 files)
+├── agents/*.md            # Agent definitions (26 files)
 └── commands/*.md          # Slash command definitions
 ```
 

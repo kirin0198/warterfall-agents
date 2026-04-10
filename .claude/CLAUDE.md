@@ -22,7 +22,7 @@ Telescope divides the entire project lifecycle into three domains — **Discover
 ```
 Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
  (requirements)                         (design & impl)                       (deploy & ops)
- 5 agents                               12 agents                              4 agents
+ 6 agents                               12 agents                              4 agents
 ```
 
 ### Branching by Product Type
@@ -46,6 +46,7 @@ Agent definitions are stored in `.claude/agents/` (the standard Claude Code loca
 ├── poc-engineer.md
 ├── concept-validator.md
 ├── scope-planner.md
+├── rules-designer.md
 ├── delivery-flow.md        # Delivery Flow (orchestrator)
 ├── spec-designer.md
 ├── ux-designer.md
@@ -76,9 +77,9 @@ Agent definitions are stored in `.claude/agents/` (the standard Claude Code loca
 | Plan | Condition | Agents to Launch |
 |------|-----------|-----------------|
 | Minimal | Personal tool / small script | interviewer |
-| Light | Personal side project / multiple features | interviewer → scope-planner |
-| Standard | External dependencies / existing system integration | interviewer → researcher → poc-engineer → scope-planner |
-| Full | Regulated / large-scale / complex | interviewer → researcher → poc-engineer → concept-validator → scope-planner |
+| Light | Personal side project / multiple features | interviewer → rules-designer → scope-planner |
+| Standard | External dependencies / existing system integration | interviewer → researcher → poc-engineer → rules-designer → scope-planner |
+| Full | Regulated / large-scale / complex | interviewer → researcher → poc-engineer → concept-validator → rules-designer → scope-planner |
 
 ### Delivery Flow Triage
 

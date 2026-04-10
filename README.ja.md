@@ -1,14 +1,14 @@
 # Telescope Agents
 
 Claude Code のカスタムエージェント定義集です。
-プロジェクトの全工程を **Discovery（要件探索）→ Delivery（設計・実装）→ Operations（デプロイ・運用）** の3領域に分割し、25の専門エージェントが自動化します。
+プロジェクトの全工程を **Discovery（要件探索）→ Delivery（設計・実装）→ Operations（デプロイ・運用）** の3領域に分割し、26の専門エージェントが自動化します。
 
 **[English README](README.md)**
 
 ```
 Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
  (要件探索)                             (設計・実装)                            (デプロイ・運用)
- 5 agents                               12 agents                              4 agents
+ 6 agents                               12 agents                              4 agents
 ```
 
 各フェーズ完了ごとにユーザーの承認を得てから次へ進みます。`service` 以外（`tool` / `library` / `cli`）は Operations をスキップします。
@@ -95,7 +95,7 @@ cd /path/to/your-project && claude
 
 各領域は独立セッションで動作し、`.md` ファイルでハンドオフします（自動チェーンなし）。
 
-**Discovery**（要件探索） — interviewer → researcher → poc-engineer → concept-validator → scope-planner
+**Discovery**（要件探索） — interviewer → researcher → poc-engineer → concept-validator → rules-designer → scope-planner
 
 **Delivery**（設計・実装） — spec-designer → ux-designer → architect → scaffolder → developer → test-designer → tester → security-auditor → reviewer → doc-writer → releaser
 
@@ -110,7 +110,7 @@ cd /path/to/your-project && claude
 | プラン | Discovery | Delivery | Operations |
 |--------|-----------|----------|------------|
 | **Minimal** | interviewer のみ | 最小構成（5 agents） | — |
-| **Light** | + scope-planner | + reviewer, test-designer | infra + ops-planner |
+| **Light** | + rules-designer, scope-planner | + reviewer, test-designer | infra + ops-planner |
 | **Standard** | + researcher, poc-engineer | + scaffolder, doc-writer | + db-ops |
 | **Full** | + concept-validator | + releaser | + observability |
 
@@ -136,7 +136,7 @@ cd /path/to/your-project && claude
 ```
 .claude/
 ├── CLAUDE.md              # 全エージェント共通ルール
-├── agents/*.md            # エージェント定義（25ファイル）
+├── agents/*.md            # エージェント定義（26ファイル）
 └── commands/*.md          # スラッシュコマンド定義
 ```
 
