@@ -1,203 +1,153 @@
 # Telescope Agents
 
-Claude Code のカスタムエージェント定義集です。
-**Telescope ワークフロー** に基づき、プロジェクトの全工程を **Discovery（要件探索）→ Delivery（設計・実装）→ Operations（デプロイ・運用）** の3領域に分割し、各領域を専門エージェントが自動化します。
+A collection of custom agent definitions for Claude Code.
+Divides the entire project lifecycle into **Discovery (requirements) → Delivery (design & implementation) → Operations (deploy & ops)**, automated by 25 specialized agents.
 
-## フロー概要
+**[日本語版 README はこちら](README.ja.md)**
 
 ```
 Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
- (要件探索)                             (設計・実装)                            (デプロイ・運用)
+ (requirements)                         (design & impl)                        (deploy & ops)
  5 agents                               12 agents                              4 agents
 ```
 
-各フェーズの完了ごとにユーザーの承認を得てから次へ進みます。
-領域間は `.md` ファイルで接続され、自動チェーンはしません。
+User approval is required at each phase completion before proceeding. Non-`service` types (`tool` / `library` / `cli`) skip Operations.
 
-### 成果物の性質による分岐
+---
 
-| PRODUCT_TYPE | Discovery | Delivery | Operations |
-|-------------|-----------|----------|------------|
-| `service` | 実行 | 実行 | 実行 |
-| `tool` / `library` / `cli` | 実行 | 実行 | **スキップ** |
+## Quick Start
 
-## エージェント一覧
-
-### Discovery 領域（要件探索）
-
-| エージェント | 役割 | 主な成果物 | 起動条件 |
-|---|---|---|---|
-| **Discovery Flow** | 要件探索フロー全体を管理 | DISCOVERY_RESULT.md | — |
-| **interviewer** | 要件ヒアリング・構造化 | INTERVIEW_RESULT.md | Minimal〜 |
-| **researcher** | ドメイン調査・競合分析 | RESEARCH_RESULT.md | Standard〜 |
-| **poc-engineer** | 技術PoC・実現可能性検証 | POC_RESULT.md | Standard〜 |
-| **concept-validator** | UIプロトタイプ検証 | CONCEPT_VALIDATION.md | Full (UI時) |
-| **scope-planner** | MVP定義・優先順位・リスク評価 | SCOPE_PLAN.md | Light〜 |
-
-### Delivery 領域（設計・実装）
-
-| エージェント | 役割 | 主な成果物 | 起動条件 |
-|---|---|---|---|
-| **Delivery Flow** | 設計・実装フロー全体を管理 | DELIVERY_RESULT.md | — |
-| **spec-designer** | 要件から仕様書を策定 | SPEC.md | 全プラン |
-| **ux-designer** | UI仕様・デザインプロンプトを作成 | UI_SPEC.md | UI時のみ |
-| **architect** | 仕様から技術設計書を作成 | ARCHITECTURE.md | 全プラン |
-| **scaffolder** | プロジェクト初期化・雛形作成 | プロジェクト構造 | Standard〜 |
-| **developer** | 設計に従いコードを実装 | 実装コード, TASK.md | 全プラン |
-| **test-designer** | テスト計画を策定 | TEST_PLAN.md | Light〜 |
-| **tester** | テストコードを作成・実行 | テストコード, レポート | 全プラン |
-| **reviewer** | コード品質・仕様適合をレビュー | レビューレポート | Light〜 |
-| **security-auditor** | セキュリティ監査（OWASP Top 10） | SECURITY_AUDIT.md | **全プラン必須** |
-| **doc-writer** | README・CHANGELOG を作成 | README.md, CHANGELOG.md | Standard〜 |
-| **releaser** | バージョニング・リリース準備 | RELEASE_NOTES.md, git tag | Full |
-| **analyst** | バグ/機能追加/リファクタの方針決定 | ISSUE.md, GitHub issue | issue経由 |
-
-### スタンドアロンエージェント
-
-| エージェント | 役割 | 主な成果物 | 起動条件 |
-|---|---|---|---|
-| **codebase-analyzer** | 既存コードから SPEC/ARCHITECTURE を逆生成 | SPEC.md, ARCHITECTURE.md | SPEC なしの既存プロジェクト |
-
-### Operations 領域（デプロイ・運用）— サービス専用
-
-| エージェント | 役割 | 主な成果物 | 起動条件 |
-|---|---|---|---|
-| **Operations Flow** | デプロイ・運用フロー全体を管理 | OPS_RESULT.md | — |
-| **infra-builder** | Dockerfile・CI/CD・環境設定 | Dockerfile, CI/CD | Light〜 |
-| **db-ops** | DB運用・マイグレーション手順 | DB_OPS.md | Standard〜 |
-| **observability** | 監視・ログ・メトリクス設計 | OBSERVABILITY.md | Full |
-| **ops-planner** | デプロイ手順・インシデント対応 | OPS_PLAN.md | Light〜 |
-
-## トリアージシステム
-
-各フローオーケストレーターはフロー開始時にプロジェクト特性を判定し、4段階のプラン（Minimal / Light / Standard / Full）から選択します。
-
-| プラン | Discovery | Delivery | Operations |
-|--------|-----------|----------|------------|
-| **Minimal** | interviewer のみ | 最小構成（5 agents） | — |
-| **Light** | + scope-planner | + reviewer + test-designer | infra + ops-planner |
-| **Standard** | + researcher + poc-engineer | + scaffolder + doc-writer | + db-ops |
-| **Full** | + concept-validator | + releaser | + observability |
-
-## 使い方
-
-### 前提条件
-
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code) がインストールされていること
-
-### セットアップ
-
-`.claude/` ディレクトリをプロジェクトにコピーします。
+**Prerequisites:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code) installed
 
 ```bash
+# 1. Copy .claude/ directory to your project
 cp -r .claude /path/to/your-project/
+
+# 2. Launch Claude Code in your project directory
+cd /path/to/your-project && claude
+
+# 3. Start with a slash command
+/discovery-flow I want to build a TODO app
 ```
 
-### 実行
+The flow orchestrator auto-detects project scale and launches only the agents needed.
 
-Claude Code 上でスラッシュコマンドを使って各エージェントを起動できます。
+---
 
-**フルフロー（Discovery → Delivery → Operations）:**
+## Usage Scenarios
+
+### New Project (Full Flow)
+
+End-to-end from requirements exploration to design, implementation, and deployment.
 
 ```
-/discovery-flow TODOアプリを作りたい
-（Discovery 完了後）
+/discovery-flow I want to build a blog management system
+(after Discovery completes)
 /delivery-flow
-（Delivery 完了後、service の場合）
+(after Delivery completes, for services)
 /operations-flow
 ```
 
-**Delivery のみ（従来の使い方）:**
+### Quick Build (Delivery Only)
+
+When requirements are already clear and you just want design + implementation.
 
 ```
-/pm TODOアプリを作りたい
+/pm I want to build a TODO app
 ```
 
-**既存プロジェクト（SPEC/ARCHITECTURE なし）:**
+### Existing Project (with SPEC / ARCHITECTURE)
+
+Organize bug fixes, feature additions, or refactoring as issues, then proceed to design & implementation.
 
 ```
-/codebase-analyzer このプロジェクトを分析して
-（分析完了後、変更を加える場合）
-/analyst ログイン機能を追加したい
+/analyst There's a 500 error on login
+(after analysis completes)
 /delivery-flow
 ```
 
-**利用可能なコマンド:**
+### Existing Project (without SPEC / ARCHITECTURE)
 
-| コマンド | 用途 |
-|---------|------|
-| `/discovery-flow` | Discovery フロー（要件探索）を開始 |
-| `/pm` / `/delivery-flow` | Delivery フロー（設計・実装）を開始 |
-| `/operations-flow` | Operations フロー（デプロイ・運用）を開始 |
-| `/analyst` | 既存プロジェクトへの issue 分析（サイドエントリー） |
-| `/codebase-analyzer` | SPEC/ARCHITECTURE のない既存プロジェクトを分析 |
-
-各フローオーケストレーターが内部でトリアージを行い、必要なエージェントを自動的に起動します。
-
-**使用例:**
+Reverse-engineer spec and architecture docs from existing code first.
 
 ```
-/discovery-flow ブログ管理システムを作りたい
-/pm TODOアプリを作りたい
-/analyst ログイン時に500エラーが発生するバグ
-/codebase-analyzer このプロジェクトの仕様と設計を分析して
+/codebase-analyzer Analyze this project's spec and design
+(after analysis completes)
+/analyst I want to add a login feature
+/delivery-flow
 ```
 
-## ファイル構成
+### Command Reference
+
+| Command | Purpose |
+|---------|---------|
+| `/discovery-flow` | Start requirements exploration flow |
+| `/pm` `/delivery-flow` | Start design & implementation flow |
+| `/operations-flow` | Start deploy & operations flow |
+| `/analyst` | Analyze issues for existing projects |
+| `/codebase-analyzer` | Analyze existing projects without specs |
+
+---
+
+## Architecture
+
+### Three-Domain Model
+
+Each domain runs in an independent session, handing off via `.md` files (no automatic chaining).
+
+**Discovery** (requirements) — interviewer → researcher → poc-engineer → concept-validator → scope-planner
+
+**Delivery** (design & impl) — spec-designer → ux-designer → architect → scaffolder → developer → test-designer → tester → security-auditor → reviewer → doc-writer → releaser
+
+**Operations** (deploy & ops) — infra-builder → db-ops → observability → ops-planner
+
+**Standalone** — analyst (issue analysis), codebase-analyzer (existing code analysis)
+
+### Triage System
+
+At flow start, project scale is assessed and agents are selected from 4 tiers automatically.
+
+| Plan | Discovery | Delivery | Operations |
+|--------|-----------|----------|------------|
+| **Minimal** | interviewer only | minimal (5 agents) | — |
+| **Light** | + scope-planner | + reviewer, test-designer | infra + ops-planner |
+| **Standard** | + researcher, poc-engineer | + scaffolder, doc-writer | + db-ops |
+| **Full** | + concept-validator | + releaser | + observability |
+
+`security-auditor` runs on all plans. `ux-designer` runs only for projects with UI.
+
+---
+
+## Key Features
+
+- **3-domain separation** — Discovery / Delivery / Operations run in independent sessions to prevent context bloat
+- **Triage adaptation** — Auto-selects Minimal–Full based on project scale
+- **Approval gates** — User approval required at each phase completion
+- **Security mandatory** — security-auditor runs on all plans (OWASP Top 10 + dependency vulnerability scanning)
+- **Session resume** — TASK.md state management enables mid-task resume
+- **Auto rollback** — Root cause analysis and rollback on test failures / review findings (up to 3 times)
+- **Multi-language** — Supports Python / TypeScript / Go / Rust
+- **Document-driven** — Domains connected via `.md` handoff files for traceability
+
+---
+
+## File Structure
 
 ```
-telescope-agents/
-├── README.md
-└── .claude/
-    ├── CLAUDE.md                      # 全エージェント共通ルール
-    ├── agents/                        # エージェント定義（Claude Code 標準配置）
-    │   ├── discovery-flow.md
-    │   ├── interviewer.md
-    │   ├── researcher.md
-    │   ├── poc-engineer.md
-    │   ├── concept-validator.md
-    │   ├── scope-planner.md
-    │   ├── delivery-flow.md
-    │   ├── spec-designer.md
-    │   ├── ux-designer.md
-    │   ├── architect.md
-    │   ├── scaffolder.md
-    │   ├── developer.md
-    │   ├── test-designer.md
-    │   ├── tester.md
-    │   ├── reviewer.md
-    │   ├── security-auditor.md
-    │   ├── doc-writer.md
-    │   ├── releaser.md
-    │   ├── analyst.md
-    │   ├── codebase-analyzer.md
-    │   ├── operations-flow.md
-    │   ├── infra-builder.md
-    │   ├── db-ops.md
-    │   ├── observability.md
-    │   └── ops-planner.md
-    └── commands/                      # スラッシュコマンド定義
-        └── *.md                       # 各エージェントの起動コマンド
+.claude/
+├── CLAUDE.md              # Common rules for all agents
+├── agents/*.md            # Agent definitions (25 files)
+└── commands/*.md          # Slash command definitions
 ```
 
-## 主な特徴
+See [.claude/CLAUDE.md](.claude/CLAUDE.md) for details on agent definitions.
 
-- **3領域分離**: Discovery / Delivery / Operations を独立セッションで管理し、コンテキスト圧迫を防止
-- **トリアージ適応**: プロジェクト規模に応じて Minimal〜Full の4段階で自動選択
-- **承認ゲート**: 各フェーズ完了時にユーザー承認を必須化し、自律エージェントの暴走を防止
-- **セキュリティ必須**: security-auditor は全プランで必ず実行（OWASP Top 10 + 依存脆弱性スキャン）
-- **セッション中断・再開**: TASK.md による状態管理で、長時間タスクの途中再開が可能
-- **自動差し戻し**: テスト失敗時は原因切り分け判断木による分析後に差し戻し（最大3回）
-- **blocked STATUS**: 設計の曖昧さを検出時に自動で該当エージェントに確認を依頼
-- **多言語対応**: Python (FastAPI) をデフォルトとしつつ、TypeScript / Go / Rust にも対応
-- **ドキュメント駆動**: 領域間は `.md` ファイルのハンドオフでトレーサビリティを確保
+---
 
-## CI/CD との関係
+## CI/CD
 
-Telescope は**開発時ワークフロー**であり、CI/CD ランタイムではありません。
+Telescope is a development-time workflow, not a CI/CD runtime. `infra-builder` generates pipeline definitions for GitHub Actions, etc.
 
-- `infra-builder` エージェントが GitHub Actions 等の CI/CD パイプライン定義を生成します
-
-## ライセンス
+## License
 
 MIT
