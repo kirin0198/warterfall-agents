@@ -169,7 +169,7 @@ cp -r platforms/codex/skills/ /path/to/your-project/
 platforms/
 ├── copilot/                     # GitHub Copilot（生成物）
 │   ├── copilot-instructions.md  # → .github/copilot-instructions.md
-│   └── agents/*.md              # → .github/agents/*.md
+│   └── agents/*.md              # → .github/agents/*.agent.md
 └── codex/                       # OpenAI Codex（生成物）
     ├── AGENTS.md                # → プロジェクトルート
     └── skills/                  # → プロジェクトルート
@@ -191,7 +191,7 @@ python3 scripts/generate.py --clean            # 生成物を削除
 | 機能 | Claude Code | GitHub Copilot | OpenAI Codex |
 |------|------------|----------------|-------------|
 | グローバル指示 | `.claude/CLAUDE.md` | `.github/copilot-instructions.md` | `AGENTS.md` |
-| エージェント定義 | `.claude/agents/*.md` | `.github/agents/*.md` | N/A（単一エージェント） |
+| エージェント定義 | `.claude/agents/*.md` | `.github/agents/*.agent.md` | N/A（単一エージェント） |
 | スキル/コマンド | `.claude/commands/*.md` | — | `skills/*/SKILL.md` |
 | サブエージェント | あり（Agent tool） | あり（agent tool） | なし |
 | フルオーケストレーション | 可能 | 可能 | 不可 |

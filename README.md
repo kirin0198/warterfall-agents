@@ -169,7 +169,7 @@ At flow start, project scale is assessed and agents are selected from 4 tiers au
 platforms/
 ├── copilot/                     # GitHub Copilot (generated)
 │   ├── copilot-instructions.md  # → .github/copilot-instructions.md
-│   └── agents/*.md              # → .github/agents/*.md
+│   └── agents/*.md              # → .github/agents/*.agent.md
 └── codex/                       # OpenAI Codex (generated)
     ├── AGENTS.md                # → project root
     └── skills/                  # → project root
@@ -191,7 +191,7 @@ python3 scripts/generate.py --clean            # Remove generated files
 | Feature | Claude Code | GitHub Copilot | OpenAI Codex |
 |---------|------------|----------------|-------------|
 | Global instructions | `.claude/CLAUDE.md` | `.github/copilot-instructions.md` | `AGENTS.md` |
-| Agent definitions | `.claude/agents/*.md` | `.github/agents/*.md` | N/A (single agent) |
+| Agent definitions | `.claude/agents/*.md` | `.github/agents/*.agent.md` | N/A (single agent) |
 | Skills / commands | `.claude/commands/*.md` | — | `skills/*/SKILL.md` |
 | Sub-agent support | Yes (Agent tool) | Yes (agent tool) | No |
 | Full orchestration | Yes | Yes | No |

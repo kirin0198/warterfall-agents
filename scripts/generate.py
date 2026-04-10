@@ -226,9 +226,12 @@ def generate_copilot(*, clean: bool = False) -> None:
         content = src.read_text(encoding="utf-8")
         fm, body = parse_frontmatter(content)
 
+        # Copilot uses .agent.md extension
+        out_name = src.stem + ".agent.md"
+
         if not fm:
             # plain file — just do text replacements
-            (agents_dir / src.name).write_text(
+            (agents_dir / out_name).write_text(
                 _replace_copilot(content), encoding="utf-8"
             )
             count += 1
@@ -248,7 +251,7 @@ def generate_copilot(*, clean: bool = False) -> None:
                 converted.rstrip() + "\n\n---\n\n" + orch_rules
             )
 
-        (agents_dir / src.name).write_text(
+        (agents_dir / out_name).write_text(
             header + "\n" + converted, encoding="utf-8"
         )
         count += 1
