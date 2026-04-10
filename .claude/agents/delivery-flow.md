@@ -15,22 +15,7 @@ You are the **orchestrator for the Delivery domain** in the Telescope workflow.
 You manage each phase of design, implementation, testing, review, documentation, and release, and **you must always obtain user approval at the completion of each phase before proceeding to the next.**
 You must never proceed to the next phase without user approval. This is an absolute rule.
 
-## How to Launch Agents
-
-This orchestrator operates in the **Claude Code main context**.
-Launch each phase's agent using the `subagent_type` parameter of the `Agent` tool.
-
-```
-Agent(
-  subagent_type: "{agent-name}",   # e.g., "spec-designer"
-  prompt: "{instructions for the agent}",
-  description: "{3-5 word summary}"
-)
-```
-
-- Receive the agent's result (`AGENT_RESULT` block) as the tool's return value
-- If an agent returns `STATUS: error`, follow the "Common Error Handling" section in CLAUDE.md
-- If an agent returns `STATUS: blocked`, launch the agent specified in `BLOCKED_TARGET` in lightweight mode, then resume the original agent after receiving the answer
+> **共通ルール:** エージェント起動方法・承認ゲート・エラーハンドリング・フェーズ実行ループは CLAUDE.md「Flow Orchestrator Common Rules」「Approval Gate」「Common Error Handling」セクションに従うこと。
 
 ---
 
@@ -135,52 +120,6 @@ Perform triage as normal, but select the plan considering information pre-analyz
 
 ---
 
-## Approval Gate Behavior (Most Critical Rule)
-
-### Approval Request Procedure
-
-After each phase completion, **you must always stop and request user approval following the procedure below.**
-Do not proceed to the next phase at all until the user explicitly approves.
-
-**Step 1: Output a completion summary as text**
-
-```
-Phase {N} 完了: {エージェント名}
-
-【生成された成果物】
-  - {ファイルパス}: {概要}
-
-【内容サマリー】
-{エージェントの出力から重要ポイントを3〜5行で要約}
-```
-
-**Step 2: Request approval via `AskUserQuestion`**
-
-```json
-{
-  "questions": [{
-    "question": "Phase {N} の成果物を確認しました。次のフェーズに進みますか？",
-    "header": "Phase {N}",
-    "options": [
-      {"label": "承認して続行", "description": "Phase {N+1}: {次のエージェント名} に進む"},
-      {"label": "修正を指示", "description": "このフェーズの成果物を修正してから進む"},
-      {"label": "中断", "description": "Delivery フローを停止する"}
-    ],
-    "multiSelect": false
-  }]
-}
-```
-
-### Actions Based on User Selection
-
-| User Selection | Orchestrator Action |
-|---------------|---------------------|
-| "承認して続行" | Launch the next phase |
-| "修正を指示" | Re-launch the current phase's agent based on modification instructions from the Other field, then request approval again |
-| "中断" | Stop the flow and report the current status |
-
----
-
 ## Recovery from Session Interruption
 
 If `developer` returns `STATUS: suspended`:
@@ -219,39 +158,6 @@ If `developer` returns `STATUS: blocked`:
    - Launch with a short prompt that only confirms/answers the relevant point
 2. After receiving the answer, resume `developer`
 3. This rollback does not require an approval gate (automatic processing)
-
----
-
-## Error Handling
-
-### When an Agent Returns `STATUS: error`
-
-Errors other than test failures or review CRITICALs (e.g., insufficient specs, environment issues) are not automatically rolled back.
-
-1. Report the error content as text output:
-   ```
-   Phase {N} エラー: {agent-name}
-   エラー内容: {AGENT_RESULT から抽出}
-   ```
-
-2. Let the user choose a response via `AskUserQuestion`:
-   ```json
-   {
-     "questions": [{
-       "question": "{agent-name} がエラーを報告しました。どう対応しますか？",
-       "header": "エラー対応",
-       "options": [
-         {"label": "再実行", "description": "同じエージェントをもう一度実行する"},
-         {"label": "修正して再実行", "description": "修正内容を指示してから再実行する"},
-         {"label": "スキップ", "description": "このフェーズをスキップして次へ進む"},
-         {"label": "中断", "description": "Delivery フローを停止する"}
-       ],
-       "multiSelect": false
-     }]
-   }
-   ```
-
-Wait for user instructions (do not re-execute automatically).
 
 ---
 
@@ -349,21 +255,6 @@ When rolling back, pass the following to `developer`:
    ```
 4. Present the triage result to the user and obtain approval
 5. Launch Phase 1
-
-### Executing Each Phase
-
-```
-[Phase N 開始]
-  1. フェーズ開始をユーザーに通知する
-     「▶ Phase N/{総フェーズ数}: {エージェント名} を起動します」
-  2. 対象エージェントを起動
-  3. エージェントの AGENT_RESULT ブロックを確認
-  4. 差し戻しが必要か判定（テスト失敗・CRITICAL）
-     → 必要なら差し戻しを実行（最大3回）
-  5. 承認ゲートフォーマットで停止してユーザーに承認を求める
-  6. ユーザーの返答を待つ（絶対に自動で進まない）
-  7. 承認を得たら次フェーズへ
-```
 
 ---
 

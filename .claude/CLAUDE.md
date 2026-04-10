@@ -309,6 +309,49 @@ When an agent returns `STATUS: error`, the orchestrator must:
 
 ---
 
+## Flow Orchestrator Common Rules
+
+Rules shared by all flow orchestrators (discovery-flow, delivery-flow, operations-flow).
+Each orchestrator's agent definition covers domain-specific logic (triage, rollback, progress display).
+The common patterns below must not be duplicated in individual orchestrator files.
+
+### How to Launch Agents
+
+Flow orchestrators operate in the **Claude Code main context**.
+Launch each phase's agent using the `subagent_type` parameter of the `Agent` tool.
+
+```
+Agent(
+  subagent_type: "{agent-name}",   # e.g.: "interviewer", "spec-designer"
+  prompt: "{instructions for the agent}",
+  description: "{3-5 word summary}"
+)
+```
+
+- Receive the agent's result (`AGENT_RESULT` block) as the tool's return value
+- If `STATUS: error` → follow "Common Error Handling" below
+- If `STATUS: blocked` → launch the agent specified in `BLOCKED_TARGET` in lightweight mode, obtain an answer, then resume the original agent
+- If `STATUS: suspended` → report to the user and provide resume instructions
+
+### Phase Execution Loop
+
+Each phase follows this common loop. Domain-specific steps (rollback checks, etc.) are additions on top of this template.
+
+```
+[Phase N 開始]
+  1. フェーズ開始をユーザーに通知する
+     「▶ Phase N/{総フェーズ数}: {エージェント名} を起動します」
+  2. 前段の成果物パスを含む指示でエージェントを起動する
+  3. エージェントの AGENT_RESULT ブロックを確認する
+  4. STATUS を判定し、error / blocked / failure に対応する
+     （failure の場合はドメイン固有の差し戻しルールに従う）
+  5. 承認ゲート（下記「Approval Gate」参照）で停止しユーザーに承認を求める
+  6. ユーザーの返答を待つ（絶対に自動で進まない）
+  7. 承認を得たら次フェーズへ
+```
+
+---
+
 ## Approval Gate
 
 Common approval gate format shared by all flow orchestrators. After each phase completion, the orchestrator must stop and request user approval.
