@@ -75,6 +75,96 @@ async def client():
         yield ac
 ```
 
+### Web E2E Test Execution Pattern (Playwright)
+
+**Python (pytest-playwright):**
+```python
+# tests/e2e/conftest.py
+import pytest
+from playwright.sync_api import Page
+
+@pytest.fixture(scope="session")
+def browser_context_args():
+    return {"base_url": "http://localhost:8000"}
+
+# tests/e2e/test_login.py
+from playwright.sync_api import Page, expect
+
+def test_login_success(page: Page):
+    """TC-E2E-001: ログイン成功フロー"""
+    page.goto("/login")
+    page.fill("[data-testid=email]", "test@example.com")
+    page.fill("[data-testid=password]", "password123")
+    page.click("[data-testid=submit]")
+    expect(page).to_have_url("/dashboard")
+```
+
+**TypeScript (@playwright/test):**
+```typescript
+// tests/e2e/login.spec.ts
+import { test, expect } from '@playwright/test';
+
+test('TC-E2E-001: login success flow', async ({ page }) => {
+  await page.goto('/login');
+  await page.fill('[data-testid=email]', 'test@example.com');
+  await page.fill('[data-testid=password]', 'password123');
+  await page.click('[data-testid=submit]');
+  await expect(page).toHaveURL('/dashboard');
+});
+```
+
+### GUI Test Execution Pattern (Desktop)
+
+**pywinauto (Windows):**
+```python
+# tests/gui/test_main_window.py
+import pytest
+from pywinauto import Application
+
+@pytest.fixture
+def app():
+    app = Application(backend="uia").start("path/to/app.exe")
+    yield app
+    app.kill()
+
+def test_menu_file_open(app):
+    """TC-GUI-001: ファイルメニューからファイルを開く"""
+    main = app.window(title="App Name")
+    main.menu_select("File->Open")
+    assert main.child_window(title="Open File").exists()
+```
+
+**pyautogui (cross-platform):**
+```python
+# tests/gui/test_basic_operations.py
+import pytest
+import pyautogui
+import subprocess
+import time
+
+@pytest.fixture
+def app_process():
+    proc = subprocess.Popen(["path/to/app"])
+    time.sleep(2)  # アプリ起動待ち
+    yield proc
+    proc.terminate()
+
+def test_button_click(app_process):
+    """TC-GUI-001: メインボタンのクリック操作"""
+    location = pyautogui.locateOnScreen("tests/gui/images/button.png")
+    assert location is not None
+    pyautogui.click(location)
+```
+
+### E2E Test Execution Pre-requirements
+
+Before running E2E tests, verify:
+1. **Web E2E**: Application server is running (or use Playwright's `webServer` config)
+2. **Web E2E**: Browsers are installed (`playwright install`)
+3. **GUI**: Display server is available (Xvfb for headless Linux CI)
+4. **GUI**: Application binary exists and is launchable
+5. **Dependencies**: E2E test packages listed in TEST_PLAN.md are installed
+
 ---
 
 ## Workflow
@@ -108,6 +198,12 @@ The flow orchestrator includes this content in the rollback instructions to `tes
 - **期待値:** {expected}
 - **実際の値:** {actual}
 - **エラー出力:** {スタックトレース等の要約}
+
+### E2E テスト失敗時の追加フィールド
+- **対象画面:** SCR-XXX
+- **スクリーンショット:** {失敗時のスクリーンショットパス}
+- **トレース:** {Playwright トレースファイルパス}（Web E2E の場合）
+- **操作手順の再現:** {失敗に至る操作ステップ}
 ```
 
 ---

@@ -75,7 +75,7 @@ Step 4. Design test cases
 |------|--------|-------------------|
 | Unit test | Functions, classes, schemas | Input/output validity, edge cases |
 | Integration test | API endpoints, inter-module coordination | Request/response validity, authentication/authorization |
-| E2E test | Entire user flow | Use case scenario reproduction (when UI exists) |
+| E2E test | Entire user flow | Designed by `e2e-test-designer` (when HAS_UI: true) |
 
 ---
 
@@ -244,6 +244,7 @@ When `tester` reports test failures, test-designer performs root cause analysis 
 - Test cases must exist for all acceptance criteria in SPEC.md
 - Each test case must have specific input values and expected values documented
 - Test types (unit/integration/E2E) are appropriately classified
+- E2E test design is delegated to `e2e-test-designer` when `HAS_UI: true`
 - UC correspondence is clear in the traceability matrix
 - If there are dependencies between tests, execution order is explicitly documented
 
@@ -260,7 +261,8 @@ ARTIFACTS:
   - TEST_PLAN.md
 TOTAL_CASES: {total number of test cases}
 UC_COVERAGE: {number of UCs covered} / {total UCs}
-NEXT: tester
+HAS_UI: true | false
+NEXT: e2e-test-designer | tester
 ```
 
 ### Rollback Mode (Failure Analysis)
@@ -275,6 +277,9 @@ ROOT_CAUSES:
 TEST_PLAN_UPDATED: true | false
 NEXT: developer | tester
 ```
+
+`HAS_UI: true` is determined from SPEC.md or the upstream `spec-designer` AGENT_RESULT.
+When `HAS_UI: true`, set `NEXT: e2e-test-designer`; otherwise set `NEXT: tester`.
 
 `NEXT: tester` when it is a test code bug that test-designer fixed.
 `NEXT: developer` when it is an implementation bug or environment issue.

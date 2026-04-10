@@ -87,6 +87,9 @@ Create config files appropriate for the tech stack:
 
 - **Lint/Format:** ruff.toml / .eslintrc / golangci.yml, etc.
 - **Testing:** pytest.ini / vitest.config.ts, etc.
+- **E2E Testing (if HAS_UI: true and ARCHITECTURE.md specifies E2E):**
+  - Playwright: `playwright.config.ts` or `pyproject.toml` [tool.pytest.ini_options] with playwright settings
+  - Test directory: `tests/e2e/` with Page Objects directory `tests/e2e/pages/` (if specified)
 - **Environment variables:** `.env.example` (empty values, with explanatory comments)
 - **Git:** `.gitignore` (template appropriate for the language)
 - **Editor:** `.editorconfig`

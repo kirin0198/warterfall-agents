@@ -51,6 +51,7 @@ If the user has specified a stack, always prioritize that; if no specification e
 | Migration | Alembic | Integrated with SQLAlchemy |
 | Environment management | uv | Faster than pip, pyproject.toml based |
 | Testing | pytest + httpx | Async test support |
+| E2E testing | Playwright (pytest-playwright) | Multi-browser, auto-wait, headless CI |
 | Lint / Format | ruff | Replaces flake8 + black, fast |
 | Type checking | mypy | Strict mode recommended |
 
@@ -126,6 +127,16 @@ If the user has specified a stack, always prioritize that; if no specification e
 
 | テスト種別 | ツール | カバレッジ目標 | 対象 |
 |-----------|--------|-------------|------|
+| 単体テスト | {pytest / vitest / go test} | {目標値} | {対象} |
+| 統合テスト | {pytest + httpx / supertest} | {目標値} | {対象} |
+| E2E テスト | {Playwright / Selenium / なし} | {目標値} | {対象画面} |
+| GUI テスト | {pywinauto / pyautogui / なし} | {目標値} | {対象操作} |
+
+### E2E テスト方針（HAS_UI: true の場合）
+- ツール選定理由: {選定根拠}
+- テスト対象ブラウザ: {Chromium / Firefox / WebKit}
+- 実行モード: {headless（CI）/ headed（開発時）}
+- Page Object Model: {使用する / 使用しない}
 
 ## 10. 実装順序・依存関係
 

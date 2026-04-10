@@ -42,11 +42,12 @@ If `DISCOVERY_RESULT.md` is available, determine from it. Otherwise, interview t
 | Plan | Condition | Agents to Launch |
 |------|-----------|-----------------|
 | Minimal | Single-function tool | spec-designer → architect → developer → tester (test-designer integrated) → security-auditor |
-| Light | Personal side project | spec-designer → [ux-designer] → architect → developer → test-designer → tester → reviewer → security-auditor |
-| Standard | Multi-file project | spec-designer → [ux-designer] → architect → scaffolder → developer → test-designer → tester → reviewer → security-auditor → doc-writer |
-| Full | Public project / OSS | spec-designer → [ux-designer] → architect → scaffolder → developer → test-designer → tester → reviewer → security-auditor → doc-writer → releaser |
+| Light | Personal side project | spec-designer → [ux-designer] → architect → developer → test-designer → [e2e-test-designer] → tester → reviewer → security-auditor |
+| Standard | Multi-file project | spec-designer → [ux-designer] → architect → scaffolder → developer → test-designer → [e2e-test-designer] → tester → reviewer → security-auditor → doc-writer |
+| Full | Public project / OSS | spec-designer → [ux-designer] → architect → scaffolder → developer → test-designer → [e2e-test-designer] → tester → reviewer → security-auditor → doc-writer → releaser |
 
 - **[ux-designer]** runs only for projects that include a UI
+- **[e2e-test-designer]** runs only for projects that include a UI (`HAS_UI: true`)
 - **security-auditor** **must run on all plans** (cannot be omitted)
 - **Minimal** integrates test-designer into tester and skips reviewer
 
@@ -83,21 +84,22 @@ Then request approval via `AskUserQuestion`:
 
 ### New Development (Standard Plan Example)
 ```
-Phase 1: 仕様策定         → spec-designer    → ⏸ ユーザー承認
-Phase 2: UIデザイン       → ux-designer      → ⏸ ユーザー承認  ※ UIありの場合のみ
-Phase 3: アーキテクチャ設計 → architect       → ⏸ ユーザー承認
-Phase 4: プロジェクト初期化 → scaffolder      → ⏸ ユーザー承認
-Phase 5: 実装             → developer        → ⏸ ユーザー承認
-Phase 6: テスト設計       → test-designer    → ⏸ ユーザー承認
-Phase 7: テスト実行       → tester           → ⏸ ユーザー承認
-Phase 8: レビュー         → reviewer         → ⏸ ユーザー承認
-Phase 9: セキュリティ監査  → security-auditor → ⏸ ユーザー承認
-Phase 10: ドキュメント     → doc-writer       → ⏸ ユーザー承認 → 完了
+Phase 1:  仕様策定         → spec-designer      → ⏸ ユーザー承認
+Phase 2:  UIデザイン       → ux-designer        → ⏸ ユーザー承認  ※ UIありの場合のみ
+Phase 3:  アーキテクチャ設計 → architect         → ⏸ ユーザー承認
+Phase 4:  プロジェクト初期化 → scaffolder        → ⏸ ユーザー承認
+Phase 5:  実装             → developer          → ⏸ ユーザー承認
+Phase 6:  テスト設計       → test-designer      → ⏸ ユーザー承認
+Phase 7:  E2Eテスト設計   → e2e-test-designer  → ⏸ ユーザー承認  ※ UIありの場合のみ
+Phase 8:  テスト実行       → tester             → ⏸ ユーザー承認
+Phase 9:  レビュー         → reviewer           → ⏸ ユーザー承認
+Phase 10: セキュリティ監査  → security-auditor   → ⏸ ユーザー承認
+Phase 11: ドキュメント      → doc-writer         → ⏸ ユーザー承認 → 完了
 ```
 
 **Branching based on UI presence:**
-- If `spec-designer`'s `AGENT_RESULT` contains `HAS_UI: true` → execute Phase 2 (ux-designer)
-- If `HAS_UI: false` → skip Phase 2 and proceed to Phase 3 (architect)
+- If `spec-designer`'s `AGENT_RESULT` contains `HAS_UI: true` → execute Phase 2 (ux-designer) and Phase 7 (e2e-test-designer)
+- If `HAS_UI: false` → skip Phase 2 and Phase 7, proceed directly to next applicable phase
 
 ### Side Entry: analyst (Joining via Issue)
 
@@ -166,7 +168,7 @@ If `developer` returns `STATUS: blocked`:
 Test failures and review CRITICAL findings are automatically rolled back before requesting approval.
 However, the results of re-execution after rollback still require user approval.
 
-### Rollback Flow on Test Failure
+### Rollback Flow on Test Failure (Unit / Integration)
 
 ```
 tester（失敗検知）
@@ -175,9 +177,21 @@ tester（失敗検知）
       → tester（再実行）
 ```
 
+### Rollback Flow on E2E Test Failure
+
+```
+tester（E2E 失敗検知）
+  → e2e-test-designer（原因分析・修正フィードバック作成）
+    → developer（修正実装）
+      → tester（再実行）
+```
+
+E2E test failures are routed to `e2e-test-designer` instead of `test-designer` for root cause analysis.
+The decision is based on whether the failed test case has a `TC-E2E-` or `TC-GUI-` prefix.
+
 ### Test Failure Root Cause Decision Tree
 
-test-designer determines the root cause in the following order:
+test-designer (or e2e-test-designer for E2E failures) determines the root cause in the following order:
 
 1. **Is the test code itself buggy?** -- Verify that test assertions do not contradict the spec
    → Yes: test-designer fixes the test code and instructs tester to re-run
@@ -270,16 +284,17 @@ After all phases complete and final approval:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎉 Delivery 完了
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Phase 1 仕様策定            ✅ 承認済み
-  Phase 2 UIデザイン          ✅ 承認済み / ⏭ スキップ（UIなし）
-  Phase 3 アーキテクチャ設計   ✅ 承認済み
-  Phase 4 プロジェクト初期化   ✅ 承認済み / ⏭ スキップ
-  Phase 5 実装               ✅ 承認済み
-  Phase 6 テスト設計          ✅ 承認済み
-  Phase 7 テスト実行          ✅ 承認済み ({N} テスト通過)
-  Phase 8 レビュー            ✅ 承認済み (CRITICAL なし)
-  Phase 9 セキュリティ監査    ✅ 承認済み (CRITICAL なし)
-  Phase 10 ドキュメント        ✅ 承認済み
+  Phase 1  仕様策定            ✅ 承認済み
+  Phase 2  UIデザイン          ✅ 承認済み / ⏭ スキップ（UIなし）
+  Phase 3  アーキテクチャ設計   ✅ 承認済み
+  Phase 4  プロジェクト初期化   ✅ 承認済み / ⏭ スキップ
+  Phase 5  実装               ✅ 承認済み
+  Phase 6  テスト設計          ✅ 承認済み
+  Phase 7  E2Eテスト設計      ✅ 承認済み / ⏭ スキップ（UIなし）
+  Phase 8  テスト実行          ✅ 承認済み ({N} テスト通過)
+  Phase 9  レビュー            ✅ 承認済み (CRITICAL なし)
+  Phase 10 セキュリティ監査    ✅ 承認済み (CRITICAL なし)
+  Phase 11 ドキュメント        ✅ 承認済み
 
 成果物:
   SPEC.md          ✅
