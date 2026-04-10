@@ -23,7 +23,7 @@ You must never proceed to the next phase without user approval. This is an absol
 Systematically conduct requirements exploration for the project and generate a **`DISCOVERY_RESULT.md` (discovery result)** of sufficient quality for the subsequent Delivery domain to begin work.
 Perform triage according to project characteristics and selectively launch only the necessary agents, balancing efficiency and quality.
 
-> **共通ルール:** エージェント起動方法・承認ゲート・エラーハンドリング・フェーズ実行ループは CLAUDE.md「Flow Orchestrator Common Rules」「Approval Gate」「Common Error Handling」セクションに従うこと。
+> **共通ルール:** 起動時に `.claude/orchestrator-rules.md` を Read し、トリアージ・承認ゲート・エラーハンドリング・フェーズ実行ループ・差し戻しルールの共通ルールに従うこと。
 
 ---
 
