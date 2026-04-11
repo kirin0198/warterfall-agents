@@ -32,15 +32,7 @@ Claude Code files (`.claude/`) are the canonical source. Copilot and Codex files
 
 ## Why Telescope
 
-- **3-domain separation** — Discovery / Delivery / Operations run in independent sessions to prevent context bloat
-- **Triage adaptation** — Auto-selects Minimal–Full plan based on project scale; no manual configuration
-- **Approval gates** — User approval required at each phase; the agent never runs ahead without consent
-- **Security mandatory** — security-auditor runs on all plans (OWASP Top 10 + dependency vulnerability scanning)
-- **Auto rollback** — Root cause analysis and rollback on test failures / review findings (up to 3 times)
-- **Session resume** — TASK.md state management enables mid-session resume
-- **Document-driven** — Domains connected via `.md` handoff files for full traceability
-- **Multi-platform** — Claude Code (canonical), GitHub Copilot, OpenAI Codex
-- **Multi-language** — Supports Python / TypeScript / Go / Rust
+AI coding agents are powerful, but a single agent session struggles with full project lifecycles — context windows overflow, quality gates get skipped, and there's no structured handoff between phases. Telescope solves this by splitting the lifecycle into isolated domains with specialized agents, mandatory approval gates, and document-driven handoffs that preserve traceability across sessions.
 
 ---
 
@@ -188,11 +180,17 @@ python3 scripts/generate.py --clean            # Remove generated files
 
 ---
 
-## Future
+## Features
 
-- [ ] Gemini CLI agent support
-- [ ] Agent evaluation framework (automated quality benchmarking)
-- [ ] Community agent marketplace (share & import agent definitions)
+- **3-domain separation** — Discovery / Delivery / Operations run in independent sessions to prevent context bloat
+- **Triage adaptation** — Auto-selects Minimal–Full plan based on project scale; no manual configuration
+- **Approval gates** — User approval required at each phase; the agent never runs ahead without consent
+- **Security mandatory** — security-auditor runs on all plans (OWASP Top 10 + dependency vulnerability scanning)
+- **Auto rollback** — Root cause analysis and rollback on test failures / review findings (up to 3 times)
+- **Session resume** — TASK.md state management enables mid-session resume
+- **Document-driven** — Domains connected via `.md` handoff files for full traceability
+- **Multi-platform** — Claude Code (canonical), GitHub Copilot, OpenAI Codex
+- **Multi-language** — Supports Python / TypeScript / Go / Rust
 
 ---
 
