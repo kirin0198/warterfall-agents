@@ -1,9 +1,14 @@
 # Telescope Agents
 
-A multi-platform collection of AI coding agent definitions.
-Divides the entire project lifecycle into **Discovery (requirements) → Delivery (design & implementation) → Operations (deploy & ops)**, automated by 26 specialized agents.
+A multi-platform collection of AI coding agent definitions that automates the entire project lifecycle with 26 specialized agents.
 
 **[日本語版 README はこちら](README.ja.md)**
+
+---
+
+## What's Telescope
+
+Telescope divides software development into three domains, each managed by an independent flow orchestrator:
 
 ```
 Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
@@ -13,9 +18,7 @@ Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVER
 
 User approval is required at each phase completion before proceeding. Non-`service` types (`tool` / `library` / `cli`) skip Operations.
 
----
-
-## Supported Platforms
+### Supported Platforms
 
 | Platform | Sub-agent orchestration | Status |
 |----------|------------------------|--------|
@@ -27,43 +30,51 @@ Claude Code files (`.claude/`) are the canonical source. Copilot and Codex files
 
 ---
 
-## Quick Start
+## Why Telescope
 
-### Claude Code
+- **3-domain separation** — Discovery / Delivery / Operations run in independent sessions to prevent context bloat
+- **Triage adaptation** — Auto-selects Minimal–Full plan based on project scale; no manual configuration
+- **Approval gates** — User approval required at each phase; the agent never runs ahead without consent
+- **Security mandatory** — security-auditor runs on all plans (OWASP Top 10 + dependency vulnerability scanning)
+- **Auto rollback** — Root cause analysis and rollback on test failures / review findings (up to 3 times)
+- **Session resume** — TASK.md state management enables mid-session resume
+- **Document-driven** — Domains connected via `.md` handoff files for full traceability
+- **Multi-platform** — Claude Code (canonical), GitHub Copilot, OpenAI Codex
+- **Multi-language** — Supports Python / TypeScript / Go / Rust
+
+---
+
+## Getting Started
+
+### Quick Start
+
+**Claude Code:**
 
 ```bash
-# Copy .claude/ directory to your project
 cp -r .claude /path/to/your-project/
 cd /path/to/your-project && claude
 
-# Start with a slash command
 /discovery-flow I want to build a TODO app
 ```
 
-### GitHub Copilot
+**GitHub Copilot:**
 
 ```bash
-# Copy Copilot files to your project's .github/
 cp -r platforms/copilot/* /path/to/your-project/.github/
 ```
 
-### OpenAI Codex
+**OpenAI Codex:**
 
 ```bash
-# Copy AGENTS.md and skills to your project root
 cp platforms/codex/AGENTS.md /path/to/your-project/
 cp -r platforms/codex/skills/ /path/to/your-project/
 ```
 
 The flow orchestrator auto-detects project scale and launches only the agents needed.
 
----
+### Usage Scenarios
 
-## Usage Scenarios
-
-### New Project (Full Flow)
-
-End-to-end from requirements exploration to design, implementation, and deployment.
+**New project (full flow)** — End-to-end from requirements exploration to deployment:
 
 ```
 /discovery-flow I want to build a blog management system
@@ -73,17 +84,13 @@ End-to-end from requirements exploration to design, implementation, and deployme
 /operations-flow
 ```
 
-### Quick Build (Delivery Only)
-
-When requirements are already clear and you just want design + implementation.
+**Quick build (Delivery only)** — When requirements are already clear:
 
 ```
 /pm I want to build a TODO app
 ```
 
-### Existing Project (with SPEC / ARCHITECTURE)
-
-Organize bug fixes, feature additions, or refactoring as issues, then proceed to design & implementation.
+**Existing project (with SPEC / ARCHITECTURE)** — Bug fixes, features, or refactoring:
 
 ```
 /analyst There's a 500 error on login
@@ -91,9 +98,7 @@ Organize bug fixes, feature additions, or refactoring as issues, then proceed to
 /delivery-flow
 ```
 
-### Existing Project (without SPEC / ARCHITECTURE)
-
-Reverse-engineer spec and architecture docs from existing code first.
+**Existing project (without SPEC / ARCHITECTURE)** — Reverse-engineer docs first:
 
 ```
 /codebase-analyzer Analyze this project's spec and design
@@ -141,27 +146,12 @@ At flow start, project scale is assessed and agents are selected from 4 tiers au
 
 `security-auditor` runs on all plans. `ux-designer` runs only for projects with UI.
 
----
-
-## Key Features
-
-- **3-domain separation** — Discovery / Delivery / Operations run in independent sessions to prevent context bloat
-- **Multi-platform** — Claude Code (canonical), GitHub Copilot, OpenAI Codex
-- **Triage adaptation** — Auto-selects Minimal–Full based on project scale
-- **Approval gates** — User approval required at each phase completion
-- **Security mandatory** — security-auditor runs on all plans (OWASP Top 10 + dependency vulnerability scanning)
-- **Session resume** — TASK.md state management enables mid-task resume
-- **Auto rollback** — Root cause analysis and rollback on test failures / review findings (up to 3 times)
-- **Multi-language** — Supports Python / TypeScript / Go / Rust
-- **Document-driven** — Domains connected via `.md` handoff files for traceability
-
----
-
-## File Structure
+### File Structure
 
 ```
 .claude/                         # Claude Code (canonical source)
-├── CLAUDE.md                    # Common rules for all agents
+├── CLAUDE.md                    # Project overview
+├── rules/*.md                   # Behavioral rules (auto-loaded)
 ├── orchestrator-rules.md        # Orchestrator-specific rules
 ├── agents/*.md                  # Agent definitions (26 files)
 └── commands/*.md                # Slash command definitions
@@ -175,7 +165,7 @@ platforms/
     └── skills/                  # → project root
 ```
 
-### Regenerating Platform Files
+Regenerate platform files:
 
 ```bash
 python3 scripts/generate.py                    # Generate all platforms
@@ -184,9 +174,7 @@ python3 scripts/generate.py --platform codex   # Codex only
 python3 scripts/generate.py --clean            # Remove generated files
 ```
 
----
-
-## Platform Comparison
+### Platform Comparison
 
 | Feature | Claude Code | GitHub Copilot | OpenAI Codex |
 |---------|------------|----------------|-------------|
@@ -196,11 +184,17 @@ python3 scripts/generate.py --clean            # Remove generated files
 | Sub-agent support | Yes (Agent tool) | Yes (agent tool) | No |
 | Full orchestration | Yes | Yes | No |
 
+> Telescope is a development-time workflow, not a CI/CD runtime. `infra-builder` generates pipeline definitions for GitHub Actions, etc.
+
 ---
 
-## CI/CD
+## Future
 
-Telescope is a development-time workflow, not a CI/CD runtime. `infra-builder` generates pipeline definitions for GitHub Actions, etc.
+- [ ] Gemini CLI agent support
+- [ ] Agent evaluation framework (automated quality benchmarking)
+- [ ] Community agent marketplace (share & import agent definitions)
+
+---
 
 ## License
 
