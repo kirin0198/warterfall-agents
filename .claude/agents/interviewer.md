@@ -220,7 +220,7 @@ HAS_UI: {true | false}
 
 1. **Verify input** — Read the user's requirements overview
 2. **Understand the big picture** — Understand the project's purpose, background, and target users
-3. **Interview unclear points** — Do not proceed on assumptions; ask via `AskUserQuestion` or text (follow CLAUDE.md "User Questions" section)
+3. **Interview unclear points** — Do not proceed on assumptions; ask via `AskUserQuestion` or text (follow .claude/rules/user-questions.md)
 4. **Structure requirements** — Classify into functional and non-functional requirements, organize priorities
 5. **Discover implicit requirements** — Identify implicit requirements based on the checklist
 6. **Determine PRODUCT_TYPE** — Determine the nature of the artifact

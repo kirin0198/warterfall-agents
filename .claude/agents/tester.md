@@ -55,7 +55,7 @@ If documents are missing:
 
 ### Test Configuration by Tech Stack
 
-Refer to CLAUDE.md "Build Verification Commands by Tech Stack" for test execution commands.
+Refer to .claude/rules/build-verification-commands.md for test execution commands.
 
 **Python (pytest) basic pattern:**
 ```python
@@ -171,7 +171,7 @@ Before running E2E tests, verify:
 3. Verify that test dependency packages are installed (install if not)
 4. Use `Glob` to understand the implementation code
 5. Create test code
-6. Commit test code (follow CLAUDE.md "Git Rules"; use prefix `test:`)
+6. Commit test code (follow .claude/rules/git-rules.md; use prefix `test:`)
    ```bash
    git add {test-files}
    git commit -m "test: {テスト対象の概要}"
