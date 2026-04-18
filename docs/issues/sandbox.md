@@ -3,6 +3,7 @@
 > 最終更新: 2026-04-18
 > 更新履歴:
 >   - 2026-04-18: 初版作成（analyst 分析結果および承認済み方針の記録）
+>   - 2026-04-18: Addendum 追記 — 案 5 (infra-builder 拡張による devcontainer 生成) を後追い採用
 
 ---
 
@@ -184,3 +185,83 @@ architect は以下を推奨する（軽量方針）:
   2. `.claude/rules/sandbox-policy.md`
   3. `wiki/en/Platform-Guide.md` / `wiki/ja/Platform-Guide.md` への節追加
   4. 既存エージェント / ルール / wiki への参照追記
+
+---
+
+## Addendum (2026-04-18): Case 5 adoption — infra-builder 拡張による devcontainer 生成
+
+### A.1 背景と経緯
+
+PR #7（ブランチ `feat/add-sandbox`）のレビュー中、ユーザーから次の指摘があった。
+
+> 現状の `sandbox-policy` は **advisory にすぎず**、Claude Code の permission mode が `auto` や `allow` 相当で動作している場合、`required` カテゴリに該当するコマンドでも警告だけ出して**素通り**してしまう。案 1〜4 だけでは「ポリシーを宣言しているが、実体的な隔離境界は存在しない」状態であり、実行環境の汚染・破壊・秘密情報流出のリスクが残る。
+
+この指摘を受け、当初 §3 の比較表で不採用とした **案 5 相当の隔離手段** を、`infra-builder` の責務拡張というかたちで**後追い採用**する。案 3（Docker / nsjail / firejail を既定化）に直行せず、infra-builder が**プロジェクト単位で devcontainer / docker-compose.dev.yml を生成する**形で実体化することで、「プラットフォーム機能優先」の原則を壊さずに実体的な隔離を追加する。
+
+> ※ `§3` の表で「案 5」は別内容（既存エージェント一斉改訂）として既に不採用とされているが、本 Addendum で採用する「案 5 (infra-builder 拡張)」はレビュー中に新たに定義された **別系統の案** である。混同を避けるため、以後は「案 5 (infra-builder 拡張)」と明示表記する。
+
+### A.2 採用理由
+
+| # | 観点 | 内容 |
+|---|------|------|
+| 1 | advisory 限界の解消 | Claude Code の permission mode 設定に依存せず、実行環境そのものを分離できる |
+| 2 | プラットフォーム機能優先との両立 | devcontainer は標準仕様 (VS Code / GitHub Codespaces / Docker) であり、特定ベンダ隔離技術への束縛ではない |
+| 3 | 既存責務との親和性 | infra-builder はもともと Dockerfile 等の本番用 infra を生成する責務を持つため、開発用 sandbox infra も同一エージェントに寄せると保守性が高い |
+| 4 | triage プラン適応 | Minimal / Light では生成をスキップし、Standard / Full で必須化するなど段階的に導入できる |
+
+### A.3 スコープ追加項目
+
+本 Addendum で追加するスコープは以下 3 項目のみとする（本番 infra への波及、他プラットフォーム対応は含めない）。
+
+1. **infra-builder 拡張（新責務）**
+   - `.devcontainer/devcontainer.json` の生成責務を追加
+   - `docker-compose.dev.yml`（開発用・sandbox 用途）の生成責務を追加
+   - 本番用 infra (`Dockerfile`, CI/CD) とは**成果物を明確に分離**する
+2. **sandbox-policy.md §3 (Isolation Mode Decision Tree) の更新**
+   - `claude_code` プラットフォーム分岐の下に「devcontainer 内実行（container isolation）」選択肢を追加
+   - `required` カテゴリは devcontainer 利用可能時に自動で container isolation を優先
+   - §4 (Sandbox Modes) に `container` モードを追加
+3. **sandbox-runner の実行経路優先順位更新**
+   - devcontainer / docker-compose が利用可能な場合、**Docker 経由実行を最優先**とする
+   - 利用不可なら既存の `platform_permission` にフォールバック
+
+### A.4 今回のスコープ外（Addendum）
+
+| 項目 | 理由 |
+|------|------|
+| 本番 infra（`Dockerfile`, CI/CD パイプライン）への影響 | 本 Addendum は **開発用 sandbox** の範囲。本番 infra 変更は別 issue |
+| `platforms/copilot/` / `platforms/codex/` の再生成 | 先行プラットフォームは Claude Code。他プラットフォームは後続 issue |
+| devcontainer 内で使用する具体的なベースイメージ・拡張機能の策定 | architect / developer が設計・実装時に決定 |
+| 既存プロジェクトへの devcontainer 後付けマイグレーション | 今回は新規生成のみ対象 |
+
+### A.5 architect が決定すべき論点（追加）
+
+architect は本 Addendum を受けて、`docs/issues/sandbox-design.md` に Addendum 節を追加し、**最低限以下の論点**を明示的に決定すること。
+
+1. **isolation mode への `container` 追加**
+   - `sandbox-policy.md` §4 (Sandbox Modes) に `container` を正式追加するか
+   - `platform_permission` と `container` の優先順位（同時利用可能時にどちらを使うか）
+   - フォールバック順: `container` → `platform_permission` → `advisory_only` → `blocked` の妥当性
+
+2. **triage プラン別の devcontainer 生成可否**
+   - `Minimal` では devcontainer 生成を**スキップ**（advisory のみ）で良いか
+   - `Light` では生成するが任意起動に留めるか
+   - `Standard` / `Full` で生成＋必須起動とするかの線引き
+   - §5 の表に「devcontainer 生成」列を追加する案
+
+3. **infra-builder の責務境界（本番 infra vs 開発用 sandbox）**
+   - 本番 infra 成果物と sandbox infra 成果物の**ディレクトリ分離規則**（例: `infra/prod/` と `.devcontainer/` / `docker-compose.dev.yml`）
+   - 命名規則と参照方向（sandbox は prod を参照してよいか、その逆は禁止か）
+   - `infra-builder` の AGENT_RESULT スキーマに追加するフィールド（例: `DEVCONTAINER_GENERATED`, `DEV_COMPOSE_GENERATED`）
+
+4. **sandbox-runner の実行経路選択ロジック**
+   - devcontainer 検出方法（`.devcontainer/devcontainer.json` の存在 / Docker daemon 生存確認）
+   - Docker 経由実行時の入出力マッピング（作業ディレクトリのマウント範囲、ネットワーク分離の既定）
+   - Docker 利用不可時のフォールバック挙動と AGENT_RESULT への記録方法
+
+### A.6 作業方針
+
+- **ブランチ**: 新ブランチは作らず、既存 `feat/add-sandbox` にコミット追加で対応する
+- **PR**: PR #7 を閉じずに同ブランチに追記コミットを push する
+- **コード変更**: 本 Addendum では **ドキュメント追記のみ**。`.claude/`, `wiki/`, `scripts/` への変更は architect / developer フェーズで行う
+- **GitHub Issue**: Issue #6 に `gh issue comment` でコメント追加し、Addendum の事実を記録する
