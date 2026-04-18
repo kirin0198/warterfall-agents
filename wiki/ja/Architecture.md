@@ -111,9 +111,9 @@ flowchart LR
 <!-- source: .claude/orchestrator-rules.md (Handoff File Specification) -->
 ```mermaid
 flowchart LR
-    DR["DISCOVERY_RESULT.md\n---\nPRODUCT_TYPE\nプロジェクト概要\n要件サマリー\nスコープ\n技術リスク・制約"]
-    DLR["DELIVERY_RESULT.md\n---\nPRODUCT_TYPE\n成果物 (SPEC/ARCH)\n技術スタック\nテスト結果\nセキュリティ監査結果"]
-    OPR["OPS_RESULT.md\n---\n成果物一覧\nデプロイ準備状態\n未対応事項"]
+    DR["DISCOVERY_RESULT.md\n---\nPRODUCT_TYPE\nProject overview\nRequirements summary\nScope\nTechnical risks & constraints"]
+    DLR["DELIVERY_RESULT.md\n---\nPRODUCT_TYPE\nArtifacts (SPEC/ARCH)\nTech stack\nTest results\nSecurity audit results"]
+    OPR["OPS_RESULT.md\n---\nArtifact list\nDeploy readiness\nOpen issues"]
 
     scope-planner -->|generates| DR
     DR -->|read by| delivery-flow
