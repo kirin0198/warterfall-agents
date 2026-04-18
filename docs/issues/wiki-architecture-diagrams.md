@@ -167,3 +167,43 @@
   - `.claude/orchestrator-rules.md`
   - `.claude/rules/agent-communication-protocol.md`
   - `wiki/en/Architecture.md`, `wiki/ja/Architecture.md`
+
+---
+
+## Addendum (2026-04-19): Figure 2 Rework
+
+### 理由
+
+図2（Agent Flow）は `flowchart TB` + 4サブグラフ（Discovery 6 / Delivery 12 / Operations 4 / Standalone 3）の構成で縦長になり、ページ全体の可読性を著しく低下させていた。特に Delivery の12エージェントが直列に並ぶ部分が長大で、スクロールせずに全体像を把握することが困難だった。
+
+### 採用案: 案B（ドメイン折りたたみ + Agents-Reference へのリンク）
+
+各ドメインを1つのノードに集約し、ノードをクリックすると `Agents-Reference.md` の該当セクションへジャンプする `click` 構文を使用した。
+
+```mermaid
+flowchart LR
+    D["Discovery<br/>(6 agents)<br/>interviewer → ... → scope-planner"]
+    DV["Delivery<br/>(12 agents)<br/>spec-designer → ... → releaser"]
+    O["Operations<br/>(4 agents)<br/>infra-builder → ... → ops-planner"]
+    S["Standalone<br/>analyst / codebase-analyzer / sandbox-runner"]
+
+    D -->|DISCOVERY_RESULT.md| DV
+    DV -->|DELIVERY_RESULT.md| O
+    S -.optional.-> DV
+
+    click D "./Agents-Reference.md#discovery-domain" "Discovery agents"
+    click DV "./Agents-Reference.md#delivery-domain" "Delivery agents"
+    click O "./Agents-Reference.md#operations-domain" "Operations agents"
+    click S "./Agents-Reference.md#standalone-agents" "Standalone agents"
+```
+
+### 効果
+
+- **ページコンパクト化**: 縦長な4サブグラフ構成を横並びの4ノードに集約
+- **情報重複解消**: エージェント名の羅列を Agents-Reference.md へ委譲し、二重管理を排除
+- **ナビゲーション改善**: `click` 構文により、ノードから詳細ページへ直接ジャンプ可能
+
+### 変更ファイル
+
+- `wiki/en/Architecture.md` — 図2を新 Mermaid ソースに置き換え
+- `wiki/ja/Architecture.md` — 同一 Mermaid ソースを適用（前後の説明文は日本語）
