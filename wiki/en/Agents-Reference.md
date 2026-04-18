@@ -4,7 +4,7 @@
 > **Last updated**: 2026-04-18
 > **Audience**: Agent developers
 
-This page provides a compact reference for all 26 Aphelion agents plus the 4 flow orchestrators. Each entry follows a standard schema: canonical file link, domain, responsibility, inputs, outputs, AGENT_RESULT fields, and NEXT conditions.
+This page provides a compact reference for all 27 Aphelion agents plus the 4 flow orchestrators. Each entry follows a standard schema: canonical file link, domain, responsibility, inputs, outputs, AGENT_RESULT fields, and NEXT conditions.
 
 For full details on any agent, follow the **Canonical** link to the source file in `.claude/agents/`.
 
@@ -14,6 +14,7 @@ For full details on any agent, follow the **Canonical** link to the source file 
 - [Discovery Domain (6 agents)](#discovery-domain)
 - [Delivery Domain (12 agents)](#delivery-domain)
 - [Operations Domain (4 agents)](#operations-domain)
+- [Safety Agents (1 agent)](#safety-agents)
 - [Standalone Agents (2 agents)](#standalone-agents)
 - [Related Pages](#related-pages)
 - [Canonical Sources](#canonical-sources)
@@ -285,10 +286,12 @@ The Operations domain (4 agents) handles deployment infrastructure and operation
 
 - **Canonical**: [.claude/agents/infra-builder.md](../../.claude/agents/infra-builder.md)
 - **Domain**: Operations
-- **Responsibility**: Generates Dockerfile (multi-stage), docker-compose.yml, GitHub Actions CI/CD, .env.example, and security headers. Runs on all Operations plans.
+- **Responsibility**: Generates Dockerfile (multi-stage), docker-compose.yml, GitHub Actions CI/CD, .env.example, security headers, and **sandbox infrastructure** (`.devcontainer/devcontainer.json` and `docker-compose.dev.yml` for container-isolated execution). Runs on all Operations plans.
 - **Inputs**: DELIVERY_RESULT.md, ARCHITECTURE.md, implementation code
-- **Outputs**: Dockerfile, .dockerignore, docker-compose.yml, docker-compose.override.yml, .github/workflows/ci.yml, .env.example
-- **AGENT_RESULT fields**: `FILES_CREATED`, `DOCKER_BUILD`, `SECURITY_HEADERS`
+- **Outputs**: Dockerfile, .dockerignore, docker-compose.yml, docker-compose.override.yml, .github/workflows/ci.yml, .env.example, `.devcontainer/devcontainer.json` (Light+), `docker-compose.dev.yml` (Light+, when project uses Compose)
+- **AGENT_RESULT fields**: `FILES_CREATED`, `DOCKER_BUILD`, `SECURITY_HEADERS`, `DEVCONTAINER_GENERATED`, `DEV_COMPOSE_GENERATED`, `SANDBOX_INFRA_PATH`
+- **Sandbox infra generation policy**: Minimal → skip; Light → generate (optional launch); Standard → generate + mandatory launch; Full → generate + mandatory launch + audit log
+- **Directory separation**: Production infra (`Dockerfile`, `docker-compose.yml`) must never reference sandbox infra (`.devcontainer/`, `docker-compose.dev.yml`). Sandbox infra referencing production is not recommended.
 - **NEXT conditions**:
   - Standard / Full plan → `db-ops`
   - Light plan → `ops-planner`
@@ -327,6 +330,30 @@ The Operations domain (4 agents) handles deployment infrastructure and operation
 
 ---
 
+## Safety Agents
+
+These agents enforce safety policies across other agents. They may be invoked automatically by orchestrators or explicitly delegated from any Bash-owning agent.
+
+### sandbox-runner
+
+- **Canonical**: [.claude/agents/sandbox-runner.md](../../.claude/agents/sandbox-runner.md)
+- **Domain**: Safety (cross-cutting)
+- **Responsibility**: Executes high-risk commands using the strongest available isolation. First attempts `container` mode (devcontainer + Docker); falls back to platform permission controls if unavailable. Re-classifies commands against `sandbox-policy.md` and returns a complete audit trail including fallback reason.
+- **Inputs**: `command`, `working_directory`, `timeout_sec`, `risk_hint`, `allow_network`, `allow_write_paths`, `dry_run`, `reason`, `caller_agent`
+- **Outputs**: `stdout`, `stderr`, `exit_code`, `sandbox_mode`, `detected_risks`, `decision`, `fallback_reason`, `notes`
+- **Execution path selection** (Step 2 of workflow):
+  1. Check for `.devcontainer/devcontainer.json` in the repository
+  2. Run `docker info` with 5-second timeout
+  3. Both OK → `container` mode (mount working directory only; `--network=none` by default; no host env vars)
+  4. Either fails → fallback to `platform_permission` with `FALLBACK_REASON` recorded
+- **AGENT_RESULT fields**: `STATUS`, `SANDBOX_MODE`, `EXIT_CODE`, `DETECTED_RISKS`, `DECISION`, `CALLER`, `DURATION_MS`, `FALLBACK_REASON` (omitted when container mode succeeds)
+- **NEXT conditions**:
+  - Called by another agent → returns to caller agent
+  - Invoked standalone → `done`
+  - Session interrupted → `suspended`
+
+---
+
 ## Standalone Agents
 
 These two agents operate outside the triage system, invoked directly by the user.
@@ -362,5 +389,5 @@ These two agents operate outside the triage system, invoked directly by the user
 
 ## Canonical Sources
 
-- [.claude/agents/](../../.claude/agents/) — All 26 agent definition files (authoritative source)
+- [.claude/agents/](../../.claude/agents/) — All 27 agent definition files (authoritative source)
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Flow orchestrator rules and triage

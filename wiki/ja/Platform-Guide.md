@@ -13,6 +13,7 @@
 - [Claude Code（正規ソース）](#claude-code正規ソース)
 - [GitHub Copilot](#github-copilot)
 - [OpenAI Codex](#openai-codex)
+- [サンドボックスとパーミッションモード](#サンドボックスとパーミッションモード)
 - [プラットフォームファイルの生成](#プラットフォームファイルの生成)
 - [機能マトリクス](#機能マトリクス)
 - [新しいプラットフォームへの移植](#新しいプラットフォームへの移植)
@@ -49,11 +50,11 @@ Claude Codeは権威あるプラットフォームです。全エージェント
     operations-flow.md
     interviewer.md         # Discoveryドメインエージェント
     researcher.md
-    ...                    # （合計26エージェント）
+    ...                    # （合計27エージェント）
   rules/
     agent-communication-protocol.md
     build-verification-commands.md
-    ...                    # （合計8ルール）
+    ...                    # （合計9ルール）
   commands/
     discovery-flow.md      # スラッシュコマンド定義
     delivery-flow.md
@@ -94,7 +95,7 @@ Copilotプラットフォームファイルは`scripts/generate.py`によってC
   agents/
     discovery-flow.agent.md
     delivery-flow.agent.md
-    ...                    # （合計26エージェント）
+    ...                    # （合計27エージェント）
 ```
 
 **Claude Codeとの主な違い：**
@@ -167,6 +168,78 @@ cp -r platforms/codex/skills/ /path/to/your-project/
 ```
 
 > マルチフェーズのフルオーケストレーションにはClaude CodeまたはGitHub Copilotを使用してください。
+
+---
+
+## サンドボックスとパーミッションモード
+
+Aphelionエージェントはユーザーの代わりに`Bash`ツールを通じてシェルコマンドを実行します。サンドボックスシステムは、リスクのあるコマンドを分類し、実行前にプラットフォームネイティブのパーミッション制御を通じてルーティングする仕組みを提供します。
+
+完全なポリシーリファレンスは[.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md)を参照してください。
+実行エージェントについては[.claude/agents/sandbox-runner.md](../../.claude/agents/sandbox-runner.md)を参照してください。
+
+### プラットフォーム別サンドボックス機能比較
+
+| 機能 | Claude Code | GitHub Copilot | OpenAI Codex |
+|---|---|---|---|
+| devcontainer によるコンテナ隔離 | あり（`container` モード — 最優先） | あり（Docker利用可能な場合） | なし |
+| ネイティブパーミッションゲート | あり（permission mode） | 一部（IDEの確認プロンプト） | なし |
+| Allow / Ask / Deny 3段階 | あり | Ask のみ | なし |
+| 永続的な設定 | `.claude/settings.json` | IDEの設定 | N/A |
+| セッションローカルオーバーライド | `.claude/settings.local.json` | セッション単位 | N/A |
+| sandbox-runner 統合 | 自動挿入（Standard+）+ 明示委譲 | 明示委譲のみ | Advisoryのみ |
+| 推奨フォールバック | — | 実行前の手動レビュー | 実行前の手動レビュー |
+
+### コンテナ隔離モード
+
+Aphelion はプラットフォームのパーミッションモードに加え、`container` 隔離モードをサポートします。`.devcontainer/devcontainer.json` が存在し Docker が利用可能な場合、`sandbox-runner` はパーミッションゲートに依存するのではなく、プロジェクトの devcontainer 内で高リスクコマンドを実行します。
+
+**`container` モードの主な特性：**
+- **実体的な物理的隔離を提供** — コマンドは制限されたファイルシステムビューを持つ別コンテナプロセスで実行されます。
+- **`auto`/`allow` モード時も有効** — Claude Code のパーミッションモードが通常はプロンプトなしでコマンドを実行する設定であっても、`container` モードは構造的な境界として機能します。
+- `infra-builder` は Light プラン以上で `.devcontainer/devcontainer.json` と `docker-compose.dev.yml` を生成します。
+- ランタイム時に Docker が利用できない場合（Standard/Full プラン）、`sandbox-runner` は `platform_permission` に緩やかにフォールバックし、`AGENT_RESULT` に `FALLBACK_REASON` を記録します。
+
+**優先順位：** `container` > `platform_permission` > `advisory_only` > `blocked`
+
+完全なポリシーは [.claude/rules/sandbox-policy.md §3–§5](../../.claude/rules/sandbox-policy.md) を参照してください。
+実行経路選択ロジックは [.claude/agents/sandbox-runner.md §Workflow Step 2](../../.claude/agents/sandbox-runner.md) を参照してください。
+
+### Claude Code パーミッションモード
+
+Claude CodeはBashコマンドに対して3段階のパーミッションレベルを提供します。
+
+| モード | 動作 |
+|------|------|
+| `allow` | 確認なしで自動実行 |
+| `ask` | 実行前にユーザー確認のため一時停止 |
+| `deny` | 実行を完全に拒否 |
+
+**設定の永続化：**
+
+- **永続的** — `.claude/settings.json`に保存（リポジトリにコミット可能でチーム共有可）
+- **セッション / ローカル** — `.claude/settings.local.json`に保存（デフォルトでgitignore対象；個人または環境別オーバーライド用）
+
+**優先順位：** セッションローカル設定が永続設定より優先されます。
+
+**sandbox-runner との関係：** `sandbox-runner`は有効なパーミッションモードを尊重します。Claude Codeのパーミッションシステムを置き換えたりバイパスしたりしません。Aphelionは`.claude/settings.json`や`.claude/settings.local.json`を直接変更しません。ユーザーがこれらのファイルを自分で設定します。
+
+### 推奨パーミッションプロファイル
+
+以下のプロファイルは推奨事項です。環境に合わせて`.claude/settings.json`または`.claude/settings.local.json`で設定してください。
+
+| 環境 | destructive_fs | prod_db | external_net | privilege_escalation | secret_access | 備考 |
+|---|---|---|---|---|---|---|
+| **dev（開発者ローカル）** | ask | deny | ask | ask | ask | 全`required`カテゴリは確認が必要；外部ネットワークも確認 |
+| **CI** | deny | deny | allow（allowlist） | deny | deny | 既知のレジストリのみネットワーク許可；破壊的操作は全面拒否 |
+| **near-production** | deny | deny | deny | deny | deny | 全面拒否；例外はhuman-in-the-loop必須 |
+
+### sandbox-runner の位置づけ
+
+1. **トリアージが有効化レベルを決定** — Minimalプラン：advisory警告のみ。Light：明示委譲。Standard/Full：`required`ティアコマンドの前にオーケストレーターが`sandbox-runner`を自動挿入。
+2. **sandbox-runner が再分類** — エージェントが`risk_hint`を提供した場合でも、`sandbox-runner`は`sandbox-policy.md`に照らして独立して再分類します。
+3. **プラットフォームモードを適用** — Claude Codeでは適切なパーミッションモードを呼び出します。Copilot/Codexでは警告を表示します。
+4. **監査証跡を返却** — `sandbox-runner`の`AGENT_RESULT`には実行が許可されたか拒否されたかに関わらず常に`DETECTED_RISKS`と`DECISION`が含まれます。
 
 ---
 
