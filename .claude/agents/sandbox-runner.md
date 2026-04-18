@@ -56,10 +56,13 @@ outputs:
   stderr: string
   exit_code: integer
   duration_ms: integer
-  sandbox_mode: enum         # platform_permission | advisory_only | blocked | bypassed
+  sandbox_mode: enum         # container | platform_permission | advisory_only | blocked | bypassed
   detected_risks: list       # Risk categories detected by policy
   platform: string           # claude_code | copilot | codex | unknown
   decision: enum             # allowed | asked_and_allowed | denied | skipped
+  fallback_reason: string    # Why container mode was not used (omitted when container succeeds):
+                             #   docker_unavailable | devcontainer_missing | docker_info_timeout
+                             #   | daemon_error | platform_unknown | none
   notes: string              # Additional notes (user confirmation details, truncated output length, etc.)
 ```
 
@@ -74,7 +77,40 @@ Read `.claude/rules/sandbox-policy.md` (auto-loaded) and classify the received `
 
 If the caller provided `risk_hint`, use it as a starting point but always verify independently.
 
-### Step 2: Detect the host platform
+### Step 2: Execution Path Selection — Container Availability Check
+
+Before platform detection, attempt to use container isolation (highest priority):
+
+1. **Check for devcontainer definition**
+   - Does `.devcontainer/devcontainer.json` exist in the repository? If not, go to step 2b.
+2. **Check Docker daemon liveness**
+   - Run `docker info` with a 5-second timeout.
+   - Non-zero exit or timeout → go to step 2b.
+3. **Both OK → adopt `container` mode**
+   - Execute the command via the devcontainer / `docker-compose.dev.yml`.
+   - Mount the working directory (caller's cwd) only — do not mount parent directories.
+   - Exclude `.env`, `.env.*`, `credentials/`, `*.secret`, `.git/config` regardless of `allow_write_paths`.
+   - Default `--network=none`. Set `bridge` only when `allow_network: true`. For `external_net` category, additionally require user confirmation.
+   - Apply host environment variables: none by default (empty allowlist).
+   - Apply `timeout_sec` to the command inside the container (not including container start time).
+   - Truncate stdout/stderr at 1 MB per stream.
+   - On success: omit `FALLBACK_REASON` from AGENT_RESULT.
+4. **Fallback → degrade to `platform_permission`** (step 2b)
+   - Record `FALLBACK_REASON` in AGENT_RESULT (see table below).
+
+**Fallback reason table:**
+
+| Situation | FALLBACK_REASON | Degraded SANDBOX_MODE |
+|-----------|----------------|-----------------------|
+| `.devcontainer/devcontainer.json` not found | `devcontainer_missing` | `platform_permission` (or `advisory_only` if platform unknown) |
+| `docker info` exits non-zero | `docker_unavailable` | Same as above |
+| `docker info` times out (5 s) | `docker_info_timeout` | Same as above |
+| Docker daemon running but returns error | `daemon_error` | Same as above |
+| Platform detection fails | `platform_unknown` | `blocked` (for `required` categories) or `advisory_only` |
+
+Container mode succeeded → `FALLBACK_REASON` is **omitted** (not present = no fallback occurred).
+
+### Step 3: Detect the host platform (fallback path only)
 
 Check environment variables:
 1. `$CLAUDE_CODE_*` present → `claude_code`
@@ -82,7 +118,7 @@ Check environment variables:
 3. `$OPENAI_CODEX_*` present → `codex`
 4. None → `unknown`
 
-### Step 3: Select sandbox_mode per decision tree
+### Step 4: Select sandbox_mode per decision tree (fallback path only)
 
 Follow the decision tree in `sandbox-policy.md §3`:
 
@@ -94,8 +130,9 @@ Follow the decision tree in `sandbox-policy.md §3`:
 | `copilot` or `codex` | `advisory_only` |
 | `unknown` | `blocked` |
 
-### Step 4: Execute or decline
+### Step 5: Execute or decline
 
+- **`container`**: Execute inside the container per the mount/network rules in Step 2. Set `decision: allowed`.
 - **`platform_permission` (ask)**: Display the command and detected risks to the user and ask for explicit approval before executing.
 - **`platform_permission` (deny)**: Refuse execution, set `decision: denied`, and explain why.
 - **`advisory_only`**: Display a warning, then execute. Set `decision: allowed` with a note about the advisory.
@@ -103,7 +140,7 @@ Follow the decision tree in `sandbox-policy.md §3`:
 - **`blocked`**: Refuse execution, prompt the user to specify the platform or use Claude Code.
 - **`dry_run: true`**: Skip execution entirely and return classification results only. Set `decision: skipped`.
 
-### Step 5: Emit AGENT_RESULT
+### Step 6: Emit AGENT_RESULT
 
 Always emit the AGENT_RESULT block defined below.
 
@@ -114,14 +151,18 @@ Always emit the AGENT_RESULT block defined below.
 ```
 AGENT_RESULT: sandbox-runner
 STATUS: success | failure | blocked | error
-SANDBOX_MODE: platform_permission | advisory_only | blocked | bypassed
+SANDBOX_MODE: container | platform_permission | advisory_only | blocked | bypassed
 EXIT_CODE: {integer}
 DETECTED_RISKS: {comma-separated categories, or "none"}
 DECISION: allowed | asked_and_allowed | denied | skipped
 CALLER: {caller agent name}
 DURATION_MS: {integer}
+FALLBACK_REASON: docker_unavailable | devcontainer_missing | docker_info_timeout | daemon_error | platform_unknown | none
 NEXT: {caller agent name | done | suspended}
 ```
+
+> `FALLBACK_REASON` is **omitted** when `container` mode was adopted successfully (no fallback occurred).
+> `FALLBACK_REASON: none` is used when container was not attempted at all (e.g., `bypassed` commands).
 
 ### STATUS Mapping
 
