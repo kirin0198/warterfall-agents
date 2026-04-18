@@ -1,0 +1,129 @@
+# Sandbox Policy
+
+> **Last updated**: 2026-04-18
+> **Auto-loaded**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
+
+This rule applies to all agents that own the `Bash` tool:
+`developer`, `tester`, `poc-engineer`, `scaffolder`, `infra-builder`, `codebase-analyzer`,
+`security-auditor`, `db-ops`, `releaser`, `observability`.
+
+(`sandbox-runner` itself owns Bash but is the *executor* of this policy, not a subject of it.
+Re-delegation from `sandbox-runner` to itself is prohibited — when `caller_agent == "sandbox-runner"`, skip re-classification.)
+
+---
+
+## 1. Dangerous Command Categories
+
+Before executing any shell command via `Bash`, classify it against the following categories.
+
+| Category | Pattern Examples | Default Tier |
+|----------|-----------------|--------------|
+| **destructive_fs** | `rm\s+-[rRfF]*\s+/`, `rm\s+-[rRfF]*\s+~`, `mkfs`, `dd\s+of=`, `shred`, `find\s+.*-delete`, `>\s*/dev/sd` | required |
+| **prod_db** | Connection strings containing `PROD`, `PRODUCTION`, `LIVE` in env var names; `psql\s+.*prod`, `mongosh?\s+.*prod`, `mysql\s+.*--host=.*prod` | required |
+| **privilege_escalation** | `sudo\b`, `su\s+-`, `chmod\s+777`, `chown\s+root`, `setuid`, `doas\b` | required |
+| **secret_access** | `cat\s+.*\.env`, `cat\s+.*credentials`, `cat\s+.*\.secret`, `gh\s+auth\s+token`, `aws\s+configure`, `kubectl\s+config\s+view\s+--raw` | required |
+| **external_net** | `curl\s+.*(https?://)(?!localhost\|127\.)`, `wget\b`, `ssh\s+`, `scp\s+`, `rsync\s+.*::`, `nc\s+`, `npm\s+publish`, `cargo\s+publish`, `twine\s+upload` | recommended |
+
+### Tier Definitions
+
+- **`required`** — Must delegate to `sandbox-runner`. In Standard/Full plans, the orchestrator inserts `sandbox-runner` automatically. In Minimal/Light plans, the calling agent must delegate explicitly and display a user warning if it cannot.
+- **`recommended`** — The calling agent should delegate to `sandbox-runner`. If delegation is skipped, record the reason in the `AGENT_RESULT` output.
+- **`optional`** — Delegation is discretionary. Advisory only; no delegation required.
+
+---
+
+## 2. Delegation Condition Table
+
+| Category             | Tier        | Orchestrator Auto-insert (Standard+) | Explicit Delegation |
+|----------------------|-------------|--------------------------------------|---------------------|
+| destructive_fs       | required    | Yes                                  | Always              |
+| prod_db              | required    | Yes                                  | Always              |
+| privilege_escalation | required    | Yes                                  | Always              |
+| secret_access        | required    | Yes                                  | Always              |
+| external_net         | recommended | Yes                                  | If caller decides   |
+| (no match)           | optional    | No                                   | No                  |
+
+---
+
+## 3. Isolation Mode Decision Tree
+
+When a command matches a category, select the isolation mode as follows:
+
+```
+[Command Input]
+    │
+    ▼
+[Category Classification] ── no category match ──▶ [bypassed: execute directly]
+    │
+    ▼
+[Platform Detection]
+    │
+    ├─ claude_code ──▶ [Permission Mode Selection]
+    │                       ├─ required category → permission: `ask` (when settings.json not configured) or `deny`
+    │                       ├─ recommended category → permission: `ask`
+    │                       └─ optional category → permission: `allow` + audit log
+    │
+    ├─ copilot / codex ──▶ [advisory_only: display warning only, execution is caller's decision]
+    │                       (Native sandbox support is a follow-up issue)
+    │
+    └─ unknown ──▶ [blocked: refuse execution, prompt user to specify platform]
+```
+
+### Platform Detection Method
+
+Check environment variables in order:
+1. `$CLAUDE_CODE_*` present → `claude_code`
+2. `$GITHUB_COPILOT_*` present → `copilot`
+3. `$OPENAI_CODEX_*` present → `codex`
+4. None detected → `unknown`
+
+---
+
+## 4. Sandbox Modes
+
+| Mode | Description |
+|------|-------------|
+| `platform_permission` | Claude Code permission mode controls execution (allow / ask / deny) |
+| `advisory_only` | Warning displayed only; execution proceeds under caller's responsibility |
+| `blocked` | Execution refused; user must confirm or override |
+| `bypassed` | No category match; executed directly without sandbox |
+
+---
+
+## 5. Triage Plan × sandbox-runner Placement
+
+| Plan | sandbox-runner Placement | Launch Model |
+|------|-------------------------|--------------|
+| **Minimal** | Not used (policy advisory only) | Policy violations: user warning only |
+| **Light** | Explicit delegation from calling agent only | `required` categories: explicit delegation; others: advisory |
+| **Standard** | Orchestrator auto-insert enabled | `required` / `recommended`: auto-insert; `optional`: explicit delegation |
+| **Full** | Same as Standard + audit log written to SECURITY_AUDIT.md | Same + `security-auditor` post-processes audit log |
+
+In Operations Flow, at Standard and above, place `sandbox-runner` before `db-ops`, `releaser`, and `observability`.
+
+---
+
+## 6. Agent Behavior When Unable to Delegate
+
+When `sandbox-runner` is unavailable (Minimal plan, standalone invocation) and a `required` category command must be executed:
+
+1. Display a warning to the user explaining the risk
+2. Ask the user for explicit confirmation before proceeding
+3. Record in `AGENT_RESULT` that delegation was skipped and the reason
+
+Example warning format:
+```
+⚠️ 警告: このコマンドは sandbox-policy の `{category}` カテゴリに該当します。
+sandbox-runner が利用できないため、直接実行します。
+コマンド: {command}
+続行する場合は確認してください。
+```
+
+---
+
+## 7. Auto-load Notes
+
+- File location: `.claude/rules/sandbox-policy.md`
+- This file is in `.claude/rules/` and is auto-loaded by Claude Code on every session start, applying to all agents.
+- Each Bash-owning agent's definition file contains a one-line reference to this policy. Detailed checks are centralized here.
+- `sandbox-runner` itself reads this policy at startup to re-classify commands received from callers.
