@@ -181,12 +181,28 @@ For the executor agent, see [.claude/agents/sandbox-runner.md](../../.claude/age
 
 | Capability | Claude Code | GitHub Copilot | OpenAI Codex |
 |---|---|---|---|
+| Container isolation via devcontainer | Yes (`container` mode — highest priority) | Yes (when Docker available) | No |
 | Native permission gate | Yes (permission mode) | Partial (IDE confirmation prompt) | No |
 | Allow / Ask / Deny tiers | Yes | Ask only | No |
 | Persistent settings | `.claude/settings.json` | IDE config | N/A |
 | Session-local override | `.claude/settings.local.json` | Per-session | N/A |
 | sandbox-runner integration | Auto-insert (Standard+) + explicit | Explicit only | Advisory only |
 | Recommended fallback | — | Manual review before execution | Manual review before execution |
+
+### Container Isolation Mode
+
+Aphelion supports a `container` isolation mode in addition to platform permission modes. When `.devcontainer/devcontainer.json` exists and Docker is available, `sandbox-runner` executes high-risk commands inside the project's devcontainer rather than relying solely on permission gates.
+
+**Key properties of `container` mode:**
+- Provides **real physical isolation** — the command runs in a separate container process with a restricted filesystem view.
+- **Effective even in `auto`/`allow` mode** — even when Claude Code's permission mode would normally execute commands without prompting, `container` mode still enforces a structural boundary.
+- `infra-builder` generates `.devcontainer/devcontainer.json` and `docker-compose.dev.yml` on Light plans and above.
+- If Docker is unavailable at runtime (Standard/Full plans), `sandbox-runner` degrades gracefully to `platform_permission` and records `FALLBACK_REASON` in `AGENT_RESULT`.
+
+**Priority order:** `container` > `platform_permission` > `advisory_only` > `blocked`
+
+For the full policy, see [.claude/rules/sandbox-policy.md §3–§5](../../.claude/rules/sandbox-policy.md).
+For the execution path selection logic, see [.claude/agents/sandbox-runner.md §Workflow Step 2](../../.claude/agents/sandbox-runner.md).
 
 ### Claude Code Permission Mode
 

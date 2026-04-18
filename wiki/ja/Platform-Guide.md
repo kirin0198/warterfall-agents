@@ -182,12 +182,28 @@ Aphelionエージェントはユーザーの代わりに`Bash`ツールを通じ
 
 | 機能 | Claude Code | GitHub Copilot | OpenAI Codex |
 |---|---|---|---|
+| devcontainer によるコンテナ隔離 | あり（`container` モード — 最優先） | あり（Docker利用可能な場合） | なし |
 | ネイティブパーミッションゲート | あり（permission mode） | 一部（IDEの確認プロンプト） | なし |
 | Allow / Ask / Deny 3段階 | あり | Ask のみ | なし |
 | 永続的な設定 | `.claude/settings.json` | IDEの設定 | N/A |
 | セッションローカルオーバーライド | `.claude/settings.local.json` | セッション単位 | N/A |
 | sandbox-runner 統合 | 自動挿入（Standard+）+ 明示委譲 | 明示委譲のみ | Advisoryのみ |
 | 推奨フォールバック | — | 実行前の手動レビュー | 実行前の手動レビュー |
+
+### コンテナ隔離モード
+
+Aphelion はプラットフォームのパーミッションモードに加え、`container` 隔離モードをサポートします。`.devcontainer/devcontainer.json` が存在し Docker が利用可能な場合、`sandbox-runner` はパーミッションゲートに依存するのではなく、プロジェクトの devcontainer 内で高リスクコマンドを実行します。
+
+**`container` モードの主な特性：**
+- **実体的な物理的隔離を提供** — コマンドは制限されたファイルシステムビューを持つ別コンテナプロセスで実行されます。
+- **`auto`/`allow` モード時も有効** — Claude Code のパーミッションモードが通常はプロンプトなしでコマンドを実行する設定であっても、`container` モードは構造的な境界として機能します。
+- `infra-builder` は Light プラン以上で `.devcontainer/devcontainer.json` と `docker-compose.dev.yml` を生成します。
+- ランタイム時に Docker が利用できない場合（Standard/Full プラン）、`sandbox-runner` は `platform_permission` に緩やかにフォールバックし、`AGENT_RESULT` に `FALLBACK_REASON` を記録します。
+
+**優先順位：** `container` > `platform_permission` > `advisory_only` > `blocked`
+
+完全なポリシーは [.claude/rules/sandbox-policy.md §3–§5](../../.claude/rules/sandbox-policy.md) を参照してください。
+実行経路選択ロジックは [.claude/agents/sandbox-runner.md §Workflow Step 2](../../.claude/agents/sandbox-runner.md) を参照してください。
 
 ### Claude Code パーミッションモード
 

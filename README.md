@@ -211,6 +211,7 @@ For detailed agent schemas, rule explanations, triage logic, and platform intern
 - **Document-driven** — Domains connected via `.md` handoff files for full traceability
 - **Multi-platform** — Claude Code (canonical), GitHub Copilot, OpenAI Codex
 - **Multi-language** — Supports Python / TypeScript / Go / Rust
+- **Container isolation** — infra-builder generates devcontainer / docker-compose.dev.yml; sandbox-runner provides real container isolation even in auto-permission mode
 
 ---
 

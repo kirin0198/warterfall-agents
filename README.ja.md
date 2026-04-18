@@ -211,6 +211,7 @@ python3 scripts/generate.py --clean            # 生成物を削除
 - **ドキュメント駆動** — 領域間は `.md` ハンドオフでトレーサビリティを確保
 - **マルチプラットフォーム** — Claude Code（正規）、GitHub Copilot、OpenAI Codex
 - **多言語対応** — Python / TypeScript / Go / Rust に対応
+- **コンテナ隔離** — infra-builder が devcontainer / docker-compose.dev.yml を生成し、sandbox-runner が auto-permission モードでも実体的なコンテナ隔離を提供
 
 ---
 

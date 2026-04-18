@@ -287,10 +287,12 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 
 - **正規**: [.claude/agents/infra-builder.md](../../.claude/agents/infra-builder.md)
 - **ドメイン**: Operations
-- **責務**: Dockerfile（マルチステージ）、docker-compose.yml、GitHub Actions CI/CD、.env.example、セキュリティヘッダーを生成します。全Operationsプランで実行されます。
+- **責務**: Dockerfile（マルチステージ）、docker-compose.yml、GitHub Actions CI/CD、.env.example、セキュリティヘッダー、および**sandbox インフラ**（コンテナ隔離実行のための `.devcontainer/devcontainer.json` と `docker-compose.dev.yml`）を生成します。全Operationsプランで実行されます。
 - **入力**: DELIVERY_RESULT.md、ARCHITECTURE.md、実装コード
-- **出力**: Dockerfile、.dockerignore、docker-compose.yml、docker-compose.override.yml、.github/workflows/ci.yml、.env.example
-- **AGENT_RESTULTフィールド**: `FILES_CREATED`、`DOCKER_BUILD`、`SECURITY_HEADERS`
+- **出力**: Dockerfile、.dockerignore、docker-compose.yml、docker-compose.override.yml、.github/workflows/ci.yml、.env.example、`.devcontainer/devcontainer.json`（Light以上）、`docker-compose.dev.yml`（Light以上、プロジェクトがComposeを使う場合）
+- **AGENT_RESTULTフィールド**: `FILES_CREATED`、`DOCKER_BUILD`、`SECURITY_HEADERS`、`DEVCONTAINER_GENERATED`、`DEV_COMPOSE_GENERATED`、`SANDBOX_INFRA_PATH`
+- **sandbox インフラ生成ポリシー**: Minimal → スキップ；Light → 生成・任意起動；Standard → 生成・必須起動；Full → 生成・必須起動 + 監査ログ
+- **ディレクトリ分離**: 本番インフラ（`Dockerfile`、`docker-compose.yml`）はsandboxインフラ（`.devcontainer/`、`docker-compose.dev.yml`）を参照してはなりません。sandbox インフラからの本番参照は非推奨です。
 - **NEXT条件**:
   - Standard / Fullプラン → `db-ops`
   - Lightプラン → `ops-planner`
@@ -337,10 +339,15 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 
 - **正規**: [.claude/agents/sandbox-runner.md](../../.claude/agents/sandbox-runner.md)
 - **ドメイン**: セーフティ（横断的）
-- **責務**: ホストプラットフォームのネイティブパーミッション制御（Claude Codeのpermission modeなど）を通じて高リスクコマンドを実行します。`sandbox-policy.md`に照らしてコマンドを再分類し、完全な監査証跡を返します。
+- **責務**: 最も強力な利用可能な隔離を使って高リスクコマンドを実行します。まず `container` モード（devcontainer + Docker）を試み、利用不可の場合はプラットフォームのパーミッション制御にフォールバックします。`sandbox-policy.md`に照らしてコマンドを再分類し、フォールバック理由を含む完全な監査証跡を返します。
 - **入力**: `command`、`working_directory`、`timeout_sec`、`risk_hint`、`allow_network`、`allow_write_paths`、`dry_run`、`reason`、`caller_agent`
-- **出力**: `stdout`、`stderr`、`exit_code`、`sandbox_mode`、`detected_risks`、`decision`、`notes`
-- **AGENT_RESTULTフィールド**: `STATUS`、`SANDBOX_MODE`、`EXIT_CODE`、`DETECTED_RISKS`、`DECISION`、`CALLER`、`DURATION_MS`
+- **出力**: `stdout`、`stderr`、`exit_code`、`sandbox_mode`、`detected_risks`、`decision`、`fallback_reason`、`notes`
+- **実行経路選択**（Workflowの Step 2）:
+  1. リポジトリ内の `.devcontainer/devcontainer.json` の存在確認
+  2. 5秒タイムアウトで `docker info` 実行
+  3. 両方 OK → `container` モード（ワーキングディレクトリのみマウント；既定 `--network=none`；ホスト環境変数なし）
+  4. いずれかNG → `FALLBACK_REASON` を記録して `platform_permission` にフォールバック
+- **AGENT_RESTULTフィールド**: `STATUS`、`SANDBOX_MODE`、`EXIT_CODE`、`DETECTED_RISKS`、`DECISION`、`CALLER`、`DURATION_MS`、`FALLBACK_REASON`（container モード成功時は省略）
 - **NEXT条件**:
   - 別エージェントから呼び出された場合 → 呼び出し元エージェントに返る
   - ユーザーがスタンドアロンで起動した場合 → `done`
