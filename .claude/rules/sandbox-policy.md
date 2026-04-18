@@ -56,18 +56,32 @@ When a command matches a category, select the isolation mode as follows:
 [Category Classification] ── no category match ──▶ [bypassed: execute directly]
     │
     ▼
-[Platform Detection]
+[Container Availability Check]
     │
-    ├─ claude_code ──▶ [Permission Mode Selection]
-    │                       ├─ required category → permission: `ask` (when settings.json not configured) or `deny`
-    │                       ├─ recommended category → permission: `ask`
-    │                       └─ optional category → permission: `allow` + audit log
+    ├─ .devcontainer/devcontainer.json exists AND `docker info` succeeds
+    │       └──▶ [container: execute via devcontainer / docker-compose.dev.yml]
+    │                (strongest isolation — bypasses permission mode concerns)
     │
-    ├─ copilot / codex ──▶ [advisory_only: display warning only, execution is caller's decision]
-    │                       (Native sandbox support is a follow-up issue)
-    │
-    └─ unknown ──▶ [blocked: refuse execution, prompt user to specify platform]
+    └─ container unavailable (devcontainer missing OR docker daemon not running)
+            │
+            ▼
+        [Platform Detection]
+            │
+            ├─ claude_code ──▶ [Permission Mode Selection]
+            │                       ├─ required category → permission: `ask` (when settings.json not configured) or `deny`
+            │                       ├─ recommended category → permission: `ask`
+            │                       └─ optional category → permission: `allow` + audit log
+            │
+            ├─ copilot / codex ──▶ [advisory_only: display warning only, execution is caller's decision]
+            │                       (Native sandbox support is a follow-up issue)
+            │
+            └─ unknown ──▶ [blocked: refuse execution, prompt user to specify platform]
 ```
+
+**Fallback order (confirmed):**
+`container` → `platform_permission` → `advisory_only` → `blocked`
+
+> **Note on auto mode and container isolation:** Even when Claude Code operates in `auto` / `allow` mode (which would otherwise bypass permission gates), running inside a container still provides real physical isolation. `container` mode is therefore always the strongest option regardless of the permission mode setting.
 
 ### Platform Detection Method
 
@@ -83,21 +97,27 @@ Check environment variables in order:
 
 | Mode | Description |
 |------|-------------|
+| `container` | Command runs inside the project's devcontainer (`.devcontainer/devcontainer.json`) or `docker-compose.dev.yml`. Provides real physical isolation. Highest priority when available. |
 | `platform_permission` | Claude Code permission mode controls execution (allow / ask / deny) |
 | `advisory_only` | Warning displayed only; execution proceeds under caller's responsibility |
 | `blocked` | Execution refused; user must confirm or override |
 | `bypassed` | No category match; executed directly without sandbox |
 
+**Priority order:** `container` > `platform_permission` > `advisory_only` > `blocked`
+
+> `container` mode provides real physical isolation independent of the platform's permission mode setting.
+> Even when running in `auto`/`allow` mode, container isolation remains effective as a structural boundary.
+
 ---
 
 ## 5. Triage Plan × sandbox-runner Placement
 
-| Plan | sandbox-runner Placement | Launch Model |
-|------|-------------------------|--------------|
-| **Minimal** | Not used (policy advisory only) | Policy violations: user warning only |
-| **Light** | Explicit delegation from calling agent only | `required` categories: explicit delegation; others: advisory |
-| **Standard** | Orchestrator auto-insert enabled | `required` / `recommended`: auto-insert; `optional`: explicit delegation |
-| **Full** | Same as Standard + audit log written to SECURITY_AUDIT.md | Same + `security-auditor` post-processes audit log |
+| Plan | sandbox-runner Placement | devcontainer Generation | devcontainer Launch Mode | Notes |
+|------|-------------------------|------------------------|--------------------------|-------|
+| **Minimal** | Not used (policy advisory only) | **Skipped** | N/A | Policy violations: user warning only. `infra-builder` does not generate devcontainer. |
+| **Light** | Explicit delegation from calling agent only | **Generated** | **Optional** (user starts `devcontainer open` when needed) | `required` categories: explicit delegation; others: advisory |
+| **Standard** | Orchestrator auto-insert enabled | **Generated** | **Mandatory** — `required`-category Bash commands run inside the container only | Docker daemon unavailable → fallback to `platform_permission` |
+| **Full** | Same as Standard + audit log written to SECURITY_AUDIT.md | **Generated** | **Mandatory + audit log** (devcontainer entry/exit recorded) | `security-auditor` post-processes audit log |
 
 In Operations Flow, at Standard and above, place `sandbox-runner` before `db-ops`, `releaser`, and `observability`.
 
