@@ -68,48 +68,23 @@ Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVER
 
 <!-- source: .claude/agents/ (agent file names), .claude/orchestrator-rules.md -->
 ```mermaid
-flowchart TB
-    subgraph Discovery ["Discovery (6 agents)"]
-        direction TB
-        interviewer --> researcher
-        researcher --> poc-engineer
-        poc-engineer --> concept-validator
-        concept-validator --> rules-designer
-        rules-designer --> scope-planner
-    end
+flowchart LR
+    D["Discovery<br/>(6 agents)<br/>interviewer → ... → scope-planner"]
+    DV["Delivery<br/>(12 agents)<br/>spec-designer → ... → releaser"]
+    O["Operations<br/>(4 agents)<br/>infra-builder → ... → ops-planner"]
+    S["Standalone<br/>analyst / codebase-analyzer / sandbox-runner"]
 
-    subgraph Delivery ["Delivery (12 agents)"]
-        direction TB
-        spec-designer --> ux-designer
-        ux-designer --> architect
-        architect --> scaffolder
-        scaffolder --> developer
-        developer --> test-designer
-        test-designer --> e2e-test-designer
-        e2e-test-designer --> tester
-        tester --> security-auditor
-        security-auditor --> reviewer
-        reviewer --> doc-writer
-        doc-writer --> releaser
-    end
+    D -->|DISCOVERY_RESULT.md| DV
+    DV -->|DELIVERY_RESULT.md| O
+    S -.optional.-> DV
 
-    subgraph Operations ["Operations (4 agents)"]
-        direction TB
-        infra-builder --> db-ops
-        db-ops --> observability
-        observability --> ops-planner
-    end
-
-    subgraph Standalone ["Standalone Agents"]
-        direction LR
-        analyst
-        codebase-analyzer
-        sandbox-runner
-    end
-
-    Discovery -->|DISCOVERY_RESULT.md| Delivery
-    Delivery -->|DELIVERY_RESULT.md| Operations
+    click D "./Agents-Reference.md#discovery-domain" "Discovery agents"
+    click DV "./Agents-Reference.md#delivery-domain" "Delivery agents"
+    click O "./Agents-Reference.md#operations-domain" "Operations agents"
+    click S "./Agents-Reference.md#standalone-agents" "Standalone agents"
 ```
+
+> See [Agents Reference](./Agents-Reference.md) for the full agent list and per-agent details.
 
 ---
 
