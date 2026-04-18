@@ -12,6 +12,7 @@ This page explains how Aphelion is adapted for each supported platform, what the
 - [Claude Code (Canonical)](#claude-code-canonical)
 - [GitHub Copilot](#github-copilot)
 - [OpenAI Codex](#openai-codex)
+- [Sandbox & Permission Modes](#sandbox--permission-modes)
 - [Generating Platform Files](#generating-platform-files)
 - [Feature Matrix](#feature-matrix)
 - [Porting to a New Platform](#porting-to-a-new-platform)
@@ -48,11 +49,11 @@ Claude Code is the authoritative platform. All agent definitions, rules, and orc
     operations-flow.md
     interviewer.md         # Discovery domain agents
     researcher.md
-    ...                    # (26 agents total)
+    ...                    # (27 agents total)
   rules/
     agent-communication-protocol.md
     build-verification-commands.md
-    ...                    # (8 rules total)
+    ...                    # (9 rules total)
   commands/
     discovery-flow.md      # Slash command definitions
     delivery-flow.md
@@ -93,7 +94,7 @@ The Copilot platform files are generated from Claude Code canonical agents by `s
   agents/
     discovery-flow.agent.md
     delivery-flow.agent.md
-    ...                    # (26 agents total)
+    ...                    # (27 agents total)
 ```
 
 **Key differences from Claude Code:**
@@ -166,6 +167,62 @@ cp -r platforms/codex/skills/ /path/to/your-project/
 ```
 
 > For full multi-phase orchestration, use Claude Code or GitHub Copilot.
+
+---
+
+## Sandbox & Permission Modes
+
+Aphelion agents execute shell commands via the `Bash` tool on behalf of the user. The sandbox system provides a structured way to classify risky commands and route them through platform-native permission controls before execution.
+
+For the full policy reference, see [.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md).
+For the executor agent, see [.claude/agents/sandbox-runner.md](../../.claude/agents/sandbox-runner.md).
+
+### Platform Sandbox Capability Comparison
+
+| Capability | Claude Code | GitHub Copilot | OpenAI Codex |
+|---|---|---|---|
+| Native permission gate | Yes (permission mode) | Partial (IDE confirmation prompt) | No |
+| Allow / Ask / Deny tiers | Yes | Ask only | No |
+| Persistent settings | `.claude/settings.json` | IDE config | N/A |
+| Session-local override | `.claude/settings.local.json` | Per-session | N/A |
+| sandbox-runner integration | Auto-insert (Standard+) + explicit | Explicit only | Advisory only |
+| Recommended fallback | — | Manual review before execution | Manual review before execution |
+
+### Claude Code Permission Mode
+
+Claude Code offers three permission levels for Bash commands:
+
+| Mode | Behavior |
+|------|----------|
+| `allow` | Execute automatically without confirmation |
+| `ask` | Pause and request user confirmation before executing |
+| `deny` | Refuse execution entirely |
+
+**Settings persistence:**
+
+- **Persistent** — Stored in `.claude/settings.json` (can be committed to the repository and shared across the team).
+- **Session / local** — Stored in `.claude/settings.local.json` (gitignored by default; for personal or per-environment overrides).
+
+**Priority:** Session-local settings take precedence over persistent settings.
+
+**Relationship with sandbox-runner:** `sandbox-runner` respects whichever permission mode is in effect. It does not replace or bypass Claude Code's permission system — it calls into it. Aphelion never modifies `.claude/settings.json` or `.claude/settings.local.json` directly; users configure these files themselves.
+
+### Recommended Permission Profiles
+
+The following profiles are recommendations only. Configure them in your own `.claude/settings.json` or `.claude/settings.local.json` as appropriate for your environment.
+
+| Environment | destructive_fs | prod_db | external_net | privilege_escalation | secret_access | Notes |
+|---|---|---|---|---|---|---|
+| **dev (local developer)** | ask | deny | ask | ask | ask | All `required` categories require confirmation; external network also asks |
+| **CI** | deny | deny | allow (allowlist) | deny | deny | Network permitted only for known registries; all destructive ops denied |
+| **near-production** | deny | deny | deny | deny | deny | Full deny; human-in-the-loop required for any exception |
+
+### How sandbox-runner Fits In
+
+1. **Triage determines activation level** — Minimal plan: advisory warnings only. Light: explicit delegation. Standard/Full: orchestrator auto-inserts `sandbox-runner` before `required`-tier commands.
+2. **sandbox-runner re-classifies** — Even when an agent provides a `risk_hint`, `sandbox-runner` independently re-classifies the command against `sandbox-policy.md`.
+3. **Platform mode is applied** — On Claude Code, the appropriate permission mode is invoked. On Copilot/Codex, an advisory warning is shown.
+4. **Audit trail returned** — `AGENT_RESULT` from `sandbox-runner` always includes `DETECTED_RISKS` and `DECISION`, regardless of whether execution was allowed or denied.
 
 ---
 

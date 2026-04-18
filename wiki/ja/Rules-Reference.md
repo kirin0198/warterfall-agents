@@ -5,7 +5,7 @@
 > **EN canonical**: 2026-04-18 of wiki/en/Rules-Reference.md
 > **Audience**: エージェント開発者
 
-このページは`.claude/rules/`にある8つの行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
+このページは`.claude/rules/`にある9つの行動ルールのコンパクトなリファレンスです。各エントリはスコープ、自動ロードの動作、他ルール・エージェントとのインタラクション、ルールが強制する主要な制約をまとめています。
 
 詳細については、**正規**リンクからソースファイルを参照してください。
 
@@ -18,6 +18,7 @@
 - [git-rules](#git-rules)
 - [language-rules](#language-rules)
 - [library-and-security-policy](#library-and-security-policy)
+- [sandbox-policy](#sandbox-policy)
 - [user-questions](#user-questions)
 - [関連ページ](#関連ページ)
 - [正規ソース](#正規ソース)
@@ -94,6 +95,16 @@
 
 ---
 
+## sandbox-policy
+
+- **正規**: [.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md)
+- **スコープ**: `Bash`ツールを持つ全エージェント：`developer`、`tester`、`poc-engineer`、`scaffolder`、`infra-builder`、`codebase-analyzer`、`security-auditor`、`db-ops`、`releaser`、`observability`。（`sandbox-runner`はポリシーの実行者であり対象外）
+- **自動ロードの動作**: Claude Codeが全セッション起動時に自動ロード
+- **インタラクション**: 5つの危険コマンドカテゴリ（`destructive_fs`、`prod_db`、`privilege_escalation`、`secret_access`、`external_net`）と3つの委譲ティア（`required`、`recommended`、`optional`）を定義します。`sandbox-runner`はこのポリシーを起動時に読み込んでコマンドを再分類します。オーケストレーターはティア定義を参照して`sandbox-runner`をいつ自動挿入するか（Standard+プラン）を決定します。Bashを持つ各エージェントの定義ファイルにはこのルールへの1行参照が含まれています。
+- **概要**: Bashを持つエージェントがいつコマンド実行を`sandbox-runner`に委譲しなければならないかを確立します。プラットフォーム検出（`claude_code` / `copilot` / `codex` / `unknown`）とコマンドカテゴリに基づく隔離モード決定ツリーを提供します。`required`ティアのコマンドは常に委譲しなければなりません；`recommended`ティアはスキップ時に記録された理由とともに委譲すべきです；`optional`ティアはadvisoryのみです。委譲が利用できない場合（Minimalプラン、スタンドアロンコンテキスト）、エージェントはユーザーに警告し明示的な確認を求めなければなりません。
+
+---
+
 ## user-questions
 
 - **正規**: [.claude/rules/user-questions.md](../../.claude/rules/user-questions.md)
@@ -112,6 +123,6 @@
 
 ## 正規ソース
 
-- [.claude/rules/](../../.claude/rules/) — 8つのルールファイル全体（権威あるソース）
+- [.claude/rules/](../../.claude/rules/) — 9つのルールファイル全体（権威あるソース）
 - [.claude/CLAUDE.md](../../.claude/CLAUDE.md) — これらのルールを参照するワークフロー概要
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — agent-communication-protocolに依存するオーケストレーターの動作

@@ -19,8 +19,8 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | Project overview and motivation | [Architecture](./Architecture.md): 3-domain model and session isolation |
 | Quick Start commands | [Getting Started](./Getting-Started.md): per-platform setup, scenarios, troubleshooting |
 | Triage plan table (summary) | [Triage System](./Triage-System.md): selection logic, conditions, and agent matrices |
-| Agent list (names only) | [Agents Reference](./Agents-Reference.md): all 26 agents with inputs, outputs, and NEXT conditions |
-| — | [Rules Reference](./Rules-Reference.md): 8 behavior rules with scope and customization notes |
+| Agent list (names only) | [Agents Reference](./Agents-Reference.md): all 27 agents with inputs, outputs, and NEXT conditions |
+| — | [Rules Reference](./Rules-Reference.md): 9 behavior rules with scope and customization notes |
 | Platform comparison table | [Platform Guide](./Platform-Guide.md): generation pipeline, constraints, and deployment |
 | — | [Contributing](./Contributing.md): how to add agents, rules, and platforms |
 
@@ -35,7 +35,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | [Getting Started](./Getting-Started.md) | Platform-specific setup, first run, usage scenarios, command reference | New users |
 | [Architecture](./Architecture.md) | 3-domain model, handoff files, session isolation, AGENT_RESULT protocol | Agent developers |
 | [Triage System](./Triage-System.md) | 4-tier plan selection logic, per-domain agent matrices, mandatory agents | All users |
-| [Agents Reference](./Agents-Reference.md) | All 26 agents: responsibility, inputs, outputs, NEXT conditions | Agent developers |
+| [Agents Reference](./Agents-Reference.md) | All 27 agents: responsibility, inputs, outputs, NEXT conditions | Agent developers |
 | [Rules Reference](./Rules-Reference.md) | All 9 behavior rules: scope, auto-load, interactions | Agent developers |
 | [Platform Guide](./Platform-Guide.md) | Claude Code / Copilot / Codex differences, generate.py pipeline | Platform porters |
 | [Contributing](./Contributing.md) | Adding agents, rules, platforms; bilingual sync workflow | Agent developers |

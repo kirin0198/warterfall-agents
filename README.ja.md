@@ -4,7 +4,7 @@
 
 # Aphelion — Frontier AI Agents
 
-マルチプラットフォーム対応の AI コーディングエージェント定義集です。26 の専門エージェントがプロジェクトの全工程を自動化します。
+マルチプラットフォーム対応の AI コーディングエージェント定義集です。27 の専門エージェントがプロジェクトの全工程を自動化します。
 
 **[English README](README.md)**
 
@@ -149,7 +149,7 @@ cp -r platforms/codex/skills/ /path/to/your-project/
 ├── CLAUDE.md                    # プロジェクト概要
 ├── rules/*.md                   # 行動ルール（自動ロード）
 ├── orchestrator-rules.md        # オーケストレーター専用ルール
-├── agents/*.md                  # エージェント定義（26ファイル）
+├── agents/*.md                  # エージェント定義（27ファイル）
 └── commands/*.md                # スラッシュコマンド定義
 
 platforms/
@@ -193,7 +193,7 @@ python3 scripts/generate.py --clean            # 生成物を削除
 | [はじめに](wiki/ja/Getting-Started.md) | 全プラットフォームのセットアップ、初回実行ウォークスルー、利用シナリオ |
 | [アーキテクチャ](wiki/ja/Architecture.md) | 3ドメインモデル、ハンドオフファイル、AGENT_RESULTプロトコル |
 | [トリアージシステム](wiki/ja/Triage-System.md) | プランティア、エージェント選択ロジック、HAS_UI条件 |
-| [エージェントリファレンス](wiki/ja/Agents-Reference.md) | 全26エージェント — 入力・出力・NEXT条件 |
+| [エージェントリファレンス](wiki/ja/Agents-Reference.md) | 全27エージェント — 入力・出力・NEXT条件 |
 | [ルールリファレンス](wiki/ja/Rules-Reference.md) | 全8行動ルール — スコープとインタラクション |
 | [プラットフォームガイド](wiki/ja/Platform-Guide.md) | Copilot/Codexの差異、ジェネレーター使用方法、移植ガイド |
 | [コントリビューティング](wiki/ja/Contributing.md) | エージェント追加方法、バイリンガル同期ポリシー、PRチェックリスト |

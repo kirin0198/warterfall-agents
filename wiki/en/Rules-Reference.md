@@ -4,7 +4,7 @@
 > **Last updated**: 2026-04-18
 > **Audience**: Agent developers
 
-This page is a compact reference for all 8 behavioral rules in `.claude/rules/`. Each entry summarizes scope, auto-load behavior, interactions with other rules and agents, and the key constraint the rule enforces.
+This page is a compact reference for all 9 behavioral rules in `.claude/rules/`. Each entry summarizes scope, auto-load behavior, interactions with other rules and agents, and the key constraint the rule enforces.
 
 For full details, follow the **Canonical** link to the source file.
 
@@ -17,6 +17,7 @@ For full details, follow the **Canonical** link to the source file.
 - [git-rules](#git-rules)
 - [language-rules](#language-rules)
 - [library-and-security-policy](#library-and-security-policy)
+- [sandbox-policy](#sandbox-policy)
 - [user-questions](#user-questions)
 - [Related Pages](#related-pages)
 - [Canonical Sources](#canonical-sources)
@@ -93,6 +94,16 @@ For full details, follow the **Canonical** link to the source file.
 
 ---
 
+## sandbox-policy
+
+- **Canonical**: [.claude/rules/sandbox-policy.md](../../.claude/rules/sandbox-policy.md)
+- **Scope**: All agents that own the `Bash` tool: `developer`, `tester`, `poc-engineer`, `scaffolder`, `infra-builder`, `codebase-analyzer`, `security-auditor`, `db-ops`, `releaser`, `observability`. (`sandbox-runner` is the policy executor, not a subject.)
+- **Auto-load behavior**: Auto-loaded by Claude Code on every session start
+- **Interactions**: Defines the 5 dangerous command categories (`destructive_fs`, `prod_db`, `privilege_escalation`, `secret_access`, `external_net`) and 3 delegation tiers (`required`, `recommended`, `optional`). `sandbox-runner` reads this policy at startup to re-classify commands. Orchestrators reference the tier definitions to decide when to auto-insert `sandbox-runner` (Standard+ plans). Each Bash-owning agent definition file contains a one-line reference to this rule.
+- **Summary**: Establishes when Bash-owning agents must delegate command execution to `sandbox-runner`. Provides the isolation mode decision tree keyed on platform detection (`claude_code` / `copilot` / `codex` / `unknown`) and command category. `required`-tier commands must always be delegated; `recommended`-tier should be delegated with a recorded reason if skipped; `optional`-tier is advisory only. When delegation is unavailable (Minimal plan, standalone context), the agent must warn the user and ask for explicit confirmation.
+
+---
+
 ## user-questions
 
 - **Canonical**: [.claude/rules/user-questions.md](../../.claude/rules/user-questions.md)
@@ -111,6 +122,6 @@ For full details, follow the **Canonical** link to the source file.
 
 ## Canonical Sources
 
-- [.claude/rules/](../../.claude/rules/) — All 8 rule files (authoritative source)
+- [.claude/rules/](../../.claude/rules/) — All 9 rule files (authoritative source)
 - [.claude/CLAUDE.md](../../.claude/CLAUDE.md) — Workflow overview that references these rules
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Orchestrator behavior that depends on agent-communication-protocol

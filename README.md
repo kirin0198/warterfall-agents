@@ -4,7 +4,7 @@
 
 # Aphelion — Frontier AI Agents
 
-A multi-platform collection of AI coding agent definitions that automates the entire project lifecycle with 26 specialized agents.
+A multi-platform collection of AI coding agent definitions that automates the entire project lifecycle with 27 specialized agents.
 
 **[日本語版 README はこちら](README.ja.md)**
 
@@ -149,7 +149,7 @@ At flow start, project scale is assessed and agents are selected from 4 tiers au
 ├── CLAUDE.md                    # Project overview
 ├── rules/*.md                   # Behavioral rules (auto-loaded)
 ├── orchestrator-rules.md        # Orchestrator-specific rules
-├── agents/*.md                  # Agent definitions (26 files)
+├── agents/*.md                  # Agent definitions (27 files)
 └── commands/*.md                # Slash command definitions
 
 platforms/
@@ -193,7 +193,7 @@ For detailed agent schemas, rule explanations, triage logic, and platform intern
 | [Getting Started](wiki/en/Getting-Started.md) | Setup for all platforms, first-run walkthrough, usage scenarios |
 | [Architecture](wiki/en/Architecture.md) | 3-domain model, handoff files, AGENT_RESULT protocol |
 | [Triage System](wiki/en/Triage-System.md) | Plan tiers, agent selection logic, HAS_UI conditions |
-| [Agents Reference](wiki/en/Agents-Reference.md) | All 26 agents — inputs, outputs, NEXT conditions |
+| [Agents Reference](wiki/en/Agents-Reference.md) | All 27 agents — inputs, outputs, NEXT conditions |
 | [Rules Reference](wiki/en/Rules-Reference.md) | All 8 behavioral rules — scope and interactions |
 | [Platform Guide](wiki/en/Platform-Guide.md) | Copilot/Codex differences, generator usage, porting guide |
 | [Contributing](wiki/en/Contributing.md) | How to add agents, bilingual sync policy, PR checklist |

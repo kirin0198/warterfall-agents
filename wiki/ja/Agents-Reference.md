@@ -5,7 +5,7 @@
 > **EN canonical**: 2026-04-18 of wiki/en/Agents-Reference.md
 > **Audience**: エージェント開発者
 
-このページはAphelionの26エージェントと4つのフローオーケストレーター全体のコンパクトなリファレンスを提供します。各エントリは標準スキーマに従っています：正規ファイルリンク、ドメイン、責務、入力、出力、AGENT_RESTULTフィールド、NEXT条件。
+このページはAphelionの27エージェントと4つのフローオーケストレーター全体のコンパクトなリファレンスを提供します。各エントリは標準スキーマに従っています：正規ファイルリンク、ドメイン、責務、入力、出力、AGENT_RESTULTフィールド、NEXT条件。
 
 各エージェントの詳細については、**正規**リンクから`.claude/agents/`のソースファイルを参照してください。
 
@@ -15,6 +15,7 @@
 - [Discoveryドメイン（6エージェント）](#discoveryドメイン)
 - [Deliveryドメイン（12エージェント）](#deliveryドメイン)
 - [Operationsドメイン（4エージェント）](#operationsドメイン)
+- [セーフティエージェント（1エージェント）](#セーフティエージェント)
 - [スタンドアロンエージェント（2エージェント）](#スタンドアロンエージェント)
 - [関連ページ](#関連ページ)
 - [正規ソース](#正規ソース)
@@ -328,6 +329,25 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 
 ---
 
+## セーフティエージェント
+
+これらのエージェントは他のエージェント全体にセーフティポリシーを適用します。オーケストレーターから自動的に挿入されることも、Bashを持つ任意のエージェントから明示的に委譲されることもあります。
+
+### sandbox-runner
+
+- **正規**: [.claude/agents/sandbox-runner.md](../../.claude/agents/sandbox-runner.md)
+- **ドメイン**: セーフティ（横断的）
+- **責務**: ホストプラットフォームのネイティブパーミッション制御（Claude Codeのpermission modeなど）を通じて高リスクコマンドを実行します。`sandbox-policy.md`に照らしてコマンドを再分類し、完全な監査証跡を返します。
+- **入力**: `command`、`working_directory`、`timeout_sec`、`risk_hint`、`allow_network`、`allow_write_paths`、`dry_run`、`reason`、`caller_agent`
+- **出力**: `stdout`、`stderr`、`exit_code`、`sandbox_mode`、`detected_risks`、`decision`、`notes`
+- **AGENT_RESTULTフィールド**: `STATUS`、`SANDBOX_MODE`、`EXIT_CODE`、`DETECTED_RISKS`、`DECISION`、`CALLER`、`DURATION_MS`
+- **NEXT条件**:
+  - 別エージェントから呼び出された場合 → 呼び出し元エージェントに返る
+  - ユーザーがスタンドアロンで起動した場合 → `done`
+  - セッション中断 → `suspended`
+
+---
+
 ## スタンドアロンエージェント
 
 この2つのエージェントはトリアージシステムの外で動作し、ユーザーが直接起動します。
@@ -363,5 +383,5 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 
 ## 正規ソース
 
-- [.claude/agents/](../../.claude/agents/) — 26エージェント定義ファイル全体（権威あるソース）
+- [.claude/agents/](../../.claude/agents/) — 27エージェント定義ファイル全体（権威あるソース）
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — フローオーケストレータールールとトリアージ
