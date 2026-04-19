@@ -1,9 +1,13 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import remarkMermaid from './src/remark-mermaid.mjs';
 
 // https://astro.build/config
 export default defineConfig({
+	markdown: {
+		remarkPlugins: [remarkMermaid],
+	},
 	integrations: [
 		starlight({
 			title: 'Aphelion',
@@ -11,6 +15,17 @@ export default defineConfig({
 				src: './src/assets/logo.png',
 			},
 			customCss: ['./src/styles/custom.css'],
+			head: [
+				{
+					tag: 'script',
+					attrs: { type: 'module' },
+					content: `
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/+esm';
+const theme = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'default';
+mermaid.initialize({ startOnLoad: true, theme, securityLevel: 'loose' });
+					`.trim(),
+				},
+			],
 			locales: {
 				en: {
 					label: 'English',
