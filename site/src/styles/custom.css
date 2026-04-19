@@ -38,11 +38,8 @@
  * public/hero.png を index.mdx の hero.image.html から直接参照して
  * Astro Image 最適化を回避し、CSS でアスペクト比と表示幅を制御する。
  *
- * 画像本体は黒背景に彩色コンテンツが載った形式。テーマ別に background を
- * 差し替えず、mix-blend-mode で黒ピクセルをページ背景色に透過させる。
- *   - screen: 下層 (page bg) の色を保持しつつ、image の黒を「抜く」。
- *     light mode では白背景 → 黒抜けて自然に溶け込む。
- *     dark mode では黒背景 → 黒抜けて同色に溶け込む (無変化に見える)。
+ * NOTE: 画像は黒背景のため light mode では周囲と色差が出る。
+ *       テーマ別の blending 対応は issue #22 で扱う。
  */
 .aphelion-hero-img {
   width: 100%;
@@ -50,5 +47,4 @@
   height: auto;
   aspect-ratio: 4 / 3;
   object-fit: contain;
-  mix-blend-mode: screen;
 }
