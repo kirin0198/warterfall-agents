@@ -15,7 +15,7 @@
 - [x] TASK-004: CLIエントリーポイントとソースパス解決 | 対象ファイル: src/cli.ts, src/lib/sources.ts
 - [x] TASK-005: init コマンド実装 | 対象ファイル: src/commands/init.ts, src/lib/copy.ts
 - [x] TASK-006: update コマンド実装 | 対象ファイル: src/commands/update.ts
-- [ ] TASK-007: ユニットテスト追加 | 対象ファイル: src/lib/copy.test.ts, src/lib/sources.test.ts
+- [x] TASK-007: ユニットテスト追加 | 対象ファイル: src/lib/copy.test.ts, src/lib/sources.test.ts
 - [ ] TASK-008: CHANGELOG.md 追加 | 対象ファイル: CHANGELOG.md
 - [ ] TASK-009: README / wiki に npx 手順を追記 | 対象ファイル: README.md, README.ja.md, docs/wiki/en/Getting-Started.md, docs/wiki/ja/Getting-Started.md
 
