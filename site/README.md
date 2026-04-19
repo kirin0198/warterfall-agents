@@ -17,8 +17,14 @@ Dev server starts at `http://localhost:4321`.
 ```bash
 cd site
 npm ci
-node ../scripts/sync-wiki.mjs
-npm run build
+npm run build  # prebuild フックが sync-wiki.mjs を自動実行
+```
+
+手動でコンテンツ同期のみ行う場合:
+
+```bash
+cd site
+npm run sync-wiki
 ```
 
 Output: `site/dist/`
@@ -28,7 +34,7 @@ Output: `site/dist/`
 | Item | Value |
 |------|-------|
 | Framework preset | Astro |
-| Build command | `cd site && npm ci && node ../scripts/sync-wiki.mjs && npm run build` |
+| Build command | `cd site && npm ci && npm run build` |
 | Build output directory | `site/dist` |
 | Root directory | `/` (repo root) |
 | Node.js version | 20 |
