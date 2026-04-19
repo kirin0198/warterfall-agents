@@ -1,1 +1,6 @@
 .claude/settings.local.json
+
+# Astro Starlight site build artifacts
+site/dist/
+site/node_modules/
+site/.astro/
