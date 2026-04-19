@@ -17,7 +17,7 @@
 - [x] TASK-006: update コマンド実装 | 対象ファイル: src/commands/update.ts
 - [x] TASK-007: ユニットテスト追加 | 対象ファイル: src/lib/copy.test.ts, src/lib/sources.test.ts
 - [x] TASK-008: CHANGELOG.md 追加 | 対象ファイル: CHANGELOG.md
-- [ ] TASK-009: README / wiki に npx 手順を追記 | 対象ファイル: README.md, README.ja.md, docs/wiki/en/Getting-Started.md, docs/wiki/ja/Getting-Started.md
+- [x] TASK-009: README / wiki に npx 手順を追記 | 対象ファイル: README.md, README.ja.md, docs/wiki/en/Getting-Started.md, docs/wiki/ja/Getting-Started.md
 
 ## 直近のコミット
 （タスク完了のたびに git log --oneline -3 を記録する）
