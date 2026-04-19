@@ -51,7 +51,28 @@ AI coding agents are powerful, but a single agent session struggles with full pr
 
 ## Getting Started
 
-### Quick Start
+### Install via npx (recommended)
+
+```bash
+# Claude Code (default)
+npx aphelion-agents init
+
+# GitHub Copilot
+npx aphelion-agents init --platform copilot
+
+# OpenAI Codex
+npx aphelion-agents init --platform codex
+
+# All platforms at once
+npx aphelion-agents init --all
+
+# Update existing installation
+npx aphelion-agents update
+```
+
+### Install via git clone (alternative)
+
+Clone the repository and copy the files manually:
 
 **Claude Code:**
 
