@@ -132,7 +132,7 @@ function rewriteLinks(body, locale) {
   // capture 1: リンクテキスト (画像判定に使用)
   // capture 2: 全パス (anchor / query 含む可能性あり)
   const re = /\[([^\]]*)\]\(([^)]+\.md(?:[?#][^)]+)?)\)/g;
-  return body.replace(re, (whole, _text, link, offset) => {
+  return body.replace(re, (whole, text, link, offset) => {
     // マッチ直前の文字が `!` なら画像リンク → 変換せずそのまま返す
     if (offset >= 1 && body[offset - 1] === '!') {
       return whole;
@@ -166,18 +166,18 @@ function rewriteLinks(body, locale) {
     // 1) 言語切替: ../en/X.md or ../ja/X.md
     const localeSwitch = dir.match(/(?:\.\.\/)+(en|ja)\/$/);
     if (localeSwitch) {
-      return `](/${localeSwitch[1]}/${slug}/${query}${anchor})`;
+      return `[${text}](/${localeSwitch[1]}/${slug}/${query}${anchor})`;
     }
 
     // 2) 同一ディレクトリ (./X.md) or 暗黙同一 (X.md)
     if (dir === '' || dir === './') {
-      return `](/${locale}/${slug}/${query}${anchor})`;
+      return `[${text}](/${locale}/${slug}/${query}${anchor})`;
     }
 
     // 3) wiki 外の .md → GitHub blob URL (大文字小文字を保持)
     // 例: ../../.claude/CLAUDE.md → https://github.com/.../blob/main/.claude/CLAUDE.md
     const cleanedDir = dir.replace(/^(?:\.\.\/)+/, '');
-    return `](${GITHUB_BLOB_BASE}${cleanedDir}${mdMatch[2]}.md${query}${anchor})`;
+    return `[${text}](${GITHUB_BLOB_BASE}${cleanedDir}${mdMatch[2]}.md${query}${anchor})`;
   });
 }
 
