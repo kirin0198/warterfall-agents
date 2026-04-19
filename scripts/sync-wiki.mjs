@@ -16,8 +16,11 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const WIKI_DIR = path.join(REPO_ROOT, 'docs', 'wiki');
 const DOCS_DIR = path.join(REPO_ROOT, 'site', 'src', 'content', 'docs');
-const LOGO_SRC = path.join(REPO_ROOT, 'docs', 'images', 'aphelion-logo.png');
-const LOGO_DEST = path.join(REPO_ROOT, 'site', 'src', 'assets', 'logo.png');
+// docs/images → site/src/assets に同期する画像アセット一覧
+const IMAGE_ASSETS = [
+  { src: 'docs/images/aphelion-logo.png', dest: 'site/src/assets/logo.png', label: 'logo' },
+  { src: 'docs/images/aphelion-top.png', dest: 'site/src/assets/hero.png', label: 'hero' },
+];
 
 // リポジトリ外 (wiki 外) のファイルへのリンクを置き換える先。GitHub blob URL。
 // 優先順位: 1) 環境変数 APHELION_GITHUB_REPO_URL, 2) package.json の repository.url / homepage,
@@ -362,26 +365,31 @@ function processFile(srcPath, destPath, locale) {
 }
 
 /**
- * ロゴ画像を docs/images/aphelion-logo.png から site/src/assets/logo.png にコピーする。
- * Starlight 側のロゴと SSOT を一致させるため、変更があった場合のみ上書きする。
+ * docs/images 配下の画像アセットを site/src/assets/ にコピーする。
+ * SSOT を一致させるため、変更があった場合のみ上書きする。
  * NI-001: src と dest の mtime/size を比較し、同一ならスキップする。
  */
-function syncLogo() {
-  if (!fs.existsSync(LOGO_SRC)) {
-    console.warn(`warn: logo source not found: ${LOGO_SRC}`);
-    return;
-  }
-  fs.mkdirSync(path.dirname(LOGO_DEST), { recursive: true });
+function syncImages() {
+  for (const asset of IMAGE_ASSETS) {
+    const src = path.join(REPO_ROOT, asset.src);
+    const dest = path.join(REPO_ROOT, asset.dest);
 
-  const srcStat = fs.statSync(LOGO_SRC);
-  const destStat = fs.existsSync(LOGO_DEST) ? fs.statSync(LOGO_DEST) : null;
-  if (destStat && srcStat.size === destStat.size && srcStat.mtimeMs <= destStat.mtimeMs) {
-    console.log(`\n[logo] unchanged: ${path.relative(REPO_ROOT, LOGO_SRC)} (skipped)`);
-    return;
-  }
+    if (!fs.existsSync(src)) {
+      console.warn(`warn: ${asset.label} source not found: ${src}`);
+      continue;
+    }
+    fs.mkdirSync(path.dirname(dest), { recursive: true });
 
-  fs.copyFileSync(LOGO_SRC, LOGO_DEST);
-  console.log(`\n[logo] ${path.relative(REPO_ROOT, LOGO_SRC)} → ${path.relative(REPO_ROOT, LOGO_DEST)}`);
+    const srcStat = fs.statSync(src);
+    const destStat = fs.existsSync(dest) ? fs.statSync(dest) : null;
+    if (destStat && srcStat.size === destStat.size && srcStat.mtimeMs <= destStat.mtimeMs) {
+      console.log(`\n[${asset.label}] unchanged: ${asset.src} (skipped)`);
+      continue;
+    }
+
+    fs.copyFileSync(src, dest);
+    console.log(`\n[${asset.label}] ${asset.src} → ${asset.dest}`);
+  }
 }
 
 /**
@@ -389,7 +397,7 @@ function syncLogo() {
  * SH-003: 同一ロケール内で slug の重複が検出された場合は即座にエラーとして終了する。
  */
 function main() {
-  syncLogo();
+  syncImages();
 
   const locales = ['en', 'ja'];
 
