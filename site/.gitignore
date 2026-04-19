@@ -24,4 +24,4 @@ pnpm-debug.log*
 src/content/docs/en/
 src/content/docs/ja/
 src/assets/logo.png
-src/assets/hero.png
+public/hero.png

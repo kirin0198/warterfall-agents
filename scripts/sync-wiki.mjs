@@ -16,10 +16,13 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const WIKI_DIR = path.join(REPO_ROOT, 'docs', 'wiki');
 const DOCS_DIR = path.join(REPO_ROOT, 'site', 'src', 'content', 'docs');
-// docs/images → site/src/assets に同期する画像アセット一覧
+// docs/images → site 側に同期する画像アセット一覧。
+// logo は Starlight が Astro Image で最適化するため src/assets/ に配置する。
+// hero は Starlight のデフォルト最適化が 1:1 クロップ固定で縦横比を保てないため、
+// 最適化を経由しない site/public/ に配置し、index.mdx の hero.image.html から直接参照する。
 const IMAGE_ASSETS = [
   { src: 'docs/images/aphelion-logo.png', dest: 'site/src/assets/logo.png', label: 'logo' },
-  { src: 'docs/images/aphelion-top.png', dest: 'site/src/assets/hero.png', label: 'hero' },
+  { src: 'docs/images/aphelion-top.png',  dest: 'site/public/hero.png',     label: 'hero' },
 ];
 
 // リポジトリ外 (wiki 外) のファイルへのリンクを置き換える先。GitHub blob URL。
