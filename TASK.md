@@ -4,7 +4,7 @@
 
 ## フェーズ: Phase 1 — CLI新設 + TypeScript化
 最終更新: 2026-04-19
-ステータス: 進行中
+ステータス: 完了
 
 ## タスク一覧
 
@@ -20,7 +20,9 @@
 - [x] TASK-009: README / wiki に npx 手順を追記 | 対象ファイル: README.md, README.ja.md, docs/wiki/en/Getting-Started.md, docs/wiki/ja/Getting-Started.md
 
 ## 直近のコミット
-（タスク完了のたびに git log --oneline -3 を記録する）
+d46ba87 docs: document npx installation in README and Getting Started wiki (TASK-009)
+6f21205 chore: add CHANGELOG.md with 0.1.0 entry (TASK-008)
+387ddff test: add unit tests for copy and sources (TASK-007)
 
 ## 中断時のメモ
 （セッション中断時に状況をここに記録する）
