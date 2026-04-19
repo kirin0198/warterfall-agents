@@ -4,7 +4,7 @@
 
 ## フェーズ: scripts ランタイム統一 (Python → Node.js)
 最終更新: 2026-04-19
-ステータス: 進行中
+ステータス: 完了
 
 ## タスク一覧
 
@@ -21,7 +21,7 @@
 - [x] TASK-004: python3 scripts/generate.py を node scripts/generate.mjs に置換 | 対象ファイル: README.md, README.ja.md, docs/wiki/en/*.md, docs/wiki/ja/*.md, docs/wiki/DESIGN.md, ISSUE.md, docs/issues/*.md
 
 ### Phase 5: generate.py 削除
-- [ ] TASK-005: git rm scripts/generate.py | 対象ファイル: scripts/generate.py
+- [x] TASK-005: git rm scripts/generate.py | 対象ファイル: scripts/generate.py
 
 ## 直近のコミット
 （タスク完了のたびに git log --oneline -3 を記録する）
