@@ -1,0 +1,78 @@
+---
+title: Aphelion
+description: Multi-platform AI coding agent workflow — Discovery, Delivery, Operations in three independent domains.
+template: splash
+hero:
+  tagline: AI coding agents for the full project lifecycle — Discovery, Delivery, Operations.
+  image:
+    html: '<img src="/hero.png" alt="Aphelion" class="aphelion-hero-img" width="720" height="540" />'
+  actions:
+    - text: Get Started
+      link: /en/getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/kirin0198/aphelion-agents
+      icon: external
+      variant: secondary
+    - text: Agents Reference
+      link: /en/agents-reference/
+      icon: open-book
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Meet the 27 Agents
+
+<CardGrid>
+	<Card title="Flow Orchestrators" icon="rocket">
+		4 top-level orchestrators: discovery-flow, delivery-flow, operations-flow, and the root triage.
+		[→ Flow Orchestrators](/en/agents-reference/#flow-orchestrators)
+	</Card>
+	<Card title="Discovery Domain" icon="magnifier">
+		6 agents that elicit, research, and prototype requirements.
+		[→ Discovery Domain](/en/agents-reference/#discovery-domain)
+	</Card>
+	<Card title="Delivery Domain" icon="puzzle">
+		12 agents that design, implement, test, review, and release.
+		[→ Delivery Domain](/en/agents-reference/#delivery-domain)
+	</Card>
+	<Card title="Operations Domain" icon="laptop">
+		4 agents that build infra, manage DB, set up observability, and plan ops.
+		[→ Operations Domain](/en/agents-reference/#operations-domain)
+	</Card>
+	<Card title="Safety & Standalone" icon="approve-check">
+		sandbox-runner for isolated execution, plus analyst and codebase-analyzer for standalone use.
+		[→ Safety Agents](/en/agents-reference/#safety-agents)
+	</Card>
+</CardGrid>
+
+## Explore the Documentation
+
+<CardGrid stagger>
+	<Card title="Getting Started" icon="rocket">
+		Platform-specific setup, first-run walkthrough, and usage scenarios.
+		[→ Getting Started](/en/getting-started/)
+	</Card>
+	<Card title="Architecture" icon="puzzle">
+		Three-domain model, handoff files, session isolation, and AGENT_RESULT protocol.
+		[→ Architecture](/en/architecture/)
+	</Card>
+	<Card title="Triage System" icon="list-format">
+		Four-tier plan selection logic and per-domain agent matrices.
+		[→ Triage System](/en/triage-system/)
+	</Card>
+	<Card title="Agents Reference" icon="open-book">
+		All 27 agents: responsibilities, inputs, outputs, and NEXT conditions.
+		[→ Agents Reference](/en/agents-reference/)
+	</Card>
+	<Card title="Rules Reference" icon="setting">
+		All behavior rules with scope, auto-load, and customization notes.
+		[→ Rules Reference](/en/rules-reference/)
+	</Card>
+	<Card title="Platform Guide" icon="laptop">
+		Claude Code, GitHub Copilot, and OpenAI Codex differences and limitations.
+		[→ Platform Guide](/en/platform-guide/)
+	</Card>
+</CardGrid>

@@ -30,13 +30,11 @@ export default defineConfig({
 	markdown: {
 		remarkPlugins: [remarkMermaid],
 	},
-	// Starlight のヘッダー左上の "Aphelion" ロゴ / タイトルは、現在のロケールの
-	// ルート (`/en`, `/ja`) にリンクするが、このサイトにはロケールルートに
-	// コンテンツがない (Home.md は `/en/home/` に配置される) ため 404 となる。
-	// ロケールルートアクセスを Home に固定リダイレクトする。
+	// サイトルート `/` は言語切替をサポートするため各ロケールの splash に委譲する。
+	// `/en` と `/ja` は Starlight が各ロケールの index.mdx を splash として配信する。
+	// 言語スイッチャーは同一スラッグのペア (`/en/` ↔ `/ja/`) 上でのみ機能する。
 	redirects: {
-		'/en': '/en/home/',
-		'/ja': '/ja/home/',
+		'/': '/en/',
 	},
 	integrations: [
 		starlight({
