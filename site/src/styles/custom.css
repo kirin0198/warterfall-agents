@@ -37,13 +37,18 @@
 /* Starlight の既定では hero 画像が 1:1 にクロップされ文字が切れるため、
  * public/hero.png を index.mdx の hero.image.html から直接参照して
  * Astro Image 最適化を回避し、CSS でアスペクト比と表示幅を制御する。
- * また周囲をソフトにフェードさせることでページ背景との色差を目立たなくする。 */
+ *
+ * 画像本体は黒背景に彩色コンテンツが載った形式。テーマ別に background を
+ * 差し替えず、mix-blend-mode で黒ピクセルをページ背景色に透過させる。
+ *   - screen: 下層 (page bg) の色を保持しつつ、image の黒を「抜く」。
+ *     light mode では白背景 → 黒抜けて自然に溶け込む。
+ *     dark mode では黒背景 → 黒抜けて同色に溶け込む (無変化に見える)。
+ */
 .aphelion-hero-img {
   width: 100%;
   max-width: 560px;
   height: auto;
   aspect-ratio: 4 / 3;
   object-fit: contain;
-  mask-image: radial-gradient(ellipse at center, black 60%, transparent 95%);
-  -webkit-mask-image: radial-gradient(ellipse at center, black 60%, transparent 95%);
+  mix-blend-mode: screen;
 }
