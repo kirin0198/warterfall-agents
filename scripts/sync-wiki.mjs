@@ -2,6 +2,7 @@
 // sync-wiki.mjs
 // docs/wiki/en/*.md と docs/wiki/ja/*.md を site/src/content/docs/{en,ja}/ にコピーし、
 // Starlight 互換の frontmatter (title, description) を自動付与するスクリプト。
+// docs/images/aphelion-logo.png も site/src/assets/logo.png に同期する。
 // Node.js 20+ ESM。外部依存なし。
 
 import * as fs from 'node:fs';
@@ -15,6 +16,8 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const WIKI_DIR = path.join(REPO_ROOT, 'docs', 'wiki');
 const DOCS_DIR = path.join(REPO_ROOT, 'site', 'src', 'content', 'docs');
+const LOGO_SRC = path.join(REPO_ROOT, 'docs', 'images', 'aphelion-logo.png');
+const LOGO_DEST = path.join(REPO_ROOT, 'site', 'src', 'assets', 'logo.png');
 
 /**
  * ファイル先頭の frontmatter ブロック (---\n...\n---) を抽出する。
@@ -186,9 +189,25 @@ function processFile(srcPath, destPath) {
 }
 
 /**
+ * ロゴ画像を docs/images/aphelion-logo.png から site/src/assets/logo.png にコピーする。
+ * Starlight 側のロゴと SSOT を一致させるため、毎ビルド時に上書きする。
+ */
+function syncLogo() {
+  if (!fs.existsSync(LOGO_SRC)) {
+    console.warn(`warn: logo source not found: ${LOGO_SRC}`);
+    return;
+  }
+  fs.mkdirSync(path.dirname(LOGO_DEST), { recursive: true });
+  fs.copyFileSync(LOGO_SRC, LOGO_DEST);
+  console.log(`\n[logo] ${path.relative(REPO_ROOT, LOGO_SRC)} → ${path.relative(REPO_ROOT, LOGO_DEST)}`);
+}
+
+/**
  * メイン処理: docs/wiki/{locale}/*.md をすべて処理して site/src/content/docs/{locale}/ に出力する。
  */
 function main() {
+  syncLogo();
+
   const locales = ['en', 'ja'];
 
   for (const locale of locales) {
