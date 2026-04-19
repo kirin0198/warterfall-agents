@@ -15,7 +15,7 @@
 - [x] TASK-002: Python版 と Node版 の出力差分ゼロを確認 | 対象ファイル: (検証のみ、コミットなし)
 
 ### Phase 3: package.json 新設
-- [ ] TASK-003: ルート package.json 作成 | 対象ファイル: package.json
+- [x] TASK-003: ルート package.json 作成 | 対象ファイル: package.json
 
 ### Phase 4: ドキュメント参照書換
 - [ ] TASK-004: python3 scripts/generate.py を node scripts/generate.mjs に置換 | 対象ファイル: README.md, README.ja.md, docs/wiki/en/*.md, docs/wiki/ja/*.md, docs/wiki/DESIGN.md, ISSUE.md, docs/issues/*.md
