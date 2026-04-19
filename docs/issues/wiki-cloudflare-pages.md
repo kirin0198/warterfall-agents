@@ -1,6 +1,7 @@
 > 最終更新: 2026-04-19
 > 更新履歴:
 >   - 2026-04-19: 初版作成（方針書。issue #TBD に対応）
+>   - 2026-04-19: prebuild フック追加によりビルドコマンド簡略化、Node 22 に更新 (Astro 6 要件)
 
 # Wiki を Cloudflare Pages で公開（MVP）
 
@@ -89,10 +90,10 @@ aphelion-agents/
 | 項目 | 値 |
 |------|---|
 | Framework preset | Astro |
-| Build command | `cd site && npm ci && node ../scripts/sync-wiki.mjs && npm run build` |
+| Build command | `cd site && npm ci && npm run build` |
 | Build output directory | `site/dist` |
 | Root directory | リポジトリルート（`/`） |
-| Node.js version | 20 |
+| Node.js version | 22 |
 | Environment variables | 現時点で不要 |
 
 `wrangler.toml` は作成しない（Pages ダッシュボード設定で完結させる）。

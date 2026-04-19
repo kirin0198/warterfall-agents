@@ -1,6 +1,6 @@
 # Local build environment for the Aphelion wiki site.
 # Cloudflare Pages does not use this Dockerfile — its build environment
-# is configured in the Pages dashboard (Framework preset: Astro, Node 20).
+# is configured in the Pages dashboard (Framework preset: Astro, Node 22 (Astro 6 要件)).
 # This container exists only to make local builds reproducible regardless
 # of the host Node.js version.
 
