@@ -1,40 +1,46 @@
 ---
-title: Welcome to Starlight
-description: Get started building your docs site with Starlight.
-template: splash # Remove or comment out this line to display the site sidebar on this page.
+title: Aphelion
+description: Multi-platform AI coding agent workflow — Discovery, Delivery, Operations in three independent domains.
+template: splash
 hero:
-  tagline: Congrats on setting up a new Starlight project!
-  image:
-    file: ../../assets/houston.webp
+  tagline: A structured multi-platform AI coding workflow for Claude Code, GitHub Copilot, and OpenAI Codex.
   actions:
-    - text: Example Guide
-      link: /guides/example/
+    - text: Get Started
+      link: /en/getting-started/
       icon: right-arrow
-    - text: Read the Starlight docs
-      link: https://starlight.astro.build
-      icon: external
+    - text: Architecture
+      link: /en/architecture/
+      icon: document
       variant: minimal
 ---
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-## Next steps
+## Explore the Documentation
 
 <CardGrid stagger>
-	<Card title="Update content" icon="pencil">
-		Edit `src/content/docs/index.mdx` to see this page change.
+	<Card title="Getting Started" icon="rocket">
+		Platform-specific setup, first-run walkthrough, and usage scenarios.
+		[→ Getting Started](/en/getting-started/)
 	</Card>
-	<Card title="Change page layout" icon="document">
-		Delete `template: splash` in `src/content/docs/index.mdx` to display a
-		sidebar on this page.
+	<Card title="Architecture" icon="puzzle">
+		Three-domain model, handoff files, session isolation, and AGENT_RESULT protocol.
+		[→ Architecture](/en/architecture/)
 	</Card>
-	<Card title="Add new content" icon="add-document">
-		Add Markdown or MDX files to `src/content/docs` to create new pages.
+	<Card title="Triage System" icon="list-format">
+		Four-tier plan selection logic and per-domain agent matrices.
+		[→ Triage System](/en/triage-system/)
 	</Card>
-	<Card title="Configure your site" icon="setting">
-		Edit your `sidebar` and other config in `astro.config.mjs`.
+	<Card title="Agents Reference" icon="open-book">
+		All 27 agents: responsibilities, inputs, outputs, and NEXT conditions.
+		[→ Agents Reference](/en/agents-reference/)
 	</Card>
-	<Card title="Read the docs" icon="open-book">
-		Learn more in [the Starlight Docs](https://starlight.astro.build/).
+	<Card title="Rules Reference" icon="setting">
+		All behavior rules with scope, auto-load, and customization notes.
+		[→ Rules Reference](/en/rules-reference/)
+	</Card>
+	<Card title="Platform Guide" icon="laptop">
+		Claude Code, GitHub Copilot, and OpenAI Codex differences and limitations.
+		[→ Platform Guide](/en/platform-guide/)
 	</Card>
 </CardGrid>
