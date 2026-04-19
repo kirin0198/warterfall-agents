@@ -15,17 +15,11 @@ export default defineConfig({
 				src: './src/assets/logo.png',
 			},
 			customCss: ['./src/styles/custom.css'],
-			head: [
-				{
-					tag: 'script',
-					attrs: { type: 'module' },
-					content: `
-import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/+esm';
-const theme = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'default';
-mermaid.initialize({ startOnLoad: true, theme, securityLevel: 'loose' });
-					`.trim(),
-				},
-			],
+			// mermaid 初期化は src/components/Head.astro で npm バンドルを使用。
+			// CDN 依存 (jsdelivr.net) と SRI なし読み込みを排除し、securityLevel を strict に変更。
+			components: {
+				Head: './src/components/Head.astro',
+			},
 			locales: {
 				en: {
 					label: 'English',
