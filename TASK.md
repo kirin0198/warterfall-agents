@@ -18,7 +18,7 @@
 - [x] TASK-003: rules-designer 挙動変更 | 対象ファイル: .claude/agents/rules-designer.md
 
 ### Phase 4
-- [ ] TASK-004: README / wiki / DESIGN.md ドキュメント更新 | 対象ファイル: README.md, README.ja.md, docs/wiki/**
+- [x] TASK-004: README / wiki / DESIGN.md ドキュメント更新 | 対象ファイル: README.md, README.ja.md, docs/wiki/**
 
 ### Phase 5
 - [ ] TASK-005: platforms 再生成 | 対象ファイル: platforms/copilot/**, platforms/codex/**
