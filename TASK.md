@@ -24,7 +24,7 @@
 - [x] TASK-005: platforms 再生成 | 対象ファイル: platforms/copilot/**, platforms/codex/**
 
 ### Phase 6
-- [ ] TASK-006: CHANGELOG.md に Unreleased エントリ追加 | 対象ファイル: CHANGELOG.md
+- [x] TASK-006: CHANGELOG.md に Unreleased エントリ追加 | 対象ファイル: CHANGELOG.md
 
 ## 直近のコミット
 （タスク完了のたびに git log --oneline -3 を記録する）
