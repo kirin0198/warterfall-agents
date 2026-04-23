@@ -14,7 +14,7 @@
 - [x] TASK-003: package-lock.json 削除 | 対象ファイル: package-lock.json
 
 ### Phase 2: 追加
-- [ ] TASK-004: package.json を npx github: 配布向けに簡素化 | 対象ファイル: package.json
+- [x] TASK-004: package.json を npx github: 配布向けに簡素化 | 対象ファイル: package.json
 - [ ] TASK-005: zero-deps mjs CLI 追加 (init/update + --user フラグ) | 対象ファイル: bin/aphelion-agents.mjs
 
 ### Phase 3: ドキュメント修正
