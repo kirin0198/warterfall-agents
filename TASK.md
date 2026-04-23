@@ -11,7 +11,7 @@
 ### Phase 1: 削除
 - [x] TASK-001: TypeScript ビルドチェーン設定ファイル削除 | 対象ファイル: tsconfig.json, tsup.config.ts, biome.json, vitest.config.ts
 - [x] TASK-002: 旧 TypeScript CLI ソース削除 | 対象ファイル: src/ 以下全て
-- [ ] TASK-003: package-lock.json 削除 | 対象ファイル: package-lock.json
+- [x] TASK-003: package-lock.json 削除 | 対象ファイル: package-lock.json
 
 ### Phase 2: 追加
 - [ ] TASK-004: package.json を npx github: 配布向けに簡素化 | 対象ファイル: package.json
