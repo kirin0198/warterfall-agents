@@ -45,6 +45,27 @@ Each orchestrator must `Read` this file at startup before beginning work.
 
 > **sandbox-runner placement in Operations Flow**: At Standard and above, `sandbox-runner` is placed before `db-ops`, `releaser`, and `observability`. This ensures that destructive DB operations and deployment commands pass through risk classification before execution.
 
+### Maintenance Flow Triage
+
+| Plan | Condition | Agents to Launch |
+|------|-----------|-----------------|
+| Patch | Bug fix / security patch / 1–3 files / no breaking change | change-classifier → analyst → developer → tester |
+| Minor | Feature addition / refactor / 4–10 files / no breaking change | + impact-analyzer → architect (differential mode) → reviewer |
+| Major | Breaking change / DB schema change / 11+ files / major SPEC impact | + security-auditor → handoff to delivery-flow |
+
+`security-auditor` is mandatory only for Major. Patch and Minor may skip it unless `trigger_type` is `security`.
+
+> **About maintenance-flow**: This is a fourth flow independent from Discovery/Delivery/Operations.
+> Triggered manually by the user via `/maintenance-flow` for existing-project maintenance tasks.
+> Patch/Minor complete standalone; Major hands off to delivery-flow via MAINTENANCE_RESULT.md.
+
+> **SPEC.md / ARCHITECTURE.md preconditions**: If either is missing at flow start,
+> `change-classifier` proposes inserting `codebase-analyzer` as Phase 0 (with user confirmation).
+
+> **Two mandatory HITL gates**: (1) After change-classifier — user approves the change plan and triage result.
+> (2) At flow completion — user confirms the final state before the flow ends. These gates are never skipped
+> even in auto-approve mode (they are logged but auto-confirmed).
+
 ---
 
 ## Sandbox Runner Auto-insertion
