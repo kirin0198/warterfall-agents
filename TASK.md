@@ -12,7 +12,7 @@
 - [x] TASK-001: .claude/orchestrator-rules.md 英語化 | 対象ファイル: .claude/orchestrator-rules.md
 
 ### Phase 2: commands/ 英語化（12ファイル一括）
-- [ ] TASK-002: .claude/commands/*.md 英語化 | 対象ファイル: .claude/commands/secrets-scan.md, vuln-scan.md, pm.md, maintenance-flow.md, discovery-flow.md, delivery-flow.md, operations-flow.md, analyst.md, reviewer.md, rules-designer.md, codebase-analyzer.md, tester.md
+- [x] TASK-002: .claude/commands/*.md 英語化 | 対象ファイル: .claude/commands/secrets-scan.md, vuln-scan.md, pm.md, maintenance-flow.md, discovery-flow.md, delivery-flow.md, operations-flow.md, analyst.md, reviewer.md, rules-designer.md, codebase-analyzer.md, tester.md
 
 ### Phase 3: agents/ オーケストレーター系（4件）
 - [ ] TASK-003: agents/ オーケストレーター英語化 | 対象ファイル: .claude/agents/discovery-flow.md, delivery-flow.md, operations-flow.md, maintenance-flow.md
