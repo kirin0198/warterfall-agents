@@ -1,8 +1,8 @@
 # アーキテクチャ
 
 > **Language**: [English](../en/Architecture.md) | [日本語](../ja/Architecture.md)
-> **Last updated**: 2026-04-19
-> **EN canonical**: 2026-04-19 of wiki/en/Architecture.md
+> **Last updated**: 2026-04-24
+> **EN canonical**: 2026-04-24 of wiki/en/Architecture.md
 > **Audience**: エージェント開発者
 
 このページではAphelionのアーキテクチャ設計を説明します：3ドメインモデル、セッション分離戦略、ハンドオフファイルスキーマ、PRODUCT_TYPE分岐、エージェント間通信プロトコル（AGENT_RESULT）について解説します。
@@ -35,12 +35,16 @@ flowchart LR
     DR["DISCOVERY_RESULT.md"]
     DLR["DELIVERY_RESULT.md"]
     OPR["OPS_RESULT.md"]
+    MR["MAINTENANCE_RESULT.md\n(Major only)"]
 
     Discovery["Discovery Flow\n(6 agents)"] -->|generates| DR
     DR -->|input for| Delivery["Delivery Flow\n(12 agents)"]
     Delivery -->|generates| DLR
     DLR -->|input for| Ops["Operations Flow\n(4 agents)\nservice only"]
     Ops -->|generates| OPR
+
+    Maintenance["Maintenance Flow\n(3 new agents + reuse)"] -->|Major| MR
+    MR -.->|handoff| Delivery
 ```
 
 **Discovery** は要件を探索・構造化し、`DISCOVERY_RESULT.md` を生成します。
@@ -48,6 +52,8 @@ flowchart LR
 **Delivery** は設計・実装・テスト・レビューを行い、`DELIVERY_RESULT.md` を生成します。
 
 **Operations** はインフラ構築・DB運用・運用計画を行い、`OPS_RESULT.md` を生成します。`PRODUCT_TYPE: service` の場合のみ実行されます。
+
+**Maintenance (独立した第 4 のフロー)** はバグ報告・CVE アラート・パフォーマンス劣化・既存プロジェクトの小規模機能追加を契機に起動します。`change-classifier` によって Patch / Minor / Major をトリアージします。Patch と Minor は単独で完結し、Major は `MAINTENANCE_RESULT.md` を生成して前処理フローとして Delivery Flow に引き渡します。詳細は [Maintenance フローのトリアージ](./Triage-System.md#maintenance-フローのトリアージ) を参照してください。
 
 ### 設計原則
 
@@ -82,6 +88,8 @@ flowchart LR
 [Operations](./Agents-Reference.md#operations-domain) ·
 [Standalone](./Agents-Reference.md#standalone-agents)
 
+Maintenance 関連エージェント (change-classifier, impact-analyzer, maintenance-flow) は 3 ドメインパイプラインから独立して起動されるため、上図では "Standalone" クラスタに含めて表示しています。各エージェントの詳細は [エージェントリファレンス → Maintenance](./Agents-Reference.md#maintenanceドメイン) を参照してください。
+
 ---
 
 ## セッション分離
@@ -108,12 +116,15 @@ flowchart LR
     DR["DISCOVERY_RESULT.md\n---\nPRODUCT_TYPE\nProject overview\nRequirements summary\nScope\nTechnical risks & constraints"]
     DLR["DELIVERY_RESULT.md\n---\nPRODUCT_TYPE\nArtifacts (SPEC/ARCH)\nTech stack\nTest results\nSecurity audit results"]
     OPR["OPS_RESULT.md\n---\nArtifact list\nDeploy readiness\nOpen issues"]
+    MR["MAINTENANCE_RESULT.md\n(Major only)\n---\nPRODUCT_TYPE\nImpact summary\nBreaking changes\nRegression risk"]
 
     scope-planner -->|generates| DR
     DR -->|read by| delivery-flow
     delivery-flow -->|generates| DLR
     DLR -->|read by| operations-flow
     operations-flow -->|generates| OPR
+    maintenance-flow -->|Major| MR
+    MR -.->|read by| delivery-flow
 ```
 
 ### DISCOVERY_RESULT.md
@@ -342,6 +353,13 @@ flowchart LR
         OLit["Light\n2 agents\nPaaS / single container"]
         OStd["Standard\n+db-ops\nAPI + DB architecture"]
         OFul["Full\n+observability\nHigh availability"]
+    end
+
+    subgraph Maintenance ["Maintenance Flow Triage"]
+        direction TB
+        MPat["Patch\n4 agents\nBug / CVE / 1–3 files"]
+        MMin["Minor\n7 agents\nFeature / refactor / 4–10 files"]
+        MMaj["Major\n→ delivery-flow\nBreaking / 11+ files"]
     end
 ```
 

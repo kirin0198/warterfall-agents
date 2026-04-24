@@ -1,7 +1,7 @@
 # Triage System
 
 > **Language**: [English](../en/Triage-System.md) | [日本語](../ja/Triage-System.md)
-> **Last updated**: 2026-04-18
+> **Last updated**: 2026-04-24
 > **Audience**: New users / Agent developers
 
 The Triage System automatically assesses project characteristics at flow start and selects the minimum set of agents needed. This page explains the 4-tier selection logic, conditions, and per-domain agent matrices.
@@ -13,6 +13,7 @@ The Triage System automatically assesses project characteristics at flow start a
 - [Discovery Flow Triage](#discovery-flow-triage)
 - [Delivery Flow Triage](#delivery-flow-triage)
 - [Operations Flow Triage](#operations-flow-triage)
+- [Maintenance Flow Triage](#maintenance-flow-triage)
 - [Mandatory Agents (Always Run)](#mandatory-agents-always-run)
 - [Conditional Agents (HAS_UI)](#conditional-agents-has_ui)
 - [Triage Assessment Questions](#triage-assessment-questions)
@@ -150,6 +151,58 @@ Operations Flow only runs for `PRODUCT_TYPE: service`. There is no Minimal plan 
 
 ---
 
+## Maintenance Flow Triage
+
+The Maintenance Flow is a **fourth flow independent from Discovery / Delivery / Operations**, invoked manually via `/maintenance-flow` for existing-project maintenance tasks (bug fixes, CVE responses, performance regressions, tech-debt cleanup, small feature extensions). Triage is performed by `change-classifier` based on **4 dimensions**: priority (P1–P4), estimated file count, breaking-change presence, and SPEC.md impact.
+
+| Plan | Trigger Condition | Agents Launched |
+|------|-----------------|----------------|
+| **Patch** | Bug fix / security patch / 1–3 files / no breaking change | `change-classifier` → `analyst` → `developer` → `tester` |
+| **Minor** | Feature addition / refactor / 4–10 files / no breaking change | + `impact-analyzer` → `architect` (differential mode) → `reviewer` |
+| **Major** | Breaking change / DB schema change / 11+ files / major SPEC impact | + `security-auditor` → handoff to `delivery-flow` via `MAINTENANCE_RESULT.md` |
+
+`security-auditor` is mandatory only for Major. Patch and Minor may skip it unless trigger type is `security`.
+
+### Maintenance Phase Sequence by Plan
+
+**Patch:**
+```
+Phase 1: Classification         → change-classifier → approval
+Phase 2: Issue creation         → analyst           → approval
+Phase 3: Implementation         → developer         → approval
+Phase 4: Test execution         → tester            → approval → done
+```
+
+**Minor:**
+```
+Phase 1: Classification         → change-classifier  → approval
+Phase 2: Impact analysis        → impact-analyzer    → approval
+Phase 3: Issue creation         → analyst            → approval
+Phase 4: Differential design    → architect          → approval
+Phase 5: Implementation         → developer          → approval
+Phase 6: Test execution         → tester             → approval
+Phase 7: Review                 → reviewer           → approval → done
+```
+
+**Major (handoff to delivery-flow):**
+```
+Phase 1: Classification         → change-classifier  → approval
+Phase 2: Impact analysis        → impact-analyzer    → approval
+Phase 3: Issue creation         → analyst            → approval
+Phase 4: Pre-audit              → security-auditor   → approval
+Phase 5: Handoff                → MAINTENANCE_RESULT.md → delivery-flow
+```
+
+### SPEC.md / ARCHITECTURE.md Preconditions
+
+If either is missing at flow start, `change-classifier` proposes inserting `codebase-analyzer` as Phase 0 with user confirmation. After `codebase-analyzer` generates the missing documents, `change-classifier` re-runs classification.
+
+### Handoff File (Major only)
+
+When the plan is Major, `maintenance-flow` generates `MAINTENANCE_RESULT.md` with fields compatible with `DISCOVERY_RESULT.md` (PRODUCT_TYPE, project overview, impact summary). This file is the handoff artifact for `delivery-flow`.
+
+---
+
 ## Mandatory Agents (Always Run)
 
 Certain agents run on **all plans** regardless of triage outcome:
@@ -224,4 +277,5 @@ HAS_UI: true
 - [.claude/agents/discovery-flow.md](../../.claude/agents/discovery-flow.md) — Discovery triage implementation
 - [.claude/agents/delivery-flow.md](../../.claude/agents/delivery-flow.md) — Delivery triage implementation
 - [.claude/agents/operations-flow.md](../../.claude/agents/operations-flow.md) — Operations triage implementation
+- [.claude/agents/maintenance-flow.md](../../.claude/agents/maintenance-flow.md) — Maintenance triage implementation
 - [.claude/rules/library-and-security-policy.md](../../.claude/rules/library-and-security-policy.md) — security-auditor mandatory rule

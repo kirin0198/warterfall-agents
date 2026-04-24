@@ -1,7 +1,7 @@
 # Aphelion Wiki
 
 > **Language**: [English](../en/Home.md) | [日本語](../ja/Home.md)
-> **Last updated**: 2026-04-18
+> **Last updated**: 2026-04-24
 > **Audience**: All users
 
 Welcome to the **Aphelion Wiki** — the detailed reference for the Aphelion multi-platform AI coding agent workflow.
@@ -19,7 +19,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | Project overview and motivation | [Architecture](./Architecture.md): 3-domain model and session isolation |
 | Quick Start commands | [Getting Started](./Getting-Started.md): per-platform setup, scenarios, troubleshooting |
 | Triage plan table (summary) | [Triage System](./Triage-System.md): selection logic, conditions, and agent matrices |
-| Agent list (names only) | [Agents Reference](./Agents-Reference.md): all 27 agents with inputs, outputs, and NEXT conditions |
+| Agent list (names only) | [Agents Reference](./Agents-Reference.md): all 29 agents across 4 flows with inputs, outputs, and NEXT conditions |
 | — | [Rules Reference](./Rules-Reference.md): 9 behavior rules with scope and customization notes |
 | Platform comparison table | [Platform Guide](./Platform-Guide.md): generation pipeline, constraints, and deployment |
 | — | [Contributing](./Contributing.md): how to add agents, rules, and platforms |
@@ -35,7 +35,7 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | [Getting Started](./Getting-Started.md) | Platform-specific setup, first run, usage scenarios, command reference | New users |
 | [Architecture](./Architecture.md) | 3-domain model, handoff files, session isolation, AGENT_RESULT protocol | Agent developers |
 | [Triage System](./Triage-System.md) | 4-tier plan selection logic, per-domain agent matrices, mandatory agents | All users |
-| [Agents Reference](./Agents-Reference.md) | All 27 agents: responsibility, inputs, outputs, NEXT conditions | Agent developers |
+| [Agents Reference](./Agents-Reference.md) | All 29 agents across Discovery / Delivery / Operations / Maintenance: responsibility, inputs, outputs, NEXT conditions | Agent developers |
 | [Rules Reference](./Rules-Reference.md) | All 9 behavior rules: scope, auto-load, interactions | Agent developers |
 | [Platform Guide](./Platform-Guide.md) | Claude Code / Copilot / Codex differences, generate.mjs pipeline | Platform porters |
 | [Contributing](./Contributing.md) | Adding agents, rules, platforms; bilingual sync workflow | Agent developers |
@@ -62,6 +62,12 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 2. Read [Architecture](./Architecture.md) — understand where the new agent fits
 3. Read [Rules Reference](./Rules-Reference.md) — understand which rules apply automatically
 
+### "I need to fix a bug or add a small feature to an existing project"
+
+1. Ensure your project has `SPEC.md` and `ARCHITECTURE.md` (if missing, run `/codebase-analyzer` first)
+2. Run `/maintenance-flow {trigger description}` — the orchestrator will triage into Patch / Minor / Major
+3. Read [Triage System → Maintenance Flow Triage](./Triage-System.md#maintenance-flow-triage) for details on what each plan includes
+
 ### "I want to use Aphelion on GitHub Copilot or OpenAI Codex"
 
 1. Read [Platform Guide](./Platform-Guide.md) — capability differences and limitations
@@ -86,6 +92,8 @@ Aphelion's README covers the quick start and an overview. This wiki provides the
 | **PRODUCT_TYPE** | Classification of the project artifact: service / tool / library / cli |
 | **HAS_UI** | Whether the project includes a user interface (affects which agents run) |
 | **Auto-approve mode** | Mode activated by `.aphelion-auto-approve` file; skips approval gates for automated evaluation |
+| **Maintenance Flow** | Fourth flow independent from the 3-domain pipeline; invoked via `/maintenance-flow` for existing-project maintenance (bugs, CVEs, refactors, small features). Triage: Patch / Minor / Major |
+| **MAINTENANCE_RESULT.md** | Handoff file generated only on Major plan; passed to Delivery Flow as a pre-processing stage |
 
 ---
 

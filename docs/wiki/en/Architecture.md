@@ -1,7 +1,7 @@
 # Architecture
 
 > **Language**: [English](../en/Architecture.md) | [日本語](../ja/Architecture.md)
-> **Last updated**: 2026-04-19
+> **Last updated**: 2026-04-24
 > **Audience**: Agent developers
 
 This page describes Aphelion's architectural design: the three-domain model, session isolation strategy, handoff file schemas, PRODUCT_TYPE branching, and the AGENT_RESULT inter-agent communication protocol.
@@ -34,12 +34,16 @@ flowchart LR
     DR["DISCOVERY_RESULT.md"]
     DLR["DELIVERY_RESULT.md"]
     OPR["OPS_RESULT.md"]
+    MR["MAINTENANCE_RESULT.md\n(Major only)"]
 
     Discovery["Discovery Flow\n(6 agents)"] -->|generates| DR
     DR -->|input for| Delivery["Delivery Flow\n(12 agents)"]
     Delivery -->|generates| DLR
     DLR -->|input for| Ops["Operations Flow\n(4 agents)\nservice only"]
     Ops -->|generates| OPR
+
+    Maintenance["Maintenance Flow\n(3 new agents + reuse)"] -->|Major| MR
+    MR -.->|handoff| Delivery
 ```
 
 **Discovery** explores and structures requirements, producing `DISCOVERY_RESULT.md`.
@@ -47,6 +51,8 @@ flowchart LR
 **Delivery** designs, implements, tests, and reviews, producing `DELIVERY_RESULT.md`.
 
 **Operations** builds infrastructure, database operations, and operations plans, producing `OPS_RESULT.md`. Only runs for `PRODUCT_TYPE: service`.
+
+**Maintenance (fourth flow, independent)** triggers on bugs, CVE alerts, performance regressions, or small feature requests for existing projects. Performs Patch / Minor / Major triage via `change-classifier`. Patch and Minor complete independently; Major generates `MAINTENANCE_RESULT.md` and hands off to Delivery Flow as a pre-processing stage. See [Maintenance Flow Triage](./Triage-System.md#maintenance-flow-triage) for details.
 
 ### Design Principles
 
@@ -79,6 +85,8 @@ Per-domain details:
 [Operations](./Agents-Reference.md#operations-domain) ·
 [Standalone](./Agents-Reference.md#standalone-agents)
 
+Maintenance-flow agents (change-classifier, impact-analyzer, maintenance-flow) appear under the "Standalone" cluster above because they are invoked independently of the primary 3-domain pipeline. See [Agents Reference → Maintenance](./Agents-Reference.md#maintenance-domain) for their full specs.
+
 ---
 
 ## Session Isolation
@@ -103,12 +111,15 @@ flowchart LR
     DR["DISCOVERY_RESULT.md\n---\nPRODUCT_TYPE\nProject overview\nRequirements summary\nScope\nTechnical risks & constraints"]
     DLR["DELIVERY_RESULT.md\n---\nPRODUCT_TYPE\nArtifacts (SPEC/ARCH)\nTech stack\nTest results\nSecurity audit results"]
     OPR["OPS_RESULT.md\n---\nArtifact list\nDeploy readiness\nOpen issues"]
+    MR["MAINTENANCE_RESULT.md\n(Major only)\n---\nPRODUCT_TYPE\nImpact summary\nBreaking changes\nRegression risk"]
 
     scope-planner -->|generates| DR
     DR -->|read by| delivery-flow
     delivery-flow -->|generates| DLR
     DLR -->|read by| operations-flow
     operations-flow -->|generates| OPR
+    maintenance-flow -->|Major| MR
+    MR -.->|read by| delivery-flow
 ```
 
 ### DISCOVERY_RESULT.md
@@ -335,6 +346,13 @@ flowchart LR
         OLit["Light\n2 agents\nPaaS / single container"]
         OStd["Standard\n+db-ops\nAPI + DB architecture"]
         OFul["Full\n+observability\nHigh availability"]
+    end
+
+    subgraph Maintenance ["Maintenance Flow Triage"]
+        direction TB
+        MPat["Patch\n4 agents\nBug / CVE / 1–3 files"]
+        MMin["Minor\n7 agents\nFeature / refactor / 4–10 files"]
+        MMaj["Major\n→ delivery-flow\nBreaking / 11+ files"]
     end
 ```
 
