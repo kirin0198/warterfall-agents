@@ -1,7 +1,9 @@
 # Aphelion Workflow Common Rules
 
-> **Last updated**: 2026-04-23
+> **Last updated**: 2026-04-24
 > **Auto-loaded**: Yes — placed in `.claude/rules/`, loaded by Claude Code on every session start
+> 更新履歴:
+>   - 2026-04-24: Maintenance Flow (第4フロー) を追加
 
 This file provides a high-level overview of the Aphelion workflow.
 Behavioral rules are defined in `.claude/rules/` (auto-loaded).
@@ -12,7 +14,7 @@ Agent-specific rules are documented in the individual files under `.github/agent
 
 ## Aphelion Workflow Model
 
-Aphelion divides the entire project lifecycle into three domains — **Discovery (requirements exploration) → Delivery (design & implementation) → Operations (deploy & operations)** — each managed by an independent orchestrator (flow).
+Aphelion divides the entire project lifecycle into three primary domains — **Discovery (requirements exploration) → Delivery (design & implementation) → Operations (deploy & operations)** — plus an independent **Maintenance** flow for changes to existing projects. Each domain is managed by an independent orchestrator (flow).
 
 ### Design Principles
 
@@ -28,14 +30,24 @@ Aphelion divides the entire project lifecycle into three domains — **Discovery
 Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVERY_RESULT.md]──▶ Operations Flow
  (requirements)                         (design & impl)                       (deploy & ops)
  6 agents                               12 agents                              4 agents
+
+                    Maintenance Flow ──[MAINTENANCE_RESULT.md]──▶ Delivery Flow (Major only)
+                    (existing project maintenance)
+                    3 new agents + reuse (analyst, architect, developer, tester,
+                                          reviewer, security-auditor, codebase-analyzer)
 ```
+
+**Maintenance Flow (new)**: Triggered by bug reports, CVE alerts, performance regressions,
+tech debt, or small feature requests on existing projects with SPEC.md/ARCHITECTURE.md.
+Performs Patch/Minor/Major triage and completes independently for Patch/Minor.
+Major handoff targets Delivery Flow as a pre-processing stage.
 
 ### Branching by Product Type
 
-| PRODUCT_TYPE | Discovery | Delivery | Operations |
-|-------------|-----------|----------|------------|
-| `service` | Run | Run | Run |
-| `tool` / `library` / `cli` | Run | Run | **Skip** |
+| PRODUCT_TYPE | Discovery | Delivery | Maintenance | Operations |
+|-------------|-----------|----------|-------------|------------|
+| `service` | Run | Run | Run (for maintenance) | Run |
+| `tool` / `library` / `cli` | Run | Run | Run (for maintenance) | **Skip** |
 
 ---
 

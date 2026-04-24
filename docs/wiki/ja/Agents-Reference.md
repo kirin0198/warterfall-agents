@@ -1,11 +1,11 @@
 # エージェントリファレンス
 
 > **Language**: [English](../en/Agents-Reference.md) | [日本語](../ja/Agents-Reference.md)
-> **Last updated**: 2026-04-18
-> **EN canonical**: 2026-04-18 of wiki/en/Agents-Reference.md
+> **Last updated**: 2026-04-24
+> **EN canonical**: 2026-04-24 of wiki/en/Agents-Reference.md
 > **Audience**: エージェント開発者
 
-このページはAphelionの27エージェントと4つのフローオーケストレーター全体のコンパクトなリファレンスを提供します。各エントリは標準スキーマに従っています：正規ファイルリンク、ドメイン、責務、入力、出力、AGENT_RESTULTフィールド、NEXT条件。
+このページは Aphelion の 29 エージェントと 4 つのフローオーケストレーター (Maintenance Flow を含む) 全体のコンパクトなリファレンスを提供します。各エントリは標準スキーマに従っています：正規ファイルリンク、ドメイン、責務、入力、出力、AGENT_RESTULTフィールド、NEXT条件。
 
 各エージェントの詳細については、**正規**リンクから`.claude/agents/`のソースファイルを参照してください。
 
@@ -15,6 +15,7 @@
 - [Discoveryドメイン（6エージェント）](#discoveryドメイン)
 - [Deliveryドメイン（12エージェント）](#deliveryドメイン)
 - [Operationsドメイン（4エージェント）](#operationsドメイン)
+- [Maintenanceドメイン（2エージェント）](#maintenanceドメイン)
 - [セーフティエージェント（1エージェント）](#セーフティエージェント)
 - [スタンドアロンエージェント（2エージェント）](#スタンドアロンエージェント)
 - [関連ページ](#関連ページ)
@@ -55,6 +56,18 @@
 - **出力**: OPS_RESULT.md、Dockerfile、docker-compose.yml、CI/CDパイプライン、DB_OPS.md、OBSERVABILITY.md、OPS_PLAN.md
 - **AGENT_RESTULTフィールド**: N/A
 - **NEXT条件**: フロー完了（ユーザーがデプロイを処理）
+
+### maintenance-flow
+
+- **正規**: [.claude/agents/maintenance-flow.md](../../.claude/agents/maintenance-flow.md)
+- **ドメイン**: オーケストレーター (Maintenance — 第 4 のフロー)
+- **責務**: 既存プロジェクトの保守ライフサイクルを管理します。トリガー (バグ / CVE / パフォーマンス / 技術的負債 / 機能追加) を受け取り、`change-classifier` で Patch / Minor / Major のトリアージを行い、対応するエージェントを順次起動します。Patch と Minor は単独完結、Major は `MAINTENANCE_RESULT.md` を生成して delivery-flow に引き渡します。
+- **入力**: ユーザーが指定するトリガー情報 (ログエラー / CVE 通知 / 機能要望 等)、SPEC.md、ARCHITECTURE.md
+- **出力**: GitHub issue、PR、テスト結果。Major のみ `MAINTENANCE_RESULT.md` を生成
+- **AGENT_RESTULTフィールド**: Patch/Minor は N/A (PR + issue で報告)。Major のみ: `PLAN`、`MAINTENANCE_RESULT`、`HANDOFF_TO`
+- **NEXT 条件**:
+  - Patch / Minor 完了 → `done`
+  - Major 完了 → `delivery-flow` (ユーザーが `MAINTENANCE_RESULT.md` を確認後に `/delivery-flow` を手動実行)
 
 ---
 
@@ -331,6 +344,35 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 
 ---
 
+## Maintenanceドメイン
+
+Maintenance ドメイン (3 エージェント + オーケストレーター) はバグ修正・CVE 対応・パフォーマンス改善・技術的負債解消・既存機能の小規模拡張を担当します。オーケストレーターは [フローオーケストレーター](#フローオーケストレーター) セクションに記載しています。本セクションではそれを支える 2 つのエージェントを説明します。
+
+### change-classifier
+
+- **正規**: [.claude/agents/change-classifier.md](../../.claude/agents/change-classifier.md)
+- **ドメイン**: Maintenance
+- **責務**: 入ってきた保守トリガーを Patch / Minor / Major プランに分類し、P1–P4 の緊急度スコアリングを行います。トリガー種別 (bug / feature / tech_debt / performance / security) を識別し、影響ファイル数を推定し、破壊的変更を検出し、SPEC.md への影響度を評価します。SPEC.md / ARCHITECTURE.md の有無を確認し、不在時は codebase-analyzer の起動を提案します。
+- **入力**: ユーザーのトリガー説明、SPEC.md、ARCHITECTURE.md、パッケージメタ情報 (package.json / pyproject.toml)
+- **出力**: 構造化された分類結果 (テキスト)
+- **AGENT_RESTULTフィールド**: `TRIGGER_TYPE`、`PLAN`、`PRIORITY`、`ESTIMATED_FILES`、`BREAKING_CHANGE`、`SPEC_IMPACT`、`DOCS_PRESENT`、`REQUIRES_CODEBASE_ANALYZER`、`RATIONALE`
+- **NEXT 条件**:
+  - `REQUIRES_CODEBASE_ANALYZER: true` → `codebase-analyzer` (完了後に change-classifier を再実行)
+  - `PLAN: Patch` → `analyst` (impact-analyzer はスキップ)
+  - `PLAN: Minor` / `Major` → `impact-analyzer`
+
+### impact-analyzer
+
+- **正規**: [.claude/agents/impact-analyzer.md](../../.claude/agents/impact-analyzer.md)
+- **ドメイン**: Maintenance
+- **責務**: 変更対象ファイルを具体的に特定し、依存グラフをたどります。破壊的 API / DB スキーマ変更を検出し、リグレッションリスク (low / medium / high) を評価し、推奨テスト範囲 (unit / integration / e2e) を提示します。
+- **入力**: `change-classifier` の AGENT_RESULT、ユーザーのトリガー説明、SPEC.md、ARCHITECTURE.md
+- **出力**: 影響レポート (テキスト)。対象ファイル・依存ファイル・破壊的変更・リグレッション評価を含む
+- **AGENT_RESTULTフィールド**: `TARGET_FILES`、`DEPENDENCY_FILES`、`BREAKING_API_CHANGES`、`DB_SCHEMA_CHANGES`、`REGRESSION_RISK`、`RECOMMENDED_TEST_SCOPE`、`IMPACT_SUMMARY`
+- **NEXT 条件**: `analyst` (常に。Minor / Major いずれでも analyst が次。プランの差は analyst 以降のフェーズ構成に現れる)
+
+---
+
 ## セーフティエージェント
 
 これらのエージェントは他のエージェント全体にセーフティポリシーを適用します。オーケストレーターから自動的に挿入されることも、Bashを持つ任意のエージェントから明示的に委譲されることもあります。
@@ -390,5 +432,5 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 
 ## 正規ソース
 
-- [.claude/agents/](../../.claude/agents/) — 27エージェント定義ファイル全体（権威あるソース）
+- [.claude/agents/](../../.claude/agents/) — エージェント定義ファイル全体（権威あるソース）
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — フローオーケストレータールールとトリアージ

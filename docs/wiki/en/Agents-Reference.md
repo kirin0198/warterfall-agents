@@ -1,10 +1,10 @@
 # Agents Reference
 
 > **Language**: [English](../en/Agents-Reference.md) | [日本語](../ja/Agents-Reference.md)
-> **Last updated**: 2026-04-18
+> **Last updated**: 2026-04-24
 > **Audience**: Agent developers
 
-This page provides a compact reference for all 27 Aphelion agents plus the 4 flow orchestrators. Each entry follows a standard schema: canonical file link, domain, responsibility, inputs, outputs, AGENT_RESULT fields, and NEXT conditions.
+This page provides a compact reference for all 29 Aphelion agents plus the 4 flow orchestrators (including the Maintenance Flow fourth orchestrator). Each entry follows a standard schema: canonical file link, domain, responsibility, inputs, outputs, AGENT_RESULT fields, and NEXT conditions.
 
 For full details on any agent, follow the **Canonical** link to the source file in `.claude/agents/`.
 
@@ -14,6 +14,7 @@ For full details on any agent, follow the **Canonical** link to the source file 
 - [Discovery Domain (6 agents)](#discovery-domain)
 - [Delivery Domain (12 agents)](#delivery-domain)
 - [Operations Domain (4 agents)](#operations-domain)
+- [Maintenance Domain (2 agents)](#maintenance-domain)
 - [Safety Agents (1 agent)](#safety-agents)
 - [Standalone Agents (2 agents)](#standalone-agents)
 - [Related Pages](#related-pages)
@@ -54,6 +55,18 @@ Flow orchestrators manage entire domains. They are not triage-selected agents bu
 - **Outputs**: OPS_RESULT.md, Dockerfile, docker-compose.yml, CI/CD pipeline, DB_OPS.md, OBSERVABILITY.md, OPS_PLAN.md
 - **AGENT_RESULT fields**: N/A
 - **NEXT conditions**: Flow complete (user handles deployment)
+
+### maintenance-flow
+
+- **Canonical**: [.claude/agents/maintenance-flow.md](../../.claude/agents/maintenance-flow.md)
+- **Domain**: Orchestrator (Maintenance — fourth flow)
+- **Responsibility**: Manages the maintenance lifecycle for existing projects. Receives a trigger (bug / CVE / performance / tech-debt / feature), performs Patch / Minor / Major triage via `change-classifier`, and launches the appropriate agent sequence. Patch and Minor complete standalone; Major generates `MAINTENANCE_RESULT.md` and hands off to delivery-flow.
+- **Inputs**: User-supplied trigger description (log error, CVE notice, feature request, etc.), SPEC.md, ARCHITECTURE.md
+- **Outputs**: GitHub issue, PR, test results; Major also produces `MAINTENANCE_RESULT.md`
+- **AGENT_RESULT fields**: N/A for Patch/Minor (orchestrator reports via PR + issue). For Major: `PLAN`, `MAINTENANCE_RESULT`, `HANDOFF_TO`
+- **NEXT conditions**:
+  - Patch / Minor completion → `done`
+  - Major completion → `delivery-flow` (user runs `/delivery-flow` manually after reviewing `MAINTENANCE_RESULT.md`)
 
 ---
 
@@ -330,6 +343,35 @@ The Operations domain (4 agents) handles deployment infrastructure and operation
 
 ---
 
+## Maintenance Domain
+
+The Maintenance domain (3 agents + orchestrator) handles bug fixes, CVE responses, performance improvements, tech-debt cleanup, and small feature extensions on existing projects. The orchestrator is documented under [Flow Orchestrators](#flow-orchestrators); the two supporting agents are described here.
+
+### change-classifier
+
+- **Canonical**: [.claude/agents/change-classifier.md](../../.claude/agents/change-classifier.md)
+- **Domain**: Maintenance
+- **Responsibility**: Classifies an incoming maintenance trigger into Patch / Minor / Major plan with P1–P4 priority scoring. Identifies trigger type (bug / feature / tech_debt / performance / security), estimates file impact, detects breaking changes, and assesses SPEC.md impact. Checks for SPEC.md / ARCHITECTURE.md presence and proposes codebase-analyzer if missing.
+- **Inputs**: User's trigger description, SPEC.md, ARCHITECTURE.md, package metadata (package.json / pyproject.toml)
+- **Outputs**: Structured classification output (text)
+- **AGENT_RESULT fields**: `TRIGGER_TYPE`, `PLAN`, `PRIORITY`, `ESTIMATED_FILES`, `BREAKING_CHANGE`, `SPEC_IMPACT`, `DOCS_PRESENT`, `REQUIRES_CODEBASE_ANALYZER`, `RATIONALE`
+- **NEXT conditions**:
+  - `REQUIRES_CODEBASE_ANALYZER: true` → `codebase-analyzer` (re-runs change-classifier after)
+  - `PLAN: Patch` → `analyst` (skips impact-analyzer)
+  - `PLAN: Minor` / `Major` → `impact-analyzer`
+
+### impact-analyzer
+
+- **Canonical**: [.claude/agents/impact-analyzer.md](../../.claude/agents/impact-analyzer.md)
+- **Domain**: Maintenance
+- **Responsibility**: Identifies the concrete set of files to change and traces the dependency graph. Detects breaking API / DB schema changes, assesses regression risk (low / medium / high), and recommends test scope (unit / integration / e2e).
+- **Inputs**: `change-classifier` AGENT_RESULT, user's trigger description, SPEC.md, ARCHITECTURE.md
+- **Outputs**: Impact report (text) with target files, dependency files, breaking changes, regression assessment
+- **AGENT_RESULT fields**: `TARGET_FILES`, `DEPENDENCY_FILES`, `BREAKING_API_CHANGES`, `DB_SCHEMA_CHANGES`, `REGRESSION_RISK`, `RECOMMENDED_TEST_SCOPE`, `IMPACT_SUMMARY`
+- **NEXT conditions**: `analyst` (always, regardless of Minor/Major plan; the plan only affects what happens *after* analyst)
+
+---
+
 ## Safety Agents
 
 These agents enforce safety policies across other agents. They may be invoked automatically by orchestrators or explicitly delegated from any Bash-owning agent.
@@ -389,5 +431,5 @@ These two agents operate outside the triage system, invoked directly by the user
 
 ## Canonical Sources
 
-- [.claude/agents/](../../.claude/agents/) — All 27 agent definition files (authoritative source)
+- [.claude/agents/](../../.claude/agents/) — All agent definition files (authoritative source)
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Flow orchestrator rules and triage
