@@ -3,7 +3,7 @@
 > 参照元: Issue #32 Phase 2 (2026-04-24)
 
 ## フェーズ: agent definitions 英語化
-最終更新: 2026-04-24
+最終更新: 2026-04-24T(TASK-005完了)
 ステータス: 進行中
 
 ## タスク一覧
@@ -21,7 +21,7 @@
 - [x] TASK-004: agents/ Discovery系英語化 | 対象ファイル: .claude/agents/interviewer.md, researcher.md, poc-engineer.md, concept-validator.md, rules-designer.md, scope-planner.md
 
 ### Phase 5: agents/ Delivery系（12件）
-- [ ] TASK-005: agents/ Delivery系英語化 | 対象ファイル: .claude/agents/spec-designer.md, architect.md, scaffolder.md, ux-designer.md, developer.md, test-designer.md, e2e-test-designer.md, tester.md, security-auditor.md, reviewer.md, doc-writer.md, releaser.md
+- [x] TASK-005: agents/ Delivery系英語化 | 対象ファイル: .claude/agents/spec-designer.md, architect.md, scaffolder.md, ux-designer.md, developer.md, test-designer.md, e2e-test-designer.md, tester.md, security-auditor.md, reviewer.md, doc-writer.md, releaser.md
 
 ### Phase 6: agents/ Operations系（4件）
 - [ ] TASK-006: agents/ Operations系英語化 | 対象ファイル: .claude/agents/infra-builder.md, db-ops.md, observability.md, ops-planner.md
@@ -30,7 +30,9 @@
 - [ ] TASK-007: agents/ Maintenance+Standalone系英語化 | 対象ファイル: .claude/agents/change-classifier.md, impact-analyzer.md, analyst.md, codebase-analyzer.md
 
 ## 直近のコミット
-（タスク完了のたびに git log --oneline -3 を記録する）
+ac1d723 refactor: translate Discovery agent definitions to English (TASK-004)
+e8b709c refactor: translate orchestrator agent definitions to English (TASK-003)
+d7404e0 refactor: translate commands/*.md to English (TASK-002)
 
 ## 中断時のメモ
 （セッション中断時に状況をここに記録する）
