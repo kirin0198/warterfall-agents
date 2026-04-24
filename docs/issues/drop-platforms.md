@@ -111,22 +111,22 @@ option of re-adding platform exports without a rewrite.
 
 ---
 
-## 3. Decisions to Make (unresolved — pending user sign-off)
+## 3. Decisions to Make
 
-Listed with the analyst's recommendation in bold.
+Listed with the analyst's recommendation in bold and user decision recorded.
 
-| # | Decision | Options | Recommendation |
-|---|----------|---------|----------------|
-| D1 | Fate of `platforms/` directory | (a) physical delete, (b) keep as "legacy snapshot" | **(a) delete**. History remains in git. |
-| D2 | Fate of `scripts/generate.mjs` | (a) delete, (b) keep minimized, (c) split residual logic | **(a) delete**. No residual logic (see §4). |
-| D3 | Fate of `docs/wiki/{en,ja}/Platform-Guide.md` | (a) delete, (b) replace with "deprecated" stub | **(a) delete**. A stub keeps confusion alive. |
-| D4 | `sandbox-policy.md` platform detection | (a) keep, (b) simplify to Claude Code only | **(a) keep** (see ADR-003). |
-| D5 | Back-compat tag for last multi-platform commit | (a) no tag, (b) tag `v0.1.0-multiplatform`, (c) tag a new branch | **(a) no tag**. git log + PR #34 are sufficient anchors. |
-| D6 | PR split strategy | (a) single PR, (b) two PRs (deletion + docs), (c) three PRs | **(b) two PRs** — see §7. |
-| D7 | `wiki/DESIGN.md` "8 pages" principle | (a) revise to 7, (b) keep 8 and treat Platform-Guide as a reserved slot | **(a) revise to 7** (see ADR-005). |
-| D8 | `package.json` `description` field | Current: *"AI coding agent definitions for Claude Code, GitHub Copilot, and OpenAI Codex"* | Replace with **"AI coding agent definitions for Claude Code — Discovery, Delivery, Operations workflow."** |
-| D9 | CHANGELOG entry wording | Unreleased section heading | **"Changed — dropped GitHub Copilot / OpenAI Codex exports; project is now Claude Code only."** |
-| D10 | Communication to existing Copilot/Codex users | (a) none, (b) GitHub Discussion / Release notes | **(b)**: add a note in the release notes referencing the last commit SHA that still contains `platforms/`. |
+| # | Decision | Options | Recommendation | User decision (2026-04-25) |
+|---|----------|---------|----------------|---------------------------|
+| D1 | Fate of `platforms/` directory | (a) physical delete, (b) keep as "legacy snapshot" | **(a) delete**. History remains in git. | **Yes — full deletion** |
+| D2 | Fate of `scripts/generate.mjs` | (a) delete, (b) keep minimized, (c) split residual logic | **(a) delete**. No residual logic (see §4). | **Yes — delete** |
+| D3 | Fate of `docs/wiki/{en,ja}/Platform-Guide.md` | (a) delete, (b) replace with "deprecated" stub | **(a) delete**. A stub keeps confusion alive. | **Yes — delete** (Q1=Yes covers D1-D3) |
+| D4 | `sandbox-policy.md` platform detection | (a) keep, (b) simplify to Claude Code only | **(a) keep** (see ADR-003). | **No — simplify to Claude Code only** (Q2 overrides ADR-003 recommendation) |
+| D5 | Back-compat tag for last multi-platform commit | (a) no tag, (b) tag `v0.1.0-multiplatform`, (c) tag a new branch | **(a) no tag**. git log + PR #34 are sufficient anchors. | **Yes — no tag** |
+| D6 | PR split strategy | (a) single PR, (b) two PRs (deletion + docs), (c) three PRs | **(b) two PRs** — see §7. | **Yes — two PRs** |
+| D7 | `wiki/DESIGN.md` "8 pages" principle | (a) revise to 7, (b) keep 8 and treat Platform-Guide as a reserved slot | **(a) revise to 7** (see ADR-005). | **Yes — revise to 7** |
+| D8 | `package.json` `description` field | Current: *"AI coding agent definitions for Claude Code, GitHub Copilot, and OpenAI Codex"* | Replace with **"AI coding agent definitions for Claude Code — Discovery, Delivery, Operations workflow."** | **Option B — `"AI coding agent definitions for Claude Code."`** |
+| D9 | CHANGELOG entry wording | Unreleased section heading | **"Changed — dropped GitHub Copilot / OpenAI Codex exports; project is now Claude Code only."** | **Accepted** |
+| D10 | Communication to existing Copilot/Codex users | (a) none, (b) GitHub Discussion / Release notes | **(b)**: add a note in the release notes referencing the last commit SHA that still contains `platforms/`. | **Yes — release notes with last SHA** |
 
 ---
 
@@ -437,19 +437,33 @@ The executing `developer` should verify, after edits:
 
 ---
 
-## 11. Open Questions (awaiting user response)
+## 11. Open Questions (resolved — sign-off recorded 2026-04-25)
 
-Because sub-agents cannot call `AskUserQuestion`, the following are listed here for explicit
-approval in the user's reply:
+Because sub-agents cannot call `AskUserQuestion`, the following were listed here for explicit
+approval in the user's reply. All questions have been answered via AskUserQuestion (main session).
 
 - Q1 (D1-D3 confirmation): Accept full deletion of `platforms/`, `scripts/generate.mjs`, and
-  `Platform-Guide.md` pair? **(analyst recommends yes)**
-- Q2 (D4): Keep sandbox-policy platform detection as-is? **(yes)**
-- Q3 (D5, D6, D10): No tag; two PRs; release-notes pointer — accept as a bundle? **(yes)**
+  `Platform-Guide.md` pair? **→ Yes (full deletion)**
+- Q2 (D4): Keep sandbox-policy platform detection as-is? **→ No — simplify to Claude Code only**
+  (deviates from ADR-003 recommendation; see §11.1)
+- Q3 (D5, D6, D10): No tag; two PRs; release-notes pointer — accept as a bundle? **→ Yes**
 - Q4 (D8): Accept the proposed `package.json` `description` replacement string?
+  **→ Option B — `"AI coding agent definitions for Claude Code."`**
 - Q5: Any objection to revising wiki DESIGN.md's "8-page principle" to 7 pages (ADR-005)?
+  **→ Yes (no objection — revise to 7 pages)**
 - Q6: Should this planning document itself be amended in a later commit with the user's sign-off
   notes, or is the GitHub Issue (see §12) the canonical sign-off record?
+  **→ Option B — amend this planning document with sign-off notes**
+
+## 11.1 Sign-off record
+
+- **Date approved**: 2026-04-25
+- **Approver**: kirin0198 (user)
+- **Approval channel**: AskUserQuestion (main session, interactive CLI)
+- **Approved deviation**: Q2 — ADR-003 recommended keeping `sandbox-policy.md` platform detection
+  logic unchanged (4-way detection: claude_code / copilot / codex / unknown). User overrode this
+  recommendation and selected "simplify to Claude Code only". The Isolation Mode Decision Tree and
+  Platform Detection Method section are to be simplified to Claude Code–only in PR 1.
 
 ---
 

@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Dropped GitHub Copilot / OpenAI Codex exports; project is now Claude Code only.
+  Removed `platforms/` directory (35 files, ~468 KiB), `scripts/generate.mjs`, and the Platform-Guide wiki page.
+  Historical multi-platform content remains accessible in git history up to commit `0ebd78e`
+  ("feat: design /maintenance-flow (4th flow for existing-project maintenance)").
+- `sandbox-policy.md` simplified to Claude Code–only: removed 4-way platform detection
+  (claude_code / copilot / codex / unknown), removed `advisory_only` sandbox mode.
 - `.claude/CLAUDE.md` moved to `.claude/rules/aphelion-overview.md` with auto-load header; the Aphelion workflow overview is now part of the auto-loaded rules collection
 - `rules-designer` now writes project-specific rules to `.claude/rules/project-rules.md` instead of the project root `CLAUDE.md`
 
