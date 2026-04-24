@@ -15,7 +15,7 @@
 - [x] TASK-002: .claude/commands/*.md 英語化 | 対象ファイル: .claude/commands/secrets-scan.md, vuln-scan.md, pm.md, maintenance-flow.md, discovery-flow.md, delivery-flow.md, operations-flow.md, analyst.md, reviewer.md, rules-designer.md, codebase-analyzer.md, tester.md
 
 ### Phase 3: agents/ オーケストレーター系（4件）
-- [ ] TASK-003: agents/ オーケストレーター英語化 | 対象ファイル: .claude/agents/discovery-flow.md, delivery-flow.md, operations-flow.md, maintenance-flow.md
+- [x] TASK-003: agents/ オーケストレーター英語化 | 対象ファイル: .claude/agents/discovery-flow.md, delivery-flow.md, operations-flow.md, maintenance-flow.md
 
 ### Phase 4: agents/ Discovery系（6件）
 - [ ] TASK-004: agents/ Discovery系英語化 | 対象ファイル: .claude/agents/interviewer.md, researcher.md, poc-engineer.md, concept-validator.md, rules-designer.md, scope-planner.md
