@@ -24,7 +24,7 @@
 - [x] TASK-005: agents/ Delivery系英語化 | 対象ファイル: .claude/agents/spec-designer.md, architect.md, scaffolder.md, ux-designer.md, developer.md, test-designer.md, e2e-test-designer.md, tester.md, security-auditor.md, reviewer.md, doc-writer.md, releaser.md
 
 ### Phase 6: agents/ Operations系（4件）
-- [ ] TASK-006: agents/ Operations系英語化 | 対象ファイル: .claude/agents/infra-builder.md, db-ops.md, observability.md, ops-planner.md
+- [x] TASK-006: agents/ Operations系英語化 | 対象ファイル: .claude/agents/infra-builder.md, db-ops.md, observability.md, ops-planner.md
 
 ### Phase 7: agents/ Maintenance+Standalone系（4件）
 - [ ] TASK-007: agents/ Maintenance+Standalone系英語化 | 対象ファイル: .claude/agents/change-classifier.md, impact-analyzer.md, analyst.md, codebase-analyzer.md
