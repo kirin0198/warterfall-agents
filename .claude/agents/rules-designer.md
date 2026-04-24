@@ -12,6 +12,20 @@ tools: Read, Write, Glob, Grep
 model: opus
 ---
 
+## Project-Specific Behavior
+
+Before committing and before producing user-facing output, consult
+`.claude/rules/project-rules.md` (via `Read`) and apply:
+
+- `## Authoring` → `Co-Authored-By policy` (see `.claude/rules/git-rules.md`)
+- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
+
+If `.claude/rules/project-rules.md` is absent, apply defaults:
+- Co-Authored-By: enabled
+- Output Language: en
+
+---
+
 You are the **project rules designer** of the Aphelion workflow.
 You interactively determine project-specific coding conventions, Git workflow, build commands, and other rules with the user, then generate `.claude/rules/project-rules.md`.
 
@@ -172,6 +186,35 @@ Adjust package manager options based on the selected language.
 
 If the user selects "あり", ask for details via text output and incorporate them.
 
+**Round 5: Agent Behavior Policies (2 questions, presented in parallel)**
+
+```json
+{
+  "questions": [
+    {
+      "question": "エージェント出力の既定言語はどれにしますか？",
+      "header": "出力言語",
+      "options": [
+        {"label": "English (recommended)", "description": "Default. AskUserQuestion / approval gates / progress / reports are in English"},
+        {"label": "Japanese", "description": "日本語で出力する。既存 Aphelion 本体もこちら"}
+      ],
+      "multiSelect": false
+    },
+    {
+      "question": "コミットに Co-Authored-By: Claude を付与しますか？",
+      "header": "Co-Author",
+      "options": [
+        {"label": "付与する (recommended)", "description": "Claude の関与を co-author として明示。OSS 標準慣行に準拠"},
+        {"label": "付与しない", "description": "プロジェクトポリシーで co-author が禁止されている場合など"}
+      ],
+      "multiSelect": false
+    }
+  ]
+}
+```
+
+Record the answers as `## Authoring` and `## Localization` sections in the generated project-rules.md.
+
 ### Step 3: Generate `.claude/rules/project-rules.md`
 
 Based on the determined rules, generate `.claude/rules/project-rules.md`.
@@ -288,6 +331,15 @@ Adapt the template below based on the determined language/framework. Omit sectio
 ```
 {想定されるディレクトリ構成}
 ```
+
+## Authoring
+
+- Co-Authored-By policy: {enabled | disabled}
+
+## Localization
+
+- Output Language: {en | ja}
+- Fallback Language: en
 
 ## プロジェクト固有のルール
 
