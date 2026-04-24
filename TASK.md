@@ -12,7 +12,7 @@
 - [x] TASK-001: Platform-Guide.md ペア削除 | 対象ファイル: docs/wiki/en/Platform-Guide.md, docs/wiki/ja/Platform-Guide.md
 - [x] TASK-002: wiki DESIGN.md を 7 ページ原則に改訂 | 対象ファイル: docs/wiki/DESIGN.md
 - [x] TASK-003: wiki Home.md (ja/en) 更新 | 対象ファイル: docs/wiki/en/Home.md, docs/wiki/ja/Home.md
-- [ ] TASK-004: wiki Getting-Started.md (ja/en) 更新 | 対象ファイル: docs/wiki/en/Getting-Started.md, docs/wiki/ja/Getting-Started.md
+- [x] TASK-004: wiki Getting-Started.md (ja/en) 更新 | 対象ファイル: docs/wiki/en/Getting-Started.md, docs/wiki/ja/Getting-Started.md
 - [ ] TASK-005: wiki Contributing.md (ja/en) 更新 | 対象ファイル: docs/wiki/en/Contributing.md, docs/wiki/ja/Contributing.md
 - [ ] TASK-006: wiki Architecture.md (ja/en) 更新 | 対象ファイル: docs/wiki/en/Architecture.md, docs/wiki/ja/Architecture.md
 - [ ] TASK-007: site 更新 | 対象ファイル: site/astro.config.mjs, site/src/content/docs/en/index.mdx, site/src/content/docs/ja/index.mdx
