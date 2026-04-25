@@ -157,11 +157,17 @@ Audit at HEAD `827c00e` (excluding the planning docs themselves):
 | `docs/wiki/ja/Contributing.md` | JA equivalent |
 | `docs/wiki/en/Architecture-Operational-Rules.md` | Mentioned in operational-rules wording |
 | `docs/wiki/ja/Architecture-Operational-Rules.md` | JA equivalent |
-| `site/src/content/docs/en/contributing.md` | Mirror of wiki |
-| `site/src/content/docs/ja/contributing.md` | Mirror of wiki |
-| `site/src/content/docs/en/architecture-operational-rules.md` | Mirror of wiki |
-| `site/src/content/docs/ja/architecture-operational-rules.md` | Mirror of wiki |
+| `site/src/content/docs/en/contributing.md` | **Auto-generated** from wiki — do not edit directly |
+| `site/src/content/docs/ja/contributing.md` | **Auto-generated** from wiki — do not edit directly |
+| `site/src/content/docs/en/architecture-operational-rules.md` | **Auto-generated** from wiki — do not edit directly |
+| `site/src/content/docs/ja/architecture-operational-rules.md` | **Auto-generated** from wiki — do not edit directly |
 | `CHANGELOG.md` | Historical entry — **do not rewrite**; old paths are correct as-of that release |
+
+> **Note on `site/src/content/docs/**`:** these files are listed in `site/.gitignore`
+> and regenerated from `docs/wiki/**` by `scripts/sync-wiki.mjs` on each site build.
+> Updating the wiki sources (rows 3–6 above) is sufficient — the next site build
+> will sync the mirror automatically. The implementation PR therefore contains
+> **no edits under `site/src/content/docs/`**, by design.
 
 ### 5.2 Execution order (for the future implementer)
 
@@ -267,3 +273,23 @@ test -s .claude/commands/issue-new.md
   (writing only the local design note with `> GitHub Issue: skipped (no gh
   auth)` in the header). This matches the analyst.md fallback pattern for
   missing remote.
+
+---
+
+## 8. Implementation notes (post-merge reference)
+
+Recorded after the implementation phase completed (commits `cc309fb`..`1ae344c`):
+
+- **`site/src/content/docs/**` was intentionally not edited.** These paths are
+  gitignored mirrors regenerated from `docs/wiki/**` by `scripts/sync-wiki.mjs`.
+  The wiki sources were updated; the next site build will sync the mirror.
+  This was a conscious deviation from §5.1's flat file list and is consistent
+  with the inventory note added there.
+- **`docs/design-notes/archived/*.md` left untouched.** The `docs/issues/`
+  references inside archived planning documents were preserved as historical
+  records (read-only by convention, same rationale as `CHANGELOG.md`).
+- **Additional prose-reference touch-ups.** Beyond §5.1's enumerated files, the
+  implementation also updated `src/.claude/README.md`,
+  `src/.claude/rules/localization-dictionary.md`, and a comment in
+  `bin/aphelion-agents.mjs` where a `docs/issues/` mention was discovered
+  during the audit. These are minor and do not change the design.
