@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="docs/images/aphelion-header.png" alt="Aphelion" width="100%">
-</p>
-
 # Aphelion — Frontier AI Agents
 
 Claude Code 向け AI コーディングエージェント定義集です。27 の専門エージェントがプロジェクトの全工程を自動化します。

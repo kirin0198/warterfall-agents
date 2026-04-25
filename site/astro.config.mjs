@@ -69,9 +69,6 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Aphelion',
-			logo: {
-				src: './src/assets/logo.png',
-			},
 			customCss: ['./src/styles/custom.css'],
 			// mermaid 初期化は src/components/Head.astro で npm バンドルを使用。
 			// CDN 依存 (jsdelivr.net) と SRI なし読み込みを排除し、securityLevel を strict に変更。

@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="docs/images/aphelion-header.png" alt="Aphelion" width="100%">
-</p>
-
 # Aphelion — Frontier AI Agents
 
 A collection of AI coding agent definitions for Claude Code that automates the entire project lifecycle with 27 specialized agents.
