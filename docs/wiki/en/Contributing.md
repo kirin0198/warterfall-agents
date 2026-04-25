@@ -83,7 +83,7 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 
 The canonical source for `rules/*.md` lives at `src/.claude/rules/`, **not** at `.claude/rules/`. This is intentional.
 
-Claude Code auto-loads `rules/*.md` from both `~/.claude/rules/` (user-global) and `<project>/.claude/rules/` (project-local) in additive fashion. For Aphelion's own maintainers, that previously meant every session opened inside the repo loaded two copies of every rule — and during the rule-edit window, two materially different versions. Relocating the source out of the repo-root `.claude/rules/` slot eliminates the structural dual-load. See `docs/issues/archived/claude-rules-isolation.md` (#44) for the full analysis.
+Claude Code auto-loads `rules/*.md` from both `~/.claude/rules/` (user-global) and `<project>/.claude/rules/` (project-local) in additive fashion. For Aphelion's own maintainers, that previously meant every session opened inside the repo loaded two copies of every rule — and during the rule-edit window, two materially different versions. Relocating the source out of the repo-root `.claude/rules/` slot eliminates the structural dual-load. See `docs/design-notes/archived/claude-rules-isolation.md` (#44) for the full analysis.
 
 **Practical consequence**: when you edit a rule under `src/.claude/rules/`, your in-progress edit does **not** automatically take effect in your current Claude Code session. Your session is governed by your user-global mirror at `~/.claude/rules/`, which is the deployed snapshot. To pick up your edit:
 

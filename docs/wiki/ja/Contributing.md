@@ -84,7 +84,7 @@
 
 `rules/*.md` の正規ソースは `src/.claude/rules/` にあり、`.claude/rules/` ではありません。これは意図的な配置です。
 
-Claude Code は `rules/*.md` を `~/.claude/rules/`（user-global）と `<project>/.claude/rules/`（project-local）の双方から **加算的に** auto-load します。Aphelion メンテナにとって、これは「リポジトリ内でセッションを開くたびに同じルールが二重に読み込まれる」状態を意味し、ルール編集中には**矛盾する 2 版が同時供給される**事態に至っていました。正規ソースを repo-root の `.claude/rules/` から退かすことで、構造的に二重ロードを排除します。詳細は `docs/issues/archived/claude-rules-isolation.md` (#44) を参照。
+Claude Code は `rules/*.md` を `~/.claude/rules/`（user-global）と `<project>/.claude/rules/`（project-local）の双方から **加算的に** auto-load します。Aphelion メンテナにとって、これは「リポジトリ内でセッションを開くたびに同じルールが二重に読み込まれる」状態を意味し、ルール編集中には**矛盾する 2 版が同時供給される**事態に至っていました。正規ソースを repo-root の `.claude/rules/` から退かすことで、構造的に二重ロードを排除します。詳細は `docs/design-notes/archived/claude-rules-isolation.md` (#44) を参照。
 
 **実務上の影響**: `src/.claude/rules/` 配下のルールを編集しても、編集中のセッションには即座に反映されません。セッションは `~/.claude/rules/`（user-global mirror = デプロイ済みスナップショット）に従って動作します。編集を反映させるには:
 
