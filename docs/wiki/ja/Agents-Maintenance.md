@@ -1,0 +1,61 @@
+# エージェントリファレンス: Maintenanceドメイン
+
+> **Language**: [English](../en/Agents-Maintenance.md) | [日本語](../ja/Agents-Maintenance.md)
+> **Last updated**: 2026-04-25 (split from Agents-Reference.md; #42)
+> **EN canonical**: 2026-04-25 of wiki/en/Agents-Maintenance.md
+> **Audience**: エージェント開発者
+
+このページはもとの Agents-Reference.md を5ページに分割したもの（#42）です。Maintenanceドメインエージェントを扱います。他のドメインは兄弟ページを参照してください: [オーケストレーター・横断系](./Agents-Orchestrators.md)、[Discovery](./Agents-Discovery.md)、[Delivery](./Agents-Delivery.md)、[Operations](./Agents-Operations.md)。
+
+## 目次
+
+- [Maintenanceドメイン](#maintenanceドメイン)
+- [関連ページ](#関連ページ)
+- [正規ソース](#正規ソース)
+
+---
+
+## Maintenanceドメイン
+
+Maintenance ドメイン (3 エージェント + オーケストレーター) はバグ修正・CVE 対応・パフォーマンス改善・技術的負債解消・既存機能の小規模拡張を担当します。オーケストレーターは [オーケストレーター・横断系](./Agents-Orchestrators.md) セクションに記載しています。本セクションではそれを支える 2 つのエージェントを説明します。
+
+### change-classifier
+
+- **正規**: [.claude/agents/change-classifier.md](../../.claude/agents/change-classifier.md)
+- **ドメイン**: Maintenance
+- **責務**: 入ってきた保守トリガーを Patch / Minor / Major プランに分類し、P1–P4 の緊急度スコアリングを行います。トリガー種別 (bug / feature / tech_debt / performance / security) を識別し、影響ファイル数を推定し、破壊的変更を検出し、SPEC.md への影響度を評価します。SPEC.md / ARCHITECTURE.md の有無を確認し、不在時は codebase-analyzer の起動を提案します。
+- **入力**: ユーザーのトリガー説明、SPEC.md、ARCHITECTURE.md、パッケージメタ情報 (package.json / pyproject.toml)
+- **出力**: 構造化された分類結果 (テキスト)
+- **AGENT_RESTULTフィールド**: `TRIGGER_TYPE`、`PLAN`、`PRIORITY`、`ESTIMATED_FILES`、`BREAKING_CHANGE`、`SPEC_IMPACT`、`DOCS_PRESENT`、`REQUIRES_CODEBASE_ANALYZER`、`RATIONALE`
+- **NEXT 条件**:
+  - `REQUIRES_CODEBASE_ANALYZER: true` → `codebase-analyzer` (完了後に change-classifier を再実行)
+  - `PLAN: Patch` → `analyst` (impact-analyzer はスキップ)
+  - `PLAN: Minor` / `Major` → `impact-analyzer`
+
+### impact-analyzer
+
+- **正規**: [.claude/agents/impact-analyzer.md](../../.claude/agents/impact-analyzer.md)
+- **ドメイン**: Maintenance
+- **責務**: 変更対象ファイルを具体的に特定し、依存グラフをたどります。破壊的 API / DB スキーマ変更を検出し、リグレッションリスク (low / medium / high) を評価し、推奨テスト範囲 (unit / integration / e2e) を提示します。
+- **入力**: `change-classifier` の AGENT_RESULT、ユーザーのトリガー説明、SPEC.md、ARCHITECTURE.md
+- **出力**: 影響レポート (テキスト)。対象ファイル・依存ファイル・破壊的変更・リグレッション評価を含む
+- **AGENT_RESTULTフィールド**: `TARGET_FILES`、`DEPENDENCY_FILES`、`BREAKING_API_CHANGES`、`DB_SCHEMA_CHANGES`、`REGRESSION_RISK`、`RECOMMENDED_TEST_SCOPE`、`IMPACT_SUMMARY`
+- **NEXT 条件**: `analyst` (常に。Minor / Major いずれでも analyst が次。プランの差は analyst 以降のフェーズ構成に現れる)
+
+---
+
+## 関連ページ
+
+- [エージェントリファレンス: オーケストレーター・横断系](./Agents-Orchestrators.md)
+- [エージェントリファレンス: Discoveryドメイン](./Agents-Discovery.md)
+- [エージェントリファレンス: Deliveryドメイン](./Agents-Delivery.md)
+- [エージェントリファレンス: Operationsドメイン](./Agents-Operations.md)
+- [アーキテクチャ: ドメインモデル](./Architecture-Domain-Model.md)
+- [トリアージシステム](./Triage-System.md)
+- [ルールリファレンス](./Rules-Reference.md)
+- [コントリビューティング](./Contributing.md)
+
+## 正規ソース
+
+- [.claude/agents/](../../.claude/agents/) — エージェント定義ファイル全体（権威あるソース）
+- [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — フローオーケストレータールールとトリアージ

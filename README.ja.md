@@ -176,9 +176,9 @@ cd /path/to/your-project && claude
 | ページ | 説明 |
 |-------|-----|
 | [はじめに](docs/wiki/ja/Getting-Started.md) | 全プラットフォームのセットアップ、初回実行ウォークスルー、利用シナリオ |
-| [アーキテクチャ](docs/wiki/ja/Architecture.md) | 3ドメインモデル、ハンドオフファイル、AGENT_RESULTプロトコル |
+| アーキテクチャ（3ページ） | [ドメインモデル](docs/wiki/ja/Architecture-Domain-Model.md), [プロトコル](docs/wiki/ja/Architecture-Protocols.md), [運用ルール](docs/wiki/ja/Architecture-Operational-Rules.md) — 3ドメインモデル、ハンドオフファイル、AGENT_RESULTプロトコル、ランタイム挙動 |
 | [トリアージシステム](docs/wiki/ja/Triage-System.md) | プランティア、エージェント選択ロジック、HAS_UI条件 |
-| [エージェントリファレンス](docs/wiki/ja/Agents-Reference.md) | 全27エージェント — 入力・出力・NEXT条件 |
+| エージェントリファレンス（5ページ） | [オーケストレーター・横断系](docs/wiki/ja/Agents-Orchestrators.md), [Discovery](docs/wiki/ja/Agents-Discovery.md), [Delivery](docs/wiki/ja/Agents-Delivery.md), [Operations](docs/wiki/ja/Agents-Operations.md), [Maintenance](docs/wiki/ja/Agents-Maintenance.md) — 29エージェント |
 | [ルールリファレンス](docs/wiki/ja/Rules-Reference.md) | 全8行動ルール — スコープとインタラクション |
 | [コントリビューティング](docs/wiki/ja/Contributing.md) | エージェント追加方法、バイリンガル同期ポリシー、PRチェックリスト |
 

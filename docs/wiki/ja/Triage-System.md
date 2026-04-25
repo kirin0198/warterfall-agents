@@ -268,8 +268,9 @@ HAS_UI: true
 
 ## 関連ページ
 
-- [アーキテクチャ](./Architecture.md)
-- [エージェントリファレンス](./Agents-Reference.md)
+- [アーキテクチャ：ドメインモデル](./Architecture-Domain-Model.md)
+- [アーキテクチャ：運用ルール](./Architecture-Operational-Rules.md)
+- [エージェントリファレンス：オーケストレーター](./Agents-Orchestrators.md)
 - [はじめに](./Getting-Started.md)
 
 ## 正規ソース
