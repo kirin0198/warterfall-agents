@@ -22,7 +22,7 @@ if (nodeMajor < 20) {
 // bin/aphelion-agents.mjs → パッケージルート
 // 二重ロード回避のため rules/ のみ src/.claude/rules/ から、
 // agents/ commands/ orchestrator-rules.md は <packageRoot>/.claude/ から取得する
-// (詳細: docs/issues/claude-rules-isolation.md, ADR-001)
+// (詳細: docs/design-notes/archived/claude-rules-isolation.md, ADR-001)
 // settings.local.json も同様に src/.claude/ を canonical とする (#31, gitignore 衝突回避)。
 const packageRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const sourcePath = join(packageRoot, ".claude");
