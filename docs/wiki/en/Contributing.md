@@ -1,7 +1,7 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: planning-doc archive workflow + 17-file archive sweep)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: planning-doc archive workflow (PR-open trigger) + 17-file archive sweep)
 > **Audience**: Agent developers
 
 This page covers how to contribute to Aphelion: adding or modifying agents, updating rules, and maintaining the wiki. Read this before opening a pull request.
@@ -210,12 +210,29 @@ implementation. Once the corresponding GitHub issue is closed (its work has
 shipped), the file moves to `docs/issues/archived/` so that the active
 directory only lists work in flight.
 
-The move is automated: when a PR is merged, the
+The move is automated and lands **in the same PR as the work** (no separate
+follow-up PR). The
 [`archive-closed-plans` workflow](../../../.github/workflows/archive-closed-plans.yml)
-parses the merged PR body for `Closes #N` / `Fixes #N` / `Resolves #N`
-keywords, verifies each referenced issue is now `CLOSED`, finds the matching
-planning doc by its `GitHub Issue: [#N]` header reference, and opens a
-follow-up PR moving the file. A maintainer reviews and merges that PR.
+fires on `pull_request: opened` / `edited` / `synchronize`, parses the PR
+body for `Closes #N` / `Fixes #N` / `Resolves #N` keywords, finds matching
+planning docs by their `GitHub Issue: [#N]` header reference, `git mv`'s
+them into `docs/issues/archived/`, and pushes the resulting commit back to
+the PR branch. The reviewer then sees one diff containing both the work and
+the archive move.
+
+The workflow is idempotent — if the planning doc is already archived (or
+no match exists), it is a no-op. Loop safety against the bot's own pushes
+is provided by an actor filter (`github.actor != 'github-actions[bot]'`)
+plus the idempotency check.
+
+> **Edge case.** The workflow archives at *PR-open* time, trusting the
+> `Closes #N` keyword as a commitment that merging will close the issue
+> (which GitHub does automatically on merge). If the PR is ultimately
+> closed *without merging*, the moves must be reverted manually
+> (`git mv docs/issues/archived/<slug>.md docs/issues/<slug>.md` and
+> open a small chore PR). The trade-off is intentional: trigger-on-merge
+> would split every change into two PRs, and PR proliferation was the
+> larger ergonomic problem.
 
 Manual fallback: `git mv docs/issues/<slug>.md docs/issues/archived/`. Use
 this if the workflow could not detect the issue reference (e.g. the planning

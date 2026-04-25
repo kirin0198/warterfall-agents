@@ -20,11 +20,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `.github/workflows/archive-closed-plans.yml` — fires on `pull_request:
-  closed` (merged only). Parses the merged PR body for `Closes #N` /
-  `Fixes #N` / `Resolves #N` keywords, verifies each issue is `CLOSED`,
-  finds the matching planning doc by `GitHub Issue: [#N]` header, and
-  opens a follow-up PR moving the file into `docs/issues/archived/`.
-  Replaces a periodic-sweep approach with an event-driven trigger.
+  opened` / `edited` / `synchronize`. Parses the PR body for `Closes #N` /
+  `Fixes #N` / `Resolves #N` keywords, finds the matching planning doc by
+  its `GitHub Issue: [#N]` header reference, `git mv`'s it into
+  `docs/issues/archived/`, and pushes the resulting commit back to the PR
+  branch. The archive move ships **in the same PR as the work** (no
+  follow-up PR), eliminating the PR-proliferation problem of trigger-on-
+  merge approaches. Idempotent (already-archived docs cause a no-op) plus
+  an actor filter prevents the bot's own pushes from looping.
 
 ### Notes
 

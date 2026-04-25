@@ -28,11 +28,22 @@ references to since-removed code, and decisions that later evolved.
 ## How files arrive here
 
 1. **Automatic** (the default) — `.github/workflows/archive-closed-plans.yml`
-   fires on `pull_request: closed` (merged only). It scans the PR body for
-   `Closes #N` / `Fixes #N` keywords; for each closed issue, looks up the
-   matching planning doc by `GitHub Issue: [#N](...)` header reference, and
-   opens a follow-up PR moving the file to this directory. Reviewer merges
-   that follow-up PR to commit the archive.
+   fires on `pull_request: opened` / `edited` / `synchronize`. It scans the PR
+   body for `Closes #N` / `Fixes #N` / `Resolves #N` keywords, finds matching
+   planning docs by `GitHub Issue: [#N](...)` header reference, `git mv`'s
+   them into this directory, and pushes the commit back to the PR branch.
+   The archive move ships **in the same PR as the work**, not as a separate
+   follow-up PR.
+
+   The workflow is idempotent: if the planning doc is already archived (or
+   no match exists), it is a no-op. Bot loops are prevented by an actor
+   filter plus the idempotency check.
+
+   **Edge case.** The workflow trusts `Closes #N` as a commitment that
+   merging will close the issue. If the PR is ultimately closed *without
+   merging*, manually move the file back: `git mv docs/issues/archived/<slug>.md
+   docs/issues/<slug>.md` and open a small chore PR.
+
 2. **Manual fallback** — `git mv docs/issues/<slug>.md docs/issues/archived/`
    then commit. Use this if the workflow could not detect the issue reference
    (e.g. the planning doc tracks a problem that has no GitHub issue, or the

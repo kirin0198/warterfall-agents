@@ -1,48 +1,58 @@
 name: Archive closed planning docs
 
-# Fires when a PR is merged. For every issue that PR closed, look for a
-# planning document in docs/issues/ that references the issue, and open a
-# follow-up PR moving it to docs/issues/archived/.
+# Auto-archive planning documents at PR-creation time so the archive
+# move lands in the same PR as the work (instead of opening a follow-up
+# PR after merge).
 #
-# This runs the same audit a maintainer would do by hand, just on the right
-# moment instead of periodically. See docs/issues/archived/README.md for
-# the manual fallback.
+# Triggers:
+#   - pull_request: opened       → first scan when PR is created
+#   - pull_request: edited       → re-scan when PR body is edited
+#                                  (e.g. user adds Closes #N later)
+#   - pull_request: synchronize  → re-scan after new commits; idempotent
+#                                  + actor filter prevents bot loops
+#
+# At trigger time the referenced issue may still be OPEN — we trust the
+# `Closes #N` / `Fixes #N` / `Resolves #N` keyword as a commitment that
+# merging this PR will close the issue (which GitHub does automatically).
+# If the maintainer ultimately closes the PR without merging, the planning
+# doc has to be moved back manually; that edge case is documented.
 
 on:
   pull_request:
-    types: [closed]
+    types: [opened, edited, synchronize]
 
 jobs:
   archive:
-    if: github.event.pull_request.merged == true
+    # Skip on fork PRs (GITHUB_TOKEN is read-only there) and on commits
+    # the bot itself pushed (loop prevention).
+    if: |
+      github.event.pull_request.head.repo.full_name == github.repository
+      && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
+      pull-requests: read
       issues: read
 
     steps:
-      - name: Checkout main
+      - name: Checkout PR branch
         uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
+          persist-credentials: true
 
-      - name: Identify candidates and stage moves
+      - name: Scan PR body and stage moves
         id: scan
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          REPO: ${{ github.repository }}
+          PR_BODY: ${{ github.event.pull_request.body }}
         shell: bash
         run: |
           set -euo pipefail
 
-          # 1. Pull the merged PR body and extract issue numbers from
-          #    `Closes #N`, `Fixes #N`, `Resolves #N` keywords (case-insensitive).
-          pr_body=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json body --jq .body)
+          # Extract issue numbers from Closes/Fixes/Resolves keywords.
           mapfile -t referenced_issues < <(
-            printf '%s\n' "$pr_body" \
+            printf '%s\n' "$PR_BODY" \
               | grep -oiE '(close[sd]?|fix(es|ed)?|resolve[sd]?)[[:space:]]*#[0-9]+' \
               | grep -oE '#[0-9]+' \
               | tr -d '#' \
@@ -50,26 +60,17 @@ jobs:
           )
 
           if [ ${#referenced_issues[@]} -eq 0 ]; then
-            echo "No Closes/Fixes/Resolves keywords found in PR body. Skipping."
+            echo "No Closes/Fixes/Resolves keywords in PR body. Nothing to archive."
             echo "moved=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
           echo "Referenced issues: ${referenced_issues[*]}"
 
-          # 2. For each issue, verify it is CLOSED, then find a matching
-          #    planning doc that references it via `GitHub Issue: [#N]` or
-          #    `Issue [#N]` in its header. Move it.
+          # Idempotent search: only matches planning docs still in the active
+          # directory. Already-archived docs cause a no-op (loop safety).
           moved=()
           for n in "${referenced_issues[@]}"; do
-            state=$(gh issue view "$n" --repo "$REPO" --json state --jq .state 2>/dev/null || echo OPEN)
-            if [ "$state" != "CLOSED" ]; then
-              echo "  Issue #$n is $state, not closed; skipping."
-              continue
-            fi
-
-            # Search active planning docs (not already archived) for the
-            # `#N` reference in the first 20 lines (header region).
             for f in docs/issues/*.md; do
               [ -f "$f" ] || continue
               if head -n 20 "$f" | grep -qE "(GitHub Issue:|Issue) \[?#${n}\b"; then
@@ -83,42 +84,28 @@ jobs:
           done
 
           if [ ${#moved[@]} -eq 0 ]; then
-            echo "No planning docs to archive."
+            echo "No matching active planning docs found. Nothing to archive."
             echo "moved=" >> "$GITHUB_OUTPUT"
           else
             printf 'moved=%s\n' "$(IFS=,; echo "${moved[*]}")" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Open archive PR
+      - name: Commit and push to PR branch
         if: steps.scan.outputs.moved != ''
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MOVED: ${{ steps.scan.outputs.moved }}
-          MERGED_PR: ${{ github.event.pull_request.number }}
-          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BRANCH: ${{ github.event.pull_request.head.ref }}
         shell: bash
         run: |
           set -euo pipefail
-          branch="chore/archive-closed-plans-after-pr${MERGED_PR}"
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b "$branch"
-          git add -A
 
-          # Build the commit message and PR body using printf so multi-line
-          # content stays out of YAML block-scalar indentation rules.
           moved_list=$(printf '%s\n' "$MOVED" | tr ',' '\n')
 
-          commit_msg=$(printf 'chore: archive planning docs closed by PR #%s\n\nAuto-generated archive move triggered by archive-closed-plans.yml.\n\nMoved (slug:issue):\n%s\n\nSee docs/issues/archived/README.md for the rationale.\n' "$MERGED_PR" "$moved_list")
+          commit_msg=$(printf 'chore: archive planning docs for issues this PR closes\n\nAuto-generated by archive-closed-plans.yml at PR-open time.\nThe planning docs below reference issues that are explicitly listed as\n"Closes/Fixes/Resolves" in PR #%s body. They are moved into\ndocs/issues/archived/ as part of this PR so the archive lives alongside\nthe work that ships it.\n\nMoved (slug:issue):\n%s\n\nIf this PR ends up closed without merging, the moves have to be reverted\nmanually. See docs/issues/archived/README.md.\n' "$PR_NUMBER" "$moved_list")
+
           git commit -m "$commit_msg"
-          git push -u origin "$branch"
-
-          pr_body=$(printf 'Automatic archive triggered by [PR #%s](../pull/%s) merging.\n\nThe workflow extracted `Closes #N` / `Fixes #N` / `Resolves #N` keywords from the PR body, verified each issue is now `CLOSED`, and moved every `docs/issues/<slug>.md` whose header references the issue into `docs/issues/archived/`.\n\n**Moved files (slug:issue):**\n\n```\n%s\n```\n\nReviewer: skim the moves and merge if correct. If the workflow misidentified a doc, just close this PR and use the manual fallback documented in `docs/issues/archived/README.md`.\n' "$MERGED_PR" "$MERGED_PR" "$moved_list")
-
-          gh pr create \
-            --repo "$REPO" \
-            --base main \
-            --head "$branch" \
-            --title "chore: archive planning docs closed by PR #${MERGED_PR}" \
-            --body "$pr_body"
+          git push origin "HEAD:${PR_BRANCH}"
