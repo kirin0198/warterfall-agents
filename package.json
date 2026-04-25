@@ -14,7 +14,13 @@
   "bin": {
     "aphelion-agents": "./bin/aphelion-agents.mjs"
   },
-  "files": ["bin", ".claude"],
+  "files": [
+    "bin",
+    ".claude/agents",
+    ".claude/rules",
+    ".claude/commands",
+    ".claude/orchestrator-rules.md"
+  ],
   "engines": {
     "node": ">=20"
   },
