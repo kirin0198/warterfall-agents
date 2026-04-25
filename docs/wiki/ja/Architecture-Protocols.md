@@ -1,11 +1,11 @@
-# アーキテクチャ: プロトコル
+# Architecture: Protocols
 
 > **Language**: [English](../en/Architecture-Protocols.md) | [日本語](../ja/Architecture-Protocols.md)
 > **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
 > **EN canonical**: 2026-04-25 of wiki/en/Architecture-Protocols.md
 > **Audience**: エージェント開発者
 
-このページはもとの Architecture.md を3ページに分割したもの（#42）です。ハンドオフファイルスキーマとエージェント間通信プロトコル（AGENT_RESULT）、`blocked` STATUSを扱います。ドメインモデルと運用ルールは兄弟ページを参照してください: [ドメインモデル](./Architecture-Domain-Model.md)、[運用ルール](./Architecture-Operational-Rules.md)。
+このページはもとの Architecture.md を3ページに分割したもの（#42）です。ハンドオフファイルスキーマとエージェント間通信プロトコル（AGENT_RESULT）、`blocked` STATUSを扱います。ドメインモデルと運用ルールは関連ページを参照してください: [ドメインモデル](./Architecture-Domain-Model.md)、[運用ルール](./Architecture-Operational-Rules.md)。
 
 ## 目次
 
@@ -176,12 +176,12 @@ Flow Orchestrator は `BLOCKED_TARGET` に指定されたエージェントを**
 
 ## 関連ページ
 
-- [アーキテクチャ: ドメインモデル](./Architecture-Domain-Model.md)
-- [アーキテクチャ: 運用ルール](./Architecture-Operational-Rules.md)
+- [Architecture: Domain Model](./Architecture-Domain-Model.md)
+- [Architecture: Operational Rules](./Architecture-Operational-Rules.md)
 - [ホーム](./Home.md)
-- [トリアージシステム](./Triage-System.md)
-- [エージェントリファレンス: Flow Orchestrator・横断系](./Agents-Orchestrators.md)
-- [ルールリファレンス](./Rules-Reference.md)
+- [Triage System](./Triage-System.md)
+- [Agents Reference: Orchestrators & Cross-Cutting](./Agents-Orchestrators.md)
+- [Rules Reference](./Rules-Reference.md)
 
 ## 正規ソース
 

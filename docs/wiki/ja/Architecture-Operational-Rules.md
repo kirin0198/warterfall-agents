@@ -1,11 +1,11 @@
-# アーキテクチャ: 運用ルール
+# Architecture: Operational Rules
 
 > **Language**: [English](../en/Architecture-Operational-Rules.md) | [日本語](../ja/Architecture-Operational-Rules.md)
 > **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
 > **EN canonical**: 2026-04-25 of wiki/en/Architecture-Operational-Rules.md
 > **Audience**: エージェント開発者
 
-このページはもとの Architecture.md を3ページに分割したもの（#42）です。自動承認モード・フェーズ実行ループ・トリアージティア・差し戻しルール・sandbox防御レイヤーといったランタイム・運用挙動を扱います。概念モデルとプロトコルは兄弟ページを参照してください: [ドメインモデル](./Architecture-Domain-Model.md)、[プロトコル](./Architecture-Protocols.md)。
+このページはもとの Architecture.md を3ページに分割したもの（#42）です。自動承認モード・フェーズ実行ループ・トリアージティア・差し戻しルール・sandbox防御レイヤーといったランタイム・運用挙動を扱います。概念モデルとプロトコルは関連ページを参照してください: [ドメインモデル](./Architecture-Domain-Model.md)、[プロトコル](./Architecture-Protocols.md)。
 
 ## 目次
 
@@ -70,7 +70,7 @@ Flow Orchestrator（フローオーケストレーター）はそれぞれドメ
 
 ## トリアージティア
 
-各 Flow Orchestrator は起動時にプロジェクトの特性を評価し、4段階のプランティアのいずれかを選択します。詳細は [トリアージシステム](./Triage-System.md) を参照してください。
+各 Flow Orchestrator は起動時にプロジェクトの特性を評価し、4段階のプランティアのいずれかを選択します。詳細は [Triage System](./Triage-System.md) を参照してください。
 
 <!-- source: .claude/orchestrator-rules.md (Triage System) -->
 ```mermaid
@@ -194,12 +194,12 @@ flowchart TB
 
 ## 関連ページ
 
-- [アーキテクチャ: ドメインモデル](./Architecture-Domain-Model.md)
-- [アーキテクチャ: プロトコル](./Architecture-Protocols.md)
+- [Architecture: Domain Model](./Architecture-Domain-Model.md)
+- [Architecture: Protocols](./Architecture-Protocols.md)
 - [ホーム](./Home.md)
-- [トリアージシステム](./Triage-System.md)
-- [エージェントリファレンス: Flow Orchestrator・横断系](./Agents-Orchestrators.md)
-- [ルールリファレンス](./Rules-Reference.md)
+- [Triage System](./Triage-System.md)
+- [Agents Reference: Orchestrators & Cross-Cutting](./Agents-Orchestrators.md)
+- [Rules Reference](./Rules-Reference.md)
 
 ## 正規ソース
 

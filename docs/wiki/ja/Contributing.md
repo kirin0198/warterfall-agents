@@ -1,4 +1,4 @@
-# コントリビューティング
+# Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
 > **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
@@ -175,11 +175,11 @@ PRを開く前に確認してください：
 
 ## 関連ページ
 
-- [アーキテクチャ：ドメインモデル](./Architecture-Domain-Model.md)
-- [アーキテクチャ：プロトコル](./Architecture-Protocols.md)
-- [アーキテクチャ：運用ルール](./Architecture-Operational-Rules.md)
+- [Architecture: Domain Model](./Architecture-Domain-Model.md)
+- [Architecture: Protocols](./Architecture-Protocols.md)
+- [Architecture: Operational Rules](./Architecture-Operational-Rules.md)
 - [エージェントリファレンス：Flow Orchestrator](./Agents-Orchestrators.md)
-- [ルールリファレンス](./Rules-Reference.md)
+- [Rules Reference](./Rules-Reference.md)
 
 ## 正規ソース
 

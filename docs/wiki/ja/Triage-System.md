@@ -1,4 +1,4 @@
-# トリアージシステム
+# Triage System
 
 > **Language**: [English](../en/Triage-System.md) | [日本語](../ja/Triage-System.md)
 > **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
@@ -268,10 +268,10 @@ HAS_UI: true
 
 ## 関連ページ
 
-- [アーキテクチャ：ドメインモデル](./Architecture-Domain-Model.md)
-- [アーキテクチャ：運用ルール](./Architecture-Operational-Rules.md)
+- [Architecture: Domain Model](./Architecture-Domain-Model.md)
+- [Architecture: Operational Rules](./Architecture-Operational-Rules.md)
 - [エージェントリファレンス：Flow Orchestrator](./Agents-Orchestrators.md)
-- [はじめに](./Getting-Started.md)
+- [Getting Started](./Getting-Started.md)
 
 ## 正規ソース
 

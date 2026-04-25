@@ -1,4 +1,4 @@
-# はじめに
+# Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
 > **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
@@ -283,8 +283,8 @@ Flow Orchestrator がオプションを表示します：
 
 ## 関連ページ
 
-- [アーキテクチャ：ドメインモデル](./Architecture-Domain-Model.md)
-- [トリアージシステム](./Triage-System.md)
+- [Architecture: Domain Model](./Architecture-Domain-Model.md)
+- [Triage System](./Triage-System.md)
 
 ## 正規ソース
 

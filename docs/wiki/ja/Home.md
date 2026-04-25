@@ -7,7 +7,7 @@
 
 **Aphelion Wiki** へようこそ。このWikiはAphelion Claude Codeエージェントワークフローの詳細リファレンスです。
 
-**初めての方はこちら** → [はじめに](./Getting-Started.md)
+**初めての方はこちら** → [Getting Started](./Getting-Started.md)
 
 ---
 
@@ -17,12 +17,12 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 
 | README | Wiki |
 |--------|------|
-| プロジェクト概要と背景 | [アーキテクチャ：ドメインモデル](./Architecture-Domain-Model.md)：3ドメインモデルとセッション分離 |
-| クイックスタートコマンド | [はじめに](./Getting-Started.md)：Claude Code セットアップ、初回実行ウォークスルー、シナリオ、トラブルシューティング |
-| トリアージプラン表（概要） | [トリアージシステム](./Triage-System.md)：選択ロジック、条件、エージェントマトリクス |
-| エージェント一覧（名前のみ） | エージェントリファレンス（ドメイン別）: [Flow Orchestrator・横断系](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — 29 エージェントの入出力と NEXT 条件 |
-| — | [ルールリファレンス](./Rules-Reference.md)：9つの行動ルールのスコープとカスタマイズ方法 |
-| — | [コントリビューション](./Contributing.md)：エージェント・ルールの追加方法、Wiki メンテナンス |
+| プロジェクト概要と背景 | [Architecture: Domain Model](./Architecture-Domain-Model.md): 3 ドメインモデルとセッション分離 |
+| クイックスタートコマンド | [Getting Started](./Getting-Started.md): Claude Code セットアップ、初回実行ウォークスルー、シナリオ、トラブルシューティング |
+| トリアージプラン表（概要） | [Triage System](./Triage-System.md): 選択ロジック、条件、エージェントマトリクス |
+| エージェント一覧（名前のみ） | Agents Reference（ドメイン別）: [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — 29 エージェントの入出力と NEXT 条件 |
+| — | [Rules Reference](./Rules-Reference.md): 9 つの行動ルールのスコープとカスタマイズ方法 |
+| — | [Contributing](./Contributing.md): エージェント・ルールの追加方法、Wiki メンテナンス |
 
 ---
 
@@ -32,12 +32,12 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 
 | ページ | 説明 | 主な読者 |
 |--------|------|---------|
-| [はじめに](./Getting-Started.md) | Claude Code セットアップ、初回実行、利用シナリオ、コマンドリファレンス | 新規ユーザー |
-| アーキテクチャ（3ページ） | [ドメインモデル](./Architecture-Domain-Model.md), [プロトコル](./Architecture-Protocols.md), [運用ルール](./Architecture-Operational-Rules.md) — 3ドメインモデル、ハンドオフファイル、`AGENT_RESULT` プロトコル、ランタイム挙動 | エージェント開発者 |
-| [トリアージシステム](./Triage-System.md) | 4ティアプラン選択ロジック、ドメイン別エージェントマトリクス、必須エージェント | 全ユーザー |
-| エージェントリファレンス（5ページ） | [Flow Orchestrator・横断系](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — 29 エージェント全件 | エージェント開発者 |
-| [ルールリファレンス](./Rules-Reference.md) | 9つの行動ルール：スコープ・自動ロード・相互関係 | エージェント開発者 |
-| [コントリビューション](./Contributing.md) | エージェント・ルールの追加、バイリンガル同期ワークフロー | エージェント開発者 |
+| [Getting Started](./Getting-Started.md) | Claude Code セットアップ、初回実行、利用シナリオ、コマンドリファレンス | 新規ユーザー |
+| Architecture（3 ページ） | [Domain Model](./Architecture-Domain-Model.md), [Protocols](./Architecture-Protocols.md), [Operational Rules](./Architecture-Operational-Rules.md) — 3 ドメインモデル、ハンドオフファイル、`AGENT_RESULT` プロトコル、ランタイム挙動 | エージェント開発者 |
+| [Triage System](./Triage-System.md) | 4 ティアプラン選択ロジック、ドメイン別エージェントマトリクス、必須エージェント | 全ユーザー |
+| Agents Reference（5 ページ） | [Orchestrators & Cross-Cutting](./Agents-Orchestrators.md), [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md) — 29 エージェント全件 | エージェント開発者 |
+| [Rules Reference](./Rules-Reference.md) | 9 つの行動ルール: スコープ・自動ロード・相互関係 | エージェント開発者 |
+| [Contributing](./Contributing.md) | エージェント・ルールの追加、バイリンガル同期ワークフロー | エージェント開発者 |
 
 ---
 
@@ -45,28 +45,28 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 
 ### 「Aphelionを初めて使いたい」
 
-1. [はじめに](./Getting-Started.md) を読む — 使用するプラットフォームのクイックスタート
+1. [Getting Started](./Getting-Started.md) を読む — 使用するプラットフォームのクイックスタート
 2. `/discovery-flow` を実行（要件が固まっている場合は `/pm`）
-3. [トリアージシステム](./Triage-System.md) を読んでどのエージェントが起動するか理解する
+3. [Triage System](./Triage-System.md) を読んでどのエージェントが起動するか理解する
 
 ### 「Aphelion の内部動作を理解したい」
 
-1. [アーキテクチャ → ドメインモデル](./Architecture-Domain-Model.md) を読む — ドメインモデルとセッション分離
-2. [アーキテクチャ → プロトコル](./Architecture-Protocols.md) を読む — ハンドオフファイルと AGENT_RESULT
-3. [エージェントリファレンス → Flow Orchestrator](./Agents-Orchestrators.md) と各ドメイン 4 ページを読む — 各エージェントの責務と連携
-4. [ルールリファレンス](./Rules-Reference.md) を読む — 全エージェントに適用される行動制約
+1. [Architecture: Domain Model](./Architecture-Domain-Model.md) を読む — ドメインモデルとセッション分離
+2. [Architecture: Protocols](./Architecture-Protocols.md) を読む — ハンドオフファイルと AGENT_RESULT
+3. [Agents Reference: Orchestrators & Cross-Cutting](./Agents-Orchestrators.md) と各ドメイン 4 ページを読む — 各エージェントの責務と連携
+4. [Rules Reference](./Rules-Reference.md) を読む — 全エージェントに適用される行動制約
 
 ### 「新しいエージェントやルールを追加したい」
 
-1. [コントリビューション](./Contributing.md) を読む — ファイルテンプレートとAGENT_RESULT契約
-2. [アーキテクチャ → ドメインモデル](./Architecture-Domain-Model.md) を読む — 新エージェントの配置場所を理解する
-3. [ルールリファレンス](./Rules-Reference.md) を読む — 自動適用されるルールを理解する
+1. [Contributing](./Contributing.md) を読む — ファイルテンプレートと AGENT_RESULT 契約
+2. [Architecture: Domain Model](./Architecture-Domain-Model.md) を読む — 新エージェントの配置場所を理解する
+3. [Rules Reference](./Rules-Reference.md) を読む — 自動適用されるルールを理解する
 
 ### 「既存プロジェクトのバグ修正や小さな機能追加をしたい」
 
 1. プロジェクトに `SPEC.md` と `ARCHITECTURE.md` があることを確認 (ない場合はまず `/codebase-analyzer` を実行)
 2. `/maintenance-flow {トリガー説明}` を実行 — Flow Orchestrator が Patch / Minor / Major にトリアージします
-3. 各プランの詳細は [トリアージシステム → Maintenance フローのトリアージ](./Triage-System.md#maintenance-フローのトリアージ) を参照
+3. 各プランの詳細は [Triage System: Maintenance Flow Triage](./Triage-System.md#maintenance-フローのトリアージ) を参照
 
 ---
 
@@ -94,9 +94,9 @@ Aphelion のリポジトリの README はクイックスタートと概要をカ
 
 ## 関連ページ
 
-- [はじめに](./Getting-Started.md)
-- [アーキテクチャ：ドメインモデル](./Architecture-Domain-Model.md)
-- [コントリビューション](./Contributing.md)
+- [Getting Started](./Getting-Started.md)
+- [Architecture: Domain Model](./Architecture-Domain-Model.md)
+- [Contributing](./Contributing.md)
 
 ## 正規ソース
 

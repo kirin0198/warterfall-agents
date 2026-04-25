@@ -1,21 +1,21 @@
-# エージェントリファレンス: Operationsドメイン
+# Agents Reference: Operations Domain
 
 > **Language**: [English](../en/Agents-Operations.md) | [日本語](../ja/Agents-Operations.md)
 > **Last updated**: 2026-04-25 (updated 2026-04-25: terminology rebalance per #40)
 > **EN canonical**: 2026-04-25 of wiki/en/Agents-Operations.md
 > **Audience**: エージェント開発者
 
-このページはもとの Agents-Reference.md を 5 ページに分割したもの（#42）です。Operations ドメインエージェントを扱います。他のドメインは兄弟ページを参照してください: [Flow Orchestrator・横断系](./Agents-Orchestrators.md)、[Discovery](./Agents-Discovery.md)、[Delivery](./Agents-Delivery.md)、[Maintenance](./Agents-Maintenance.md)。
+このページはもとの Agents-Reference.md を 5 ページに分割したもの（#42）です。Operations ドメインエージェントを扱います。他のドメインは関連ページを参照してください: [Flow Orchestrator・横断系](./Agents-Orchestrators.md)、[Discovery](./Agents-Discovery.md)、[Delivery](./Agents-Delivery.md)、[Maintenance](./Agents-Maintenance.md)。
 
 ## 目次
 
-- [Operationsドメイン](#operationsドメイン)
+- [Operations Domain](#operations-domain)
 - [関連ページ](#関連ページ)
 - [正規ソース](#正規ソース)
 
 ---
 
-## Operationsドメイン
+## Operations Domain
 
 Operationsドメイン（4エージェント）はデプロイインフラと運用計画を担当します。PRODUCT_TYPE: serviceの場合のみ実行されます。
 
@@ -69,14 +69,14 @@ Operationsドメイン（4エージェント）はデプロイインフラと運
 
 ## 関連ページ
 
-- [エージェントリファレンス: Flow Orchestrator・横断系](./Agents-Orchestrators.md)
-- [エージェントリファレンス: Discoveryドメイン](./Agents-Discovery.md)
-- [エージェントリファレンス: Deliveryドメイン](./Agents-Delivery.md)
-- [エージェントリファレンス: Maintenanceドメイン](./Agents-Maintenance.md)
-- [アーキテクチャ: 運用ルール](./Architecture-Operational-Rules.md)
-- [トリアージシステム](./Triage-System.md)
-- [ルールリファレンス](./Rules-Reference.md)
-- [コントリビューティング](./Contributing.md)
+- [Agents Reference: Orchestrators & Cross-Cutting](./Agents-Orchestrators.md)
+- [Agents Reference: Discovery Domain](./Agents-Discovery.md)
+- [Agents Reference: Delivery Domain](./Agents-Delivery.md)
+- [Agents Reference: Maintenance Domain](./Agents-Maintenance.md)
+- [Architecture: Operational Rules](./Architecture-Operational-Rules.md)
+- [Triage System](./Triage-System.md)
+- [Rules Reference](./Rules-Reference.md)
+- [Contributing](./Contributing.md)
 
 ## 正規ソース
 
