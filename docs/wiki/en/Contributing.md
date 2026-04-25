@@ -1,7 +1,7 @@
 # Contributing
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: version-bump policy for `.claude/**` changes; smoke-test gate)
+> **Last updated**: 2026-04-25 (updated 2026-04-25: rules canonical source moved to src/.claude/rules/; edit-vs-effect decoupling section added)
 > **Audience**: Agent developers
 
 This page covers how to contribute to Aphelion: adding or modifying agents, updating rules, and maintaining the wiki. Read this before opening a pull request.
@@ -71,7 +71,7 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 
 ## Updating Rules
 
-1. **Edit the canonical file** at `.claude/rules/{name}.md`.
+1. **Edit the canonical file** at `src/.claude/rules/{name}.md` (see "Editing Aphelion's own rules" below for the layout rationale).
 
 2. **Update the corresponding Rules-Reference entry** in both `wiki/en/Rules-Reference.md` and `wiki/ja/Rules-Reference.md`.
 
@@ -79,6 +79,21 @@ This page covers how to contribute to Aphelion: adding or modifying agents, upda
 
 4. **If the rule affects triage**, also update `wiki/en/Triage-System.md` and `wiki/ja/Triage-System.md`.
 
+### Editing Aphelion's own rules
+
+The canonical source for `rules/*.md` lives at `src/.claude/rules/`, **not** at `.claude/rules/`. This is intentional.
+
+Claude Code auto-loads `rules/*.md` from both `~/.claude/rules/` (user-global) and `<project>/.claude/rules/` (project-local) in additive fashion. For Aphelion's own maintainers, that previously meant every session opened inside the repo loaded two copies of every rule — and during the rule-edit window, two materially different versions. Relocating the source out of the repo-root `.claude/rules/` slot eliminates the structural dual-load. See `docs/issues/claude-rules-isolation.md` (#44) for the full analysis.
+
+**Practical consequence**: when you edit a rule under `src/.claude/rules/`, your in-progress edit does **not** automatically take effect in your current Claude Code session. Your session is governed by your user-global mirror at `~/.claude/rules/`, which is the deployed snapshot. To pick up your edit:
+
+1. Bump `package.json` `version` per the policy below.
+2. Run `node bin/aphelion-agents.mjs update --user` (or after merge, `npx github:kirin0198/aphelion-agents#main update --user`).
+3. Start a new Claude Code session.
+
+This edit-vs-effect decoupling is deliberate: editing a rule while being simultaneously governed by it is a chicken-and-egg problem. Decoupling avoids it.
+
+> Do **not** symlink `src/.claude/rules/` to `<repo>/.claude/rules/`. That re-introduces the dual-load this layout was designed to remove.
 
 ---
 

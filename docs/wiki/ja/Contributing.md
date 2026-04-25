@@ -1,7 +1,7 @@
 # コントリビューティング
 
 > **Language**: [English](../en/Contributing.md) | [日本語](../ja/Contributing.md)
-> **Last updated**: 2026-04-25
+> **Last updated**: 2026-04-25 (updated 2026-04-25: ルール正規ソースを src/.claude/rules/ に移動; edit-vs-effect 分離を追記)
 > **EN canonical**: 2026-04-25 (updated 2026-04-25) of wiki/en/Contributing.md
 > **Audience**: エージェント開発者
 
@@ -72,7 +72,7 @@
 
 ## ルールの更新
 
-1. **`.claude/rules/{name}.md`の正規ファイルを編集します。**
+1. **`src/.claude/rules/{name}.md`の正規ファイルを編集します**（配置の根拠は下記「Aphelion 自身のルールを編集する」を参照）。
 
 2. **`wiki/en/Rules-Reference.md`と`wiki/ja/Rules-Reference.md`の両方のRules-Referenceエントリを更新します。**
 
@@ -80,6 +80,21 @@
 
 4. **ルールがトリアージに影響する場合**、`wiki/en/Triage-System.md`と`wiki/ja/Triage-System.md`も更新します。
 
+### Aphelion 自身のルールを編集する
+
+`rules/*.md` の正規ソースは `src/.claude/rules/` にあり、`.claude/rules/` ではありません。これは意図的な配置です。
+
+Claude Code は `rules/*.md` を `~/.claude/rules/`（user-global）と `<project>/.claude/rules/`（project-local）の双方から **加算的に** auto-load します。Aphelion メンテナにとって、これは「リポジトリ内でセッションを開くたびに同じルールが二重に読み込まれる」状態を意味し、ルール編集中には**矛盾する 2 版が同時供給される**事態に至っていました。正規ソースを repo-root の `.claude/rules/` から退かすことで、構造的に二重ロードを排除します。詳細は `docs/issues/claude-rules-isolation.md` (#44) を参照。
+
+**実務上の影響**: `src/.claude/rules/` 配下のルールを編集しても、編集中のセッションには即座に反映されません。セッションは `~/.claude/rules/`（user-global mirror = デプロイ済みスナップショット）に従って動作します。編集を反映させるには:
+
+1. 下記のポリシーに従い `package.json` の `version` を bump する。
+2. `node bin/aphelion-agents.mjs update --user`（または merge 後は `npx github:kirin0198/aphelion-agents#main update --user`）を実行する。
+3. 新しい Claude Code セッションを開く。
+
+この edit-vs-effect の分離は意図的です — ルールを編集している最中に、編集中のルールに自身が拘束されるのは chicken-and-egg 問題であり、避けるべきだからです。
+
+> `src/.claude/rules/` を `<repo>/.claude/rules/` にシンボリックリンクしないでください。この配置が解消した二重ロードが再発します。
 
 ---
 
