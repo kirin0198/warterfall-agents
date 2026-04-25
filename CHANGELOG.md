@@ -9,6 +9,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 (no changes)
 
+## 0.3.0 - 2026-04-25
+
+### Changed
+
+- Canonical source for `.claude/rules/` relocated from `<repo>/.claude/rules/` to
+  `<repo>/src/.claude/rules/` to eliminate Claude Code's additive auto-load of rules
+  when working inside the Aphelion repository itself. Per ADR-001 in
+  `docs/issues/claude-rules-isolation.md`, only `rules/` is moved; `agents/`,
+  `commands/`, and `orchestrator-rules.md` remain at repo root because their
+  override semantics (project wins over user-global) already produce correct
+  single-load behavior. (#44)
+- `bin/aphelion-agents.mjs` now uses a hybrid source layout: `agents/`, `commands/`,
+  and `orchestrator-rules.md` are copied from `<packageRoot>/.claude/`; `rules/`
+  is overlaid from `<packageRoot>/src/.claude/rules/`.
+- `package.json` `files` allowlist updated: replaced `.claude/rules` with
+  `src/.claude/rules`.
+- `package.json` version bumped from `0.2.0` to `0.3.0` per the post-#43 policy
+  ("any change under `.claude/**` requires a version bump").
+- `scripts/smoke-update.sh` asserts against `src/.claude/rules/` as the canonical
+  source path.
+
+### Added
+
+- `src/.claude/README.md` explaining the directory's purpose and warning against
+  re-symlinking it to repo root.
+- `docs/wiki/{en,ja}/Contributing.md` section "Editing Aphelion's own rules"
+  documenting ADR-005's edit-vs-effect decoupling: maintainer rule edits do
+  not take effect in their session until they run `update --user`.
+
+### Migration
+
+- Existing users on `0.2.0` need to run `npx github:kirin0198/aphelion-agents#main update --user`
+  (or `npm cache clean --force` first if `0.3.0` doesn't pull immediately) to refresh
+  `~/.claude/rules/`. The version bump invalidates the npx cache; no separate `migrate`
+  command is provided per ADR-004.
+
 ## 0.2.0 - 2026-04-25
 
 ### Fixed
