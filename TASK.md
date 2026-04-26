@@ -3,7 +3,7 @@
 > 参照元: docs/design-notes/git-policy-externalization.md (2026-04-26)
 
 ## フェーズ: git policy externalization (#73)
-最終更新: 2026-04-26T00:00:00
+最終更新: 2026-04-26T12:00:00
 ステータス: 進行中
 
 ## タスク一覧
@@ -13,7 +13,7 @@
 - [x] TASK-002: developer.md の Branch & PR Strategy を縮小 | 対象ファイル: .claude/agents/developer.md
 - [x] TASK-003: analyst.md の重複削除 | 対象ファイル: .claude/agents/analyst.md
 - [x] TASK-004: rules-designer.md に Repository 質問 + テンプレ追加 | 対象ファイル: .claude/agents/rules-designer.md
-- [ ] TASK-005: AC-6 動作確認 (REPO_STATE classification)
+- [x] TASK-005: AC-6 動作確認 (REPO_STATE classification)
 - [ ] TASK-006: PR 作成
 
 ## 直近のコミット
