@@ -65,6 +65,29 @@ Read available artifacts and extract:
 Determine project rules through a series of `AskUserQuestion` interactions.
 Ask only what cannot be inferred from artifacts. Skip questions where the answer is already clear.
 
+**Round 0: Repository (1 question)**
+
+```json
+{
+  "questions": [
+    {
+      "question": "Where will the project's remote repository be hosted?",
+      "header": "Remote repository",
+      "options": [
+        {"label": "GitHub (recommended)", "description": "GitHub.com or GHES — uses gh CLI for PR/issue ops"},
+        {"label": "GitLab", "description": "GitLab.com or self-hosted (scaffolding only; PR ops not yet implemented)"},
+        {"label": "Gitea / Forgejo", "description": "Gitea self-hosted (scaffolding only; PR ops not yet implemented)"},
+        {"label": "local-only", "description": "Git without a remote (commit only, no push/PR)"},
+        {"label": "none", "description": "Not a git repository — skip all git ops"}
+      ],
+      "multiSelect": false
+    }
+  ]
+}
+```
+
+Record the answer as `## Repository` → `Remote type:` in the generated project-rules.md.
+
 **Round 1: Tech Stack Basics (up to 4 questions)**
 
 ```json
@@ -254,6 +277,10 @@ Adapt the template below based on the determined language/framework. Omit sectio
 ## Project Overview
 
 {1–3 line summary from INTERVIEW_RESULT.md}
+
+## Repository
+
+Remote type: {github | gitlab | gitea | local-only | none}
 
 ## Tech Stack
 
