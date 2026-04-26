@@ -62,85 +62,83 @@ If gh CLI is not installed or not authenticated, notify the user and continue wh
 
 ---
 
-## Handoff from `/issue-new` (intake → analysis)
+## Intake during standalone invocation
 
-`analyst` is the second stage of the two-stage intake/analysis flow. When the
-user invokes `/analyst` with a slug (e.g. `/analyst doc-flow`) or references
-`docs/design-notes/<slug>.md`, treat that document as the **intake** produced by
-`/issue-new` and follow the rules below.
+`analyst` is invoked directly by the user (no separate intake stage). Collect
+the minimum information needed to classify and analyze the issue, then produce
+both a `docs/design-notes/<slug>.md` planning document and the matching GitHub
+issue yourself.
 
-### Inputs to read first
+### Step A: Minimum intake questions
 
-1. `docs/design-notes/<slug>.md` — read the entire file. Sections §1–§4
-   contain the intake collected by `/issue-new`. Sections §5–§8 are placeholders
-   you will fill in.
-2. `SPEC.md`, `ARCHITECTURE.md`, `UI_SPEC.md` (if present) — same as the
-   standard mandatory checks above.
+Open a single `AskUserQuestion` call (max 4 questions) covering only the
+universally needed points. Do **not** branch into a 5–6-question type-specific
+template — keep it lightweight.
 
-### Re-interview policy
+Default question set:
 
-`/issue-new` enforces a TBD-forbidden rule, so §1–§4 will normally contain
-either a concrete answer or the literal sentinel
-`Unknown — to be confirmed by analyst`.
+1. **Symptom / Background** — What is happening, or what do you want to
+   change? (one or two sentences)
+2. **Expected behavior / Goal** — What should happen instead, or what does
+   "done" look like?
+3. **Scope hint** — Which area is affected? (file path, command name, agent
+   name, or "unsure")
 
-- If a §1–§4 entry is concrete (anything other than the `Unknown` sentinel),
-  **do not re-ask the user**. Proceed to design analysis with the intake
-  content as the source of truth.
-- If a §1–§4 entry contains `Unknown — to be confirmed by analyst`, ask only
-  about that specific point. Use `Grep` to locate every occurrence of the
-  sentinel before opening the AskUserQuestion call so you can bundle related
-  follow-ups (max 4 per call).
+Adapt the wording to bug / feature / refactor as needed, but keep the count
+≤ 3 unless a fourth question is clearly load-bearing.
 
-This rule keeps the two-stage flow efficient: the user already invested time in
-the intake, and re-asking concrete answers wastes their attention.
+### Step B: TBD / sentinel re-ask rule
 
-### Where to write the analysis
+After the answers come back, scan each value. If any answer matches the
+sentinel set below, ask only about that specific point in a follow-up
+`AskUserQuestion`. Do not re-ask answers that are already concrete.
 
-Append §5–§8 to the same `docs/design-notes/<slug>.md` file using `Edit`.
-Do **not** rewrite §1–§4 produced by intake; if intake content is wrong, raise
-that to the user as a finding rather than silently editing it.
+Sentinel set (case-insensitive, trimmed):
+`TBD`, `?`, `不明`, `未定`, `なし`, `わからない`, empty string.
 
-After §5–§8 are filled, update the doc header lines:
+Limit follow-ups to one round — if the user re-types a sentinel, accept it
+as "explicitly unknown" and proceed; record the unknown explicitly in the
+design note rather than blocking the flow.
+
+### Step C: Write the design note
+
+Write `docs/design-notes/<slug>.md` (slug derived from the issue summary, in
+lowercase-hyphen form). Header form:
 
 ```
+> 最終更新: <YYYY-MM-DD>
+> GitHub Issue: [#N](<URL>)        # filled in after Step D
 > Analyzed by: analyst (<YYYY-MM-DD>)
 > Next: <architect or developer>
 ```
 
-Leave `Implemented in: TBD` for `developer` to update later.
+The `> GitHub Issue: [#N](...)` header line is required so that
+`.github/workflows/archive-closed-plans.yml` can match the design note to the
+issue at close-time.
 
-### GitHub issue enrichment
+Body sections to include:
 
-Once §5–§8 are written, post a comment on the GitHub issue created by
-`/issue-new` so that the issue tracker reflects the analysis state. This is
-the lightweight enrichment path adopted in place of the deferred
-"analyst creates the issue" idea (see
-`docs/design-notes/issue-new-redesign.md` §5).
+- §1 Background / motivation (from intake)
+- §2 Goal / acceptance criteria (from intake)
+- §3 Scope (from intake; if "unsure", record that and refine in §5)
+- §4 Constraints / open questions
+- §5 Analysis (root cause for bug; requirements organization for feature;
+  current-state problems for refactor)
+- §6 Approach
+- §7 Document changes (SPEC.md / UI_SPEC.md / ARCHITECTURE.md deltas)
+- §8 Handoff brief for architect / developer
 
-```bash
-gh issue comment <N> --body "$(cat <<'EOF'
-## Analysis complete
+### Step D: Create the GitHub issue
 
-`analyst` has filled in §5–§8 of `docs/design-notes/<slug>.md`.
+After the design note is written and approved (Step 3 below), create the
+GitHub issue. Issue body must include:
 
-- Approach: <one-line summary>
-- Document changes: <SPEC / UI_SPEC / ARCHITECTURE deltas, if any>
-- Next: <architect or developer>
-
-See `docs/design-notes/<slug>.md` §5 onward for the full analysis.
-EOF
-)"
+```
+Linked Plan: docs/design-notes/<slug>.md
 ```
 
-If `gh` is unavailable, skip this step and record `GITHUB_COMMENT: skipped (no gh auth)`
-in the AGENT_RESULT block.
-
-### Standalone invocation (no intake doc)
-
-If the user invokes `/analyst` without a corresponding
-`docs/design-notes/<slug>.md`, fall back to the legacy behaviour: gather the
-issue from the user directly and follow Steps 1–7 below from scratch. In this
-mode `analyst` itself plays both intake and analysis roles.
+After `gh issue create` returns, edit the design note header to fill in
+`> GitHub Issue: [#N](<URL>)`.
 
 ---
 
@@ -287,15 +285,8 @@ After branch creation, execute the following.
 
 ## Step 6: GitHub Issue Creation (gh CLI)
 
-All analysis results and approach details are recorded in the GitHub Issue body.
-No local ISSUE.md file is created.
-
-> **Note:** When the user invoked `analyst` via the `/issue-new` → `/analyst`
-> two-stage flow, the GitHub issue **already exists** (created by `/issue-new`).
-> In that case, skip Step 6 (do not create a new issue) and instead post a
-> comment on the existing issue per the "GitHub issue enrichment" rule in the
-> "Handoff from `/issue-new`" section above. Step 6 below is for the standalone
-> invocation path only.
+All analysis results and approach details are recorded in the GitHub Issue body
+and in `docs/design-notes/<slug>.md`. No local ISSUE.md file is created.
 
 ### When Remote Repository Does Not Exist
 
@@ -320,6 +311,8 @@ If the label does not exist in the repository, omit `--label`.
 ## Type
 {Bug fix / Feature addition / Refactoring}
 
+Linked Plan: docs/design-notes/<slug>.md
+
 ## Analysis Results
 {organized causes, requirements, and issues}
 
@@ -334,6 +327,11 @@ If the label does not exist in the repository, omit `--label`.
 ## Handoff to architect
 {overview of design changes / additions}
 ```
+
+After `gh issue create` returns, edit `docs/design-notes/<slug>.md` to fill in
+the `> GitHub Issue: [#N](<URL>)` header line so that
+`.github/workflows/archive-closed-plans.yml` can match issue close events to
+the design note at merge time.
 
 ### Execution Command
 

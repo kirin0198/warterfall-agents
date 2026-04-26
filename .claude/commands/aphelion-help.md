@@ -19,13 +19,12 @@ responsibility and are not listed here — run `/help` for those.
 |---------|---------|
 | `/pm` | Quick Delivery launch when requirements are already clear (skips Discovery) |
 | `/aphelion-init` | First-run project rules setup (launches `rules-designer`) |
-| `/issue-new` | Structured intake gate — collect issue details (§1–§4) and create planning doc + GitHub issue (run `/analyst` next for §5–§8) |
 
 ## Standalone agents
 
 | Command | Purpose |
 |---------|---------|
-| `/analyst` | Classify and analyze an issue (bug / feature / refactor) on an existing project |
+| `/analyst` | Classify and analyze an issue (bug / feature / refactor); creates `docs/design-notes/<slug>.md` and the GitHub issue itself |
 | `/codebase-analyzer` | Reverse-engineer SPEC.md / ARCHITECTURE.md from an existing codebase |
 | `/rules-designer` | Generate or update `.claude/rules/project-rules.md` interactively |
 | `/reviewer` | Code review against SPEC.md and ARCHITECTURE.md |
