@@ -26,6 +26,7 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 - Output Language: en
 
 > Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
+> Follows `.claude/rules/git-rules.md` for repository policy and gh CLI availability checks (Startup Probe).
 
 ---
 
@@ -51,12 +52,9 @@ Analyze the content of an issue and perform the following:
    - `ARCHITECTURE.md` — Current design
    - `UI_SPEC.md` — If UI is included
 
-2. Check gh CLI availability:
-```bash
-gh --version
-gh auth status
-gh repo view --json nameWithOwner
-```
+2. Run the Startup Probe defined in `.claude/rules/git-rules.md` → `## Startup Probe`
+   to determine `REPO_STATE`. Use the result to decide whether GitHub issue creation
+   is available (requires `REPO_STATE=github`).
 
 If gh CLI is not installed or not authenticated, notify the user and continue while skipping GitHub issue creation.
 
