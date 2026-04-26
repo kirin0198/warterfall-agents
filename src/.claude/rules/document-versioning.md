@@ -5,9 +5,9 @@
 When updating any design document (SPEC.md, ARCHITECTURE.md, UI_SPEC.md, TEST_PLAN.md), record the update date at the beginning of the file.
 
 ```markdown
-> 最終更新: {YYYY-MM-DD}
-> 更新履歴:
->   - {YYYY-MM-DD}: {変更概要}
+> Last updated: {YYYY-MM-DD}
+> Update history:
+>   - {YYYY-MM-DD}: {summary of change}
 ```
 
 ## Traceability
@@ -24,23 +24,23 @@ Generated at implementation start and updated upon each task completion.
 ```markdown
 # TASK.md
 
-> 参照元: ARCHITECTURE.md ({バージョン or 最終更新日})
+> Source: ARCHITECTURE.md ({version or last-updated date})
 
-## フェーズ: {フェーズ名}
-最終更新: {日時}
-ステータス: 進行中
+## Phase: {phase name}
+Last updated: {timestamp}
+Status: in-progress
 
-## タスク一覧
+## Task list
 
 ### Phase {N}
-- [ ] TASK-001: {タスク名} | 対象ファイル: src/...
-- [ ] TASK-002: {タスク名} | 対象ファイル: src/...
+- [ ] TASK-001: {task name} | Target file: src/...
+- [ ] TASK-002: {task name} | Target file: src/...
 
-## 直近のコミット
-（タスク完了のたびに git log --oneline -3 を記録する）
+## Recent commits
+(Record `git log --oneline -3` after each task completion.)
 
-## 中断時のメモ
-（セッション中断時に状況をここに記録する）
+## Suspension notes
+(Record session-suspension status here.)
 ```
 
 ## TASK.md Lifecycle
