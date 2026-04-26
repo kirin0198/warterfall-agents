@@ -4,7 +4,7 @@
 
 ## フェーズ: git policy externalization (#73)
 最終更新: 2026-04-26T12:00:00
-ステータス: 進行中
+ステータス: 完了
 
 ## タスク一覧
 
@@ -14,7 +14,7 @@
 - [x] TASK-003: analyst.md の重複削除 | 対象ファイル: .claude/agents/analyst.md
 - [x] TASK-004: rules-designer.md に Repository 質問 + テンプレ追加 | 対象ファイル: .claude/agents/rules-designer.md
 - [x] TASK-005: AC-6 動作確認 (REPO_STATE classification)
-- [ ] TASK-006: PR 作成
+- [x] TASK-006: PR 作成 | PR #74: https://github.com/kirin0198/aphelion-agents/pull/74
 
 ## 直近のコミット
 （タスク完了のたびに git log --oneline -3 を記録する）
