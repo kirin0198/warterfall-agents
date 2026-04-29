@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `.github/workflows/check-readme-wiki-sync.yml` — advisory CI check for README ↔ Wiki
+  drift; runs on every PR (`pull_request: [opened, edited, synchronize]`). Read-only
+  check; does not block merge. Promotion to a required status check is a deliberate
+  follow-up decision. (#81 / follow-up to #76)
 - `language-rules.md` — "Repo-root README sync convention" sub-section closing
   the #75 dangling pointer (#82). Covers: §3.1 English canonical direction;
   §3.2 Same-PR mandatory sync with 7-day follow-up exception for minor fixes;
