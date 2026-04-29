@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `scripts/check-readme-wiki-sync.sh` — new executable script that checks
+  cross-source consistency for three items: (1) agent count parity across
+  `README.md`, `README.ja.md`, `docs/wiki/en/Home.md`, `docs/wiki/ja/Home.md`;
+  (2) slash command list parity between `.claude/commands/aphelion-help.md`
+  and `docs/wiki/en/Getting-Started.md`; (3) `^## ` heading count + line
+  position match between `README.md` and `README.ja.md`. Exit 0 on success
+  (silent), exit 1 with stderr message identifying the failed surface. (#76)
+- `docs/wiki/{en,ja}/Contributing.md` — new §"README ↔ Wiki responsibility
+  split" section (replaces the former §"README vs Wiki separation") documenting
+  roles, boundary rule, and co-update set table; new PR Checklist entry for
+  the co-update set check. (#76)
 - `language-rules.md` — new "Hand-authored canonical narrative" section
   declaring per-directory canonical-language rules for `docs/wiki/{en,ja}/`
   (bilingual, English canonical, English-fixed skeleton),
