@@ -3,8 +3,8 @@
 > Source: design-notes/repo-root-readme-sync-convention.md (2026-04-29) + GitHub issue #82
 
 ## Phase: docs/repo-root-readme-sync-convention
-Last updated: 2026-04-30T00:00:00
-Status: In progress
+Last updated: 2026-04-30T00:30:00
+Status: Completed
 
 ## Task List
 
@@ -15,7 +15,9 @@ Status: In progress
 - [x] TASK-004: design note §7 に決定事項を記録 + Implemented in 追記 | Target file: docs/design-notes/repo-root-readme-sync-convention.md
 
 ## Recent Commits
-(各タスク完了後に git log --oneline -3 を記録)
+c03cde5 docs: amend Implemented in to PR #87 (#82)
+dba6520 docs: record #82 decisions and Implemented in (#82)
+87c9ecd chore: bump to 0.3.4 and update CHANGELOG for #82
 
 ## Session Interruption Notes
 (中断時の状況をここに記録)
