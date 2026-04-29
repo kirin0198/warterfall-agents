@@ -435,4 +435,4 @@ grep -A3 '\[Unreleased\]' CHANGELOG.md | head
 
 `architect` 起動は不要（ARCHITECTURE.md 影響なし、purely docs/policy 改訂）。
 
-> Implemented in: TBD
+> Implemented in: PR #87
