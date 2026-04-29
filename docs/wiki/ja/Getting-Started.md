@@ -1,8 +1,8 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: /aphelion-init と /aphelion-help を追加, #39)
-> **EN canonical**: 2026-04-25 (updated 2026-04-25) of wiki/en/Getting-Started.md
+> **Last updated**: 2026-04-30 (updated 2026-04-30: TASK.md プレースホルダー規約を明記, #80)
+> **EN canonical**: 2026-04-30 (updated 2026-04-30) of wiki/en/Getting-Started.md
 > **Audience**: 新規ユーザー
 
 このページはAphelionを使い始めるために必要なすべてをカバーします：Claude Code のセットアップ、初回実行のウォークスルー、利用シナリオ、コマンドリファレンス、トラブルシューティング。
@@ -260,6 +260,8 @@ Deliveryが完了した後（serviceプロジェクトの場合）：
 | Discovery | INTERVIEW_RESULT.md、RESEARCH_RESULT.md、POC_RESULT.md、SCOPE_PLAN.md、DISCOVERY_RESULT.md |
 | Delivery | SPEC.md、UI_SPEC.md、ARCHITECTURE.md、TASK.md、実装コード、TEST_PLAN.md、SECURITY_AUDIT.md、README.md |
 | Operations | Dockerfile、docker-compose.yml、.github/workflows/ci.yml、DB_OPS.md、OBSERVABILITY.md、OPS_PLAN.md |
+
+**`TASK.md` について:** `developer` エージェントは Delivery フェーズ中にタスクごとの進捗を管理するために `TASK.md` を作成・更新します。フェーズが実行されていない間は、`TASK.md` はリポジトリルートに空のプレースホルダーファイルとして存在します。これは正常なアイドル状態であり、未完了の作業があることを示すものではありません。
 
 ### セッション再開
 

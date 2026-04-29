@@ -1,7 +1,7 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-04-25 (updated 2026-04-25: added /aphelion-init and /aphelion-help, #39)
+> **Last updated**: 2026-04-30 (updated 2026-04-30: clarify TASK.md placeholder convention, #80)
 > **Audience**: New users
 
 This page covers everything you need to start using Aphelion: Claude Code setup, first-run walkthrough, usage scenarios, command reference, and troubleshooting.
@@ -273,6 +273,8 @@ Each agent generates one or more files:
 | Discovery | INTERVIEW_RESULT.md, RESEARCH_RESULT.md, POC_RESULT.md, SCOPE_PLAN.md, DISCOVERY_RESULT.md |
 | Delivery | SPEC.md, UI_SPEC.md, ARCHITECTURE.md, TASK.md, implementation code, TEST_PLAN.md, SECURITY_AUDIT.md, README.md |
 | Operations | Dockerfile, docker-compose.yml, .github/workflows/ci.yml, DB_OPS.md, OBSERVABILITY.md, OPS_PLAN.md |
+
+**Note on `TASK.md`:** The `developer` agent creates and updates `TASK.md` during a Delivery phase to track per-task progress. When no phase is running, `TASK.md` sits at the repository root as an empty placeholder file — this is the correct idle state, not a sign of incomplete work.
 
 ### Session Resume
 
