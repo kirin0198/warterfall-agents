@@ -76,7 +76,7 @@ After Phase 0, re-run `change-classifier` to produce a valid AGENT_RESULT.
 ### Patch Plan
 ```
 Phase 1: Change classification / urgency  → change-classifier  → ⏸ User approval (change plan)  ← Mandatory HITL Gate #1
-Phase 2: Issue creation / approach        → analyst            → ⏸ User approval
+Phase 2: Issue creation / approach        → analyst            → doc-reviewer (conditional auto) → ⏸ User approval
 Phase 3: Implementation                  → developer          → ⏸ User approval
 Phase 4: Test execution                  → tester             → ⏸ User approval
 [Final flow completion confirmation]                           ⏸ User approval                   ← Mandatory HITL Gate #2
@@ -88,11 +88,16 @@ Phase 4: Test execution       → tester             → ⏸ User approval
 Phase 5: Security audit (opt) → security-auditor   → ⏸ User approval
 ```
 
+> **Conditional auto for doc-reviewer (Patch only)**: doc-reviewer is
+> auto-inserted only when `analyst.DOCS_UPDATED` contains SPEC.md or
+> ARCHITECTURE.md with a non-empty diff. If `DOCS_UPDATED` reports
+> SPEC.md as `no_change`, doc-reviewer is skipped (no rollback chain formed).
+
 ### Minor Plan
 ```
 Phase 1: Change classification / urgency  → change-classifier         → ⏸ User approval (change plan)  ← Mandatory HITL Gate #1
 Phase 2: Impact analysis                  → impact-analyzer           → ⏸ User approval
-Phase 3: Issue creation / approach        → analyst                   → ⏸ User approval
+Phase 3: Issue creation / approach        → analyst                   → doc-reviewer (conditional auto) → ⏸ User approval
 Phase 4: Differential architecture design → architect (differential)  → ⏸ User approval
 Phase 5: Implementation                   → developer                 → ⏸ User approval
 Phase 6: Test execution                   → tester                    → ⏸ User approval
@@ -100,15 +105,19 @@ Phase 7: Review                           → reviewer                  → ⏸ 
 [Final flow completion confirmation]                                   ⏸ User approval              ← Mandatory HITL Gate #2
 ```
 
+> **doc-reviewer for Minor**: Always invoked after analyst. Minor and Major always invoke doc-reviewer after analyst.
+
 ### Major Plan (handoff to delivery-flow)
 ```
 Phase 1: Change classification / urgency  → change-classifier  → ⏸ User approval (change plan)  ← Mandatory HITL Gate #1
 Phase 2: Impact analysis                  → impact-analyzer    → ⏸ User approval
-Phase 3: Issue creation / approach        → analyst            → ⏸ User approval
+Phase 3: Issue creation / approach        → analyst            → doc-reviewer (conditional auto) → ⏸ User approval
 Phase 4: Pre-security audit               → security-auditor   → ⏸ User approval
 [Generate MAINTENANCE_RESULT.md]
 [delivery-flow handoff confirmation]                           ⏸ User approval                   ← Mandatory HITL Gate #2
 ```
+
+> **doc-reviewer for Major**: Always invoked after analyst. Minor and Major always invoke doc-reviewer after analyst.
 
 ---
 
@@ -160,6 +169,7 @@ Inherits `.claude/orchestrator-rules.md` Rollback Rules with the following maint
 | reviewer CRITICAL | developer | Minor only (Patch has no reviewer) |
 | security-auditor CRITICAL | developer | Major only (pre-audit detection) |
 | developer blocked | architect (differential mode) | Minor only. Patch rolls back to analyst |
+| doc-reviewer FAIL | analyst | All plans (Patch only when triggered). Shares Rollback Limit (Common) |
 
 ---
 
