@@ -198,7 +198,7 @@ Phase 1: Requirements interview  → interviewer       → ⏸ User approval
 ```
 Phase 1: Requirements interview  → interviewer       → ⏸ User approval
 Phase 2: Rules definition        → rules-designer    → ⏸ User approval
-Phase 3: Scope definition        → scope-planner     → ⏸ User approval → Done
+Phase 3: Scope definition        → scope-planner     → doc-reviewer (auto) → ⏸ User approval → Done
 ```
 
 ### Standard Plan
@@ -207,7 +207,7 @@ Phase 1: Requirements interview  → interviewer       → ⏸ User approval
 Phase 2: Domain research         → researcher        → ⏸ User approval
 Phase 3: Technical PoC           → poc-engineer      → ⏸ User approval
 Phase 4: Rules definition        → rules-designer    → ⏸ User approval
-Phase 5: Scope definition        → scope-planner     → ⏸ User approval → Done
+Phase 5: Scope definition        → scope-planner     → doc-reviewer (auto) → ⏸ User approval → Done
 ```
 
 ### Full Plan
@@ -217,15 +217,20 @@ Phase 2: Domain research         → researcher        → ⏸ User approval
 Phase 3: Technical PoC           → poc-engineer      → ⏸ User approval
 Phase 4: Concept validation      → concept-validator → ⏸ User approval  (UI projects only)
 Phase 5: Rules definition        → rules-designer    → ⏸ User approval
-Phase 6: Scope definition        → scope-planner     → ⏸ User approval → Done
+Phase 6: Scope definition        → scope-planner     → doc-reviewer (auto) → ⏸ User approval → Done
 ```
+
+> **Note on Minimal**: Minimal plan ends after `interviewer`. Since
+> `doc-reviewer` is triggered post-`scope-planner`, it is not invoked in
+> Minimal. This is by structural absence, not by an explicit "skip" rule.
 
 ---
 
 ## Rollback Rules
 
-In the Discovery domain, there are two rollback patterns.
-Rollbacks are limited to **3 times maximum**. If exceeded, report the situation to the user and ask for their decision.
+In the Discovery domain, there are three rollback patterns.
+Rollbacks are limited per `.claude/orchestrator-rules.md` "Rollback Limit
+(Common)" (max 3 across all rollback types). If exceeded, report the situation to the user and ask for their decision.
 
 ### Pattern 1: poc-engineer → interviewer (technically infeasible requirements)
 
@@ -277,6 +282,35 @@ scope-planner
 ### Request
 - Please conduct additional research on the above information and update RESEARCH_RESULT.md
 ```
+
+### Pattern 3: doc-reviewer FAIL → scope-planner
+
+```
+doc-reviewer (DOC_REVIEW_RESULT: fail, TRIGGERED_BY: scope-planner)
+  → scope-planner (fix)
+    → doc-reviewer (re-check)
+```
+
+Pass the following to `scope-planner` during rollback:
+
+```
+## Rollback: Doc review failed
+
+### Rollback source
+doc-reviewer
+
+### Inconsistencies
+{INCONSISTENCY_ITEMS list with perspective and evidence}
+
+### Files to fix
+DISCOVERY_RESULT.md (and possibly INTERVIEW_RESULT.md / SCOPE_PLAN.md)
+
+### Request
+- Resolve the inconsistencies above without removing already-confirmed requirements
+- Re-emit AGENT_RESULT after fixing
+```
+
+Limit: shared via `.claude/orchestrator-rules.md` "Rollback Limit (Common)".
 
 ---
 
