@@ -5,6 +5,7 @@
 > 更新履歴:
 >   - 2026-04-24: Maintenance Flow (第4フロー) を追加
 >   - 2026-04-30: doc-reviewer (cross-cutting agent) を追加 (#91)
+>   - 2026-04-30: doc-flow (5th flow, customer deliverable generation) を追加 (#54)
 
 This file provides a high-level overview of the Aphelion workflow.
 Behavioral rules are defined in `.claude/rules/` (auto-loaded).
@@ -16,7 +17,7 @@ Agent-specific rules are documented in the individual files under `.claude/agent
 
 ## Aphelion Workflow Model
 
-Aphelion divides the entire project lifecycle into three primary domains — **Discovery (requirements exploration) → Delivery (design & implementation) → Operations (deploy & operations)** — plus an independent **Maintenance** flow for changes to existing projects. Each domain is managed by an independent orchestrator (flow).
+Aphelion divides the entire project lifecycle into three primary domains — **Discovery (requirements exploration) → Delivery (design & implementation) → Operations (deploy & operations)** — plus an independent **Maintenance** flow for changes to existing projects, and an independent **Doc** flow for customer-deliverable doc generation. Each domain is managed by an independent orchestrator (flow).
 
 ### Design Principles
 
@@ -37,6 +38,10 @@ Discovery Flow ──[DISCOVERY_RESULT.md]──▶ Delivery Flow ──[DELIVER
                     (existing project maintenance)
                     3 new agents + reuse (analyst, architect, developer, tester,
                                           reviewer, security-auditor, codebase-analyzer)
+
+                    Doc Flow ──[DOC_FLOW_RESULT.md + docs/deliverables/{slug}/*.md]
+                    (customer-deliverable doc generation, MVP=6 doc types)
+                    7 agents (1 orchestrator + 6 authors)
 ```
 
 **Maintenance Flow (new)**: Triggered by bug reports, CVE alerts, performance regressions,
@@ -50,10 +55,10 @@ Major handoff targets Delivery Flow as a pre-processing stage.
 
 ### Branching by Product Type
 
-| PRODUCT_TYPE | Discovery | Delivery | Maintenance | Operations |
-|-------------|-----------|----------|-------------|------------|
-| `service` | Run | Run | Run (for maintenance) | Run |
-| `tool` / `library` / `cli` | Run | Run | Run (for maintenance) | **Skip** |
+| PRODUCT_TYPE | Discovery | Delivery | Maintenance | Operations | Doc |
+|-------------|-----------|----------|-------------|------------|-----|
+| `service` | Run | Run | Run (for maintenance) | Run | Run (on demand) |
+| `tool` / `library` / `cli` | Run | Run | Run (for maintenance) | **Skip** | Run (user-manual / ops-manual auto-skip) |
 
 ---
 
@@ -68,6 +73,18 @@ Orchestrator-specific rules are in `.claude/orchestrator-rules.md` (read on-dema
 |-------|-------|---------|------------|
 | `sandbox-runner` | Read, Bash, Grep | High-risk command execution | Auto-insert (Standard+) / explicit delegation |
 | `doc-reviewer` | Read, Glob, Grep | Markdown artifact consistency review | Auto-insert (all plans) / standalone |
+
+### Doc Flow agents
+
+| Agent | Tools | Purpose | Invocation |
+|-------|-------|---------|------------|
+| `doc-flow` | Bash, Read, Write, Glob, Grep, Agent | 5th flow orchestrator | `/doc-flow` |
+| `hld-author` | Read, Write, Glob, Grep | High-Level Design | via doc-flow / standalone |
+| `lld-author` | Read, Write, Glob, Grep | Low-Level Design | via doc-flow / standalone |
+| `ops-manual-author` | Read, Write, Glob, Grep | Ops manual | via doc-flow / standalone |
+| `api-reference-author` | Read, Write, Glob, Grep | API reference (customer) | via doc-flow / standalone |
+| `user-manual-author` | Read, Write, Glob, Grep | End-user manual | via doc-flow / standalone |
+| `handover-author` | Read, Write, Glob, Grep | Handover package | via doc-flow / standalone |
 
 ---
 

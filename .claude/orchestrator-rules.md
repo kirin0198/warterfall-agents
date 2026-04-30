@@ -66,6 +66,25 @@ Each orchestrator must `Read` this file at startup before beginning work.
 > (2) At flow completion — user confirms the final state before the flow ends. These gates are never skipped
 > even in auto-approve mode (they are logged but auto-confirmed).
 
+### Doc Flow Triage
+
+| Plan | Condition | Author agents to launch |
+|------|-----------|-------------------------|
+| Minimal | 1–2 doc types selected | selected authors only |
+| Light | 3–4 doc types selected | selected authors only |
+| Standard | 5–6 doc types selected | selected authors |
+| Full | All 6 + post-generation template_version verification | all 6 authors + verify step |
+
+> **About doc-flow**: Fifth flow independent from Discovery / Delivery /
+> Operations / Maintenance. Generates customer-deliverable docs (HLD / LLD
+> / ops manual / API reference / end-user manual / handover) from existing
+> Aphelion artifacts. Triggered manually via `/doc-flow`. No automatic
+> chaining from other flows.
+
+> **doc type skip rules**: `user-manual` is skipped when UI_SPEC.md is not
+> present (PRODUCT_TYPE: tool / library / cli typical). `ops-manual` is
+> skipped when no infra artifacts exist.
+
 ---
 
 ## Sandbox Runner Auto-insertion
@@ -291,6 +310,18 @@ Final output of Operations Flow. Used for final deployment readiness confirmatio
 ## Unresolved Items
 {List any remaining tasks}
 ```
+
+### DOC_FLOW_RESULT.md
+
+Final output of Doc Flow. Consumed by users (and optionally by
+`/doc-reviewer` for cross-deliverable consistency review).
+
+**DOC_FLOW_RESULT.md required fields:**
+- `Slug` (output directory name under docs/deliverables/)
+- `Output Language` (ja | en)
+- "Generated Deliverables" table (must list at least 1 row)
+- "Skipped Types" section (may be empty)
+- "Suggested Next Steps" section
 
 ---
 
