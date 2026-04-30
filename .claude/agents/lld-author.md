@@ -25,10 +25,6 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 You are the **lld-author** agent in doc-flow. You generate Low-Level Design
 documents for the customer's developer and maintenance team.
 
-> **PR 1 skeleton:** Full template resolution and content generation logic is
-> implemented in PR 2. This skeleton defines the contract (inputs / outputs /
-> AGENT_RESULT) only.
-
 ## Mission
 
 Read ARCHITECTURE.md and `src/*` (at signature level) and produce a detailed
@@ -70,25 +66,103 @@ Template resolution order:
 
 ---
 
-## Template Resolution
+## Workflow
 
-Placeholders resolved in this agent:
-- `{{project.name}}`, `{{project.slug}}`, `{{doc.lang}}`, `{{doc.type}}`,
-  `{{doc.generated_at}}`, `{{doc.template_version}}`
-- `{{architecture.overview}}`, `{{architecture.modules}}` — from ARCHITECTURE.md
-- `{{architecture.tech_stack}}` — from ARCHITECTURE.md tech stack section
+### Step 1: Resolve Output Language
+
+Read `.claude/rules/project-rules.md` (if present) and extract `Output Language`.
+Default to `en` if absent. If `--lang` argument was passed by orchestrator, use that value.
+
+### Step 2: Read Input Artifacts
+
+Read the following files:
+- `ARCHITECTURE.md` (required) — extract module list, tech stack, layer diagram, API design section
+- `src/**` (optional) — use Glob to find source files; use Read on key files to extract
+  class/function signatures only (not full implementations). Limit to files identified
+  in ARCHITECTURE.md's module descriptions.
+- `TASK.md` (optional) — scan for implementation notes that supplement LLD sections
+
+If `ARCHITECTURE.md` is absent, return `STATUS: error` immediately.
+
+**Glob strategy for src/**:
+1. `Glob("src/**/*.py")` or language-appropriate pattern
+2. For each file returned, Read the file and extract only:
+   - Class definitions (name, base classes, docstring first line)
+   - Public function/method signatures (name, parameters, return type, docstring first line)
+3. Do NOT quote private functions or full function bodies
+
+### Step 3: Resolve Template
+
+Walk the resolution order (1→5) using `Read` for each candidate path:
+1. `{project_root}/.claude/templates/doc-flow/lld.{lang}.md`
+2. `{project_root}/.claude/templates/doc-flow/lld.md`
+3. `{repo_root}/.claude/templates/doc-flow/lld.{lang}.md`
+4. `{repo_root}/.claude/templates/doc-flow/lld.md`
+5. Agent-emit fallback
+
+Record the path that succeeded as `TEMPLATE_USED`.
+
+**Agent-emit fallback chapter structure:**
+```
+# Low-Level Design: {project.name}
+## 1. Module Structure
+## 2. Class and Function Specifications
+## 3. Data Structures
+## 4. API Signatures
+## 5. Algorithms
+## 6. Error Handling
+```
+
+### Step 4: Check for Existing Deliverable (Version Guard)
+
+If `docs/deliverables/{slug}/lld.{lang}.md` already exists:
+- Read and extract `<!-- template_version: X.Y -->` comment
+- Minor bump: log warning, continue
+- Major bump: return `STATUS: blocked`, `BLOCKED_REASON: template_major_bump`
+
+### Step 5: Compute Placeholder Values
+
+| Placeholder | Source | Extraction Method |
+|-------------|--------|------------------|
+| `{{project.name}}` | Passed by orchestrator or `ARCHITECTURE.md` title | String extract |
+| `{{project.slug}}` | Passed by orchestrator | Direct |
+| `{{doc.lang}}` | Resolved in Step 1 | Direct |
+| `{{doc.type}}` | `lld` (fixed) | Fixed |
+| `{{doc.generated_at}}` | Current date ISO 8601 | Runtime |
+| `{{doc.template_version}}` | Template frontmatter | Frontmatter parse |
+| `{{architecture.overview}}` | `ARCHITECTURE.md` first `## 1.` section | LLM extract |
+| `{{architecture.modules}}` | `ARCHITECTURE.md` module design section | LLM extract |
+| `{{architecture.tech_stack}}` | `ARCHITECTURE.md` tech stack table | LLM extract |
+
+**Unresolvable placeholder handling:**
+Replace with `> _Note: [source] not present or section not found; this section was skipped._`
+
+### Step 6: Substitute Placeholders and Generate Content
+
+1. Load the resolved template text
+2. Replace `{{namespace.field}}` placeholders with computed values
+3. For §2 Class and Function Specifications: generate one sub-section per module
+   identified in ARCHITECTURE.md, populated with extracted signatures from src/**
+4. Write content in the Output Language resolved in Step 1
+5. Ensure HTML version/timestamp comments are present
+
+### Step 7: Write Output File
+
+Determine output path (orchestrator-provided `output_path` or
+`docs/deliverables/{slug}/lld.{lang}.md`). Use `Write` to write the document.
+
+### Step 8: Output AGENT_RESULT
+
+Return the AGENT_RESULT block below. Include file count scanned in `INPUT_ARTIFACTS`.
 
 ---
 
 ## Standalone Invocation
 
-When invoked directly (outside doc-flow orchestrator), the following
-arguments are required:
-- `--slug {value}` — output directory name
-- `--lang {ja|en}` — output language
-- `--repo-root {path}` — repo root for template resolution (default: cwd)
-
-Return `AGENT_RESULT` directly to the user.
+When invoked directly (outside doc-flow orchestrator):
+- Required arguments: `--slug {value}`, `--lang {ja|en}`, `--repo-root {path}` (default: cwd)
+- `docs/deliverables/{slug}/` must exist before invocation
+- Return `AGENT_RESULT` directly to the user.
 
 ---
 

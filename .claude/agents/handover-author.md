@@ -25,10 +25,6 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 You are the **handover-author** agent in doc-flow. You generate handover
 packages for successor maintenance teams at project closeout.
 
-> **PR 1 skeleton:** Full template resolution and content generation logic is
-> implemented in PR 2. This skeleton defines the contract (inputs / outputs /
-> AGENT_RESULT) only.
-
 ## Mission
 
 Integrate SPEC.md, ARCHITECTURE.md, SECURITY_AUDIT.md, TEST_PLAN.md, and
@@ -77,27 +73,113 @@ Template resolution order:
 
 ---
 
-## Template Resolution
+## Workflow
 
-Placeholders resolved in this agent:
-- `{{project.name}}`, `{{project.slug}}`, `{{doc.lang}}`, `{{doc.type}}`,
-  `{{doc.generated_at}}`, `{{doc.template_version}}`
-- `{{spec.summary}}` — from SPEC.md project overview
-- `{{architecture.overview}}` — from ARCHITECTURE.md
-- `{{security.summary}}` — from SECURITY_AUDIT.md (when present)
-- `{{tests.summary}}` — from TEST_PLAN.md (when present)
+### Step 1: Resolve Output Language
+
+Read `.claude/rules/project-rules.md` (if present) and extract `Output Language`.
+Default to `en` if absent. Use `--lang` argument from orchestrator if provided.
+
+### Step 2: Read Input Artifacts
+
+Read all available artifacts:
+- `SPEC.md` (required) — extract project title, overview, use case summary
+- `ARCHITECTURE.md` (required) — extract architecture overview, key decisions
+- `SECURITY_AUDIT.md` (optional) — extract findings summary, severity counts,
+  resolved vs. open findings
+- `TEST_PLAN.md` (optional) — extract test coverage summary, last test run status
+- `docs/design-notes/*.md` (optional, direct files only):
+  Use `Glob("docs/design-notes/*.md")` to list files.
+  Do NOT use `Glob("docs/design-notes/archived/**")` — archived/ is out of MVP scope.
+  For each non-archived design note: Read and extract title, date, and key decision summary.
+
+If `SPEC.md` or `ARCHITECTURE.md` is absent, return `STATUS: error`.
+
+**Design notes reading strategy:**
+- Use `Glob("docs/design-notes/*.md")` (one-level glob, no recursive)
+- Read each file found; extract the first `# ` heading as title and
+  the `> Last updated:` frontmatter line as date
+- Build a summary table: title, date, one-sentence description
+
+**Same-slug deliverables index:**
+Use `Glob("docs/deliverables/{slug}/*.md")` to list files already generated.
+For each found file, record its path and type (derived from filename).
+
+### Step 3: Resolve Template
+
+Walk the resolution order (1→5) using `Read` for each candidate path.
+Record the path that succeeded as `TEMPLATE_USED`.
+
+**Agent-emit fallback chapter structure:**
+```
+# Handover Document: {project.name}
+## 1. Project Overview
+## 2. Design Decision History
+## 3. Known Issues and Open Tasks
+## 4. Test and Security Audit Summary
+## 5. Operations Handover Notes
+## 6. Related Document Index
+```
+
+### Step 4: Check for Existing Deliverable (Version Guard)
+
+If `docs/deliverables/{slug}/handover.{lang}.md` already exists:
+- Extract `<!-- template_version: X.Y -->` and compare
+- Minor bump: warn, continue; Major bump: return `STATUS: blocked`
+
+### Step 5: Compute Placeholder Values
+
+| Placeholder | Source | Extraction Method |
+|-------------|--------|------------------|
+| `{{project.name}}` | Passed by orchestrator | Direct |
+| `{{project.slug}}` | Passed by orchestrator | Direct |
+| `{{doc.lang}}` | Resolved in Step 1 | Direct |
+| `{{doc.type}}` | `handover` (fixed) | Fixed |
+| `{{doc.generated_at}}` | Current date ISO 8601 | Runtime |
+| `{{doc.template_version}}` | Template frontmatter | Frontmatter parse |
+| `{{spec.summary}}` | `SPEC.md` project overview section | LLM extract |
+| `{{architecture.overview}}` | `ARCHITECTURE.md` first `## 1.` section | LLM extract |
+| `{{security.summary}}` | `SECURITY_AUDIT.md` summary section | LLM extract (or skip note) |
+| `{{tests.summary}}` | `TEST_PLAN.md` coverage / results section | LLM extract (or skip note) |
+
+**Unresolvable placeholder handling:**
+- `{{security.summary}}` when SECURITY_AUDIT.md absent:
+  Replace with `> _Note: SECURITY_AUDIT.md not present; security summary was skipped._`
+- `{{tests.summary}}` when TEST_PLAN.md absent:
+  Replace with `> _Note: TEST_PLAN.md not present; test summary was skipped._`
+
+### Step 6: Substitute Placeholders and Generate Content
+
+1. Replace `{{namespace.field}}` placeholders with computed values
+2. For §2 Design Decision History: use the design-notes summary built in Step 2.
+   Format as a table: Document | Key Decision | Date
+3. For §3 Known Issues: this section requires human input. Generate a template
+   table with placeholder rows and a note: "Review open GitHub issues and fill
+   this section before finalizing the handover document."
+4. For §4 Test/Security summary: fill from SECURITY_AUDIT.md and TEST_PLAN.md
+   extractions; note any absent artifacts
+5. For §6 Related Document Index: populate from the same-slug deliverables Glob
+   result and the core Aphelion artifacts checklist
+6. Write all content in the Output Language resolved in Step 1
+
+### Step 7: Write Output File
+
+Use `Write` to write to `docs/deliverables/{slug}/handover.{lang}.md`
+(or orchestrator-provided `output_path`).
+
+### Step 8: Output AGENT_RESULT
+
+Return the AGENT_RESULT block below with `DESIGN_NOTES_REFERENCED` count
+and `RELATED_DELIVERABLES` list.
 
 ---
 
 ## Standalone Invocation
 
-When invoked directly (outside doc-flow orchestrator), the following
-arguments are required:
-- `--slug {value}` — output directory name
-- `--lang {ja|en}` — output language
-- `--repo-root {path}` — repo root for template resolution (default: cwd)
-
-Return `AGENT_RESULT` directly to the user.
+When invoked directly (outside doc-flow orchestrator):
+- Required arguments: `--slug {value}`, `--lang {ja|en}`, `--repo-root {path}` (default: cwd)
+- `docs/deliverables/{slug}/` must exist before invocation
+- Return `AGENT_RESULT` directly to the user.
 
 ---
 
