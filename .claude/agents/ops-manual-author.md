@@ -25,10 +25,6 @@ If `.claude/rules/project-rules.md` is absent, apply defaults:
 You are the **ops-manual-author** agent in doc-flow. You generate operations
 manuals for the customer's operations team.
 
-> **PR 1 skeleton:** Full template resolution and content generation logic is
-> implemented in PR 2. This skeleton defines the contract (inputs / outputs /
-> AGENT_RESULT) only.
-
 ## Mission
 
 Repackage infra-builder / releaser / observability outputs (Dockerfile,
@@ -78,24 +74,98 @@ Template resolution order:
 
 ---
 
-## Template Resolution
+## Workflow
 
-Placeholders resolved in this agent:
-- `{{project.name}}`, `{{project.slug}}`, `{{doc.lang}}`, `{{doc.type}}`,
-  `{{doc.generated_at}}`, `{{doc.template_version}}`
-- `{{ops.runbook}}` — dynamically generated from infra artifacts and OPS_PLAN.md
+### Step 1: Resolve Output Language
+
+Read `.claude/rules/project-rules.md` (if present) and extract `Output Language`.
+Default to `en` if absent. Use `--lang` argument from orchestrator if provided.
+
+### Step 2: Check Skip Condition
+
+Use `Glob` to check for the presence of infra artifacts:
+- `Glob("Dockerfile")`, `Glob("docker-compose*.yml")`, `Glob("infra/**")`
+- Also read `SPEC.md` (if present) to detect `PRODUCT_TYPE: tool | library | cli`
+
+If **no** infra artifacts are found and PRODUCT_TYPE is tool/library/cli:
+→ Return `STATUS: skipped`, `SKIP_REASON: no infra artifacts (PRODUCT_TYPE != service)`
+immediately. Do not proceed further.
+
+If infra artifacts exist OR PRODUCT_TYPE is `service`: proceed to Step 3.
+
+### Step 3: Read Input Artifacts
+
+Read available artifacts:
+- `Dockerfile` — extract exposed ports, base image, environment variables
+- `docker-compose.yml` — extract service definitions, ports, volumes, environment
+- `infra/**` — Glob and read key config files (k8s manifests, terraform, etc.)
+- `OBSERVABILITY.md` — extract monitoring targets, alert thresholds, dashboards
+- `OPS_PLAN.md` — extract runbook entries, incident procedures, escalation paths
+- `OPS_RESULT.md` — extract operational notes from Operations Flow run
+
+### Step 4: Resolve Template
+
+Walk the resolution order (1→5) using `Read` for each candidate path.
+Record the path that succeeded as `TEMPLATE_USED`.
+
+**Agent-emit fallback chapter structure:**
+```
+# Operations Manual: {project.name}
+## 1. System Overview (Operations Perspective)
+## 2. Startup and Shutdown Procedures
+## 3. Monitoring and Alerting
+## 4. Backup and Restore
+## 5. Incident Response
+## 6. Maintenance Windows
+## 7. Contact and Escalation
+```
+
+### Step 5: Check for Existing Deliverable (Version Guard)
+
+If `docs/deliverables/{slug}/ops-manual.{lang}.md` already exists:
+- Extract `<!-- template_version: X.Y -->` and compare
+- Minor bump: warn, continue; Major bump: return `STATUS: blocked`
+
+### Step 6: Compute Placeholder Values
+
+| Placeholder | Source | Extraction Method |
+|-------------|--------|------------------|
+| `{{project.name}}` | Passed by orchestrator | Direct |
+| `{{project.slug}}` | Passed by orchestrator | Direct |
+| `{{doc.lang}}` | Resolved in Step 1 | Direct |
+| `{{doc.type}}` | `ops-manual` (fixed) | Fixed |
+| `{{doc.generated_at}}` | Current date ISO 8601 | Runtime |
+| `{{doc.template_version}}` | Template frontmatter | Frontmatter parse |
+| `{{ops.runbook}}` | `OPS_PLAN.md` runbook section + `OBSERVABILITY.md` alerts | LLM extract |
+
+**Unresolvable placeholder handling:**
+Replace with `> _Note: [artifact] not present; this section was skipped._`
+
+### Step 7: Substitute Placeholders and Generate Content
+
+1. Replace placeholders with computed values
+2. For startup/shutdown chapter: extract commands from Dockerfile/compose
+3. For monitoring chapter: extract metrics and thresholds from OBSERVABILITY.md
+4. For incident chapter: extract escalation paths from OPS_PLAN.md
+5. Write all content in the Output Language resolved in Step 1
+
+### Step 8: Write Output File
+
+Use `Write` to write to `docs/deliverables/{slug}/ops-manual.{lang}.md`
+(or orchestrator-provided `output_path`).
+
+### Step 9: Output AGENT_RESULT
+
+Return the AGENT_RESULT block below.
 
 ---
 
 ## Standalone Invocation
 
-When invoked directly (outside doc-flow orchestrator), the following
-arguments are required:
-- `--slug {value}` — output directory name
-- `--lang {ja|en}` — output language
-- `--repo-root {path}` — repo root for template resolution (default: cwd)
-
-Return `AGENT_RESULT` directly to the user.
+When invoked directly (outside doc-flow orchestrator):
+- Required arguments: `--slug {value}`, `--lang {ja|en}`, `--repo-root {path}` (default: cwd)
+- `docs/deliverables/{slug}/` must exist before invocation
+- Return `AGENT_RESULT` directly to the user.
 
 ---
 
