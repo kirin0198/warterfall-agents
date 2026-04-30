@@ -2,21 +2,21 @@
 
 > Source: docs/design-notes/doc-reviewer-architecture.md (2026-04-30)
 
-## Phase: PR 1 — doc-reviewer core implementation
-Last updated: 2026-04-30T03:00:00
-Status: Completed
+## Phase: PR 2 — doc-reviewer flow wiring
+Last updated: 2026-04-30T10:00:00
+Status: In progress
 
 ## Task List
 
-### Phase 1 (PR 1)
-- [x] TASK-001: Create .claude/agents/doc-reviewer.md | Target file: .claude/agents/doc-reviewer.md
-- [x] TASK-002: Add 4 sections to .claude/orchestrator-rules.md | Target file: .claude/orchestrator-rules.md
-- [x] TASK-003: Add boundary paragraph to .claude/agents/reviewer.md | Target file: .claude/agents/reviewer.md
+### Phase 2 (PR 2)
+- [ ] TASK-001: Wire doc-reviewer into delivery-flow.md | Target file: .claude/agents/delivery-flow.md
+- [ ] TASK-002: Wire doc-reviewer into discovery-flow.md | Target file: .claude/agents/discovery-flow.md
+- [ ] TASK-003: Wire doc-reviewer into maintenance-flow.md | Target file: .claude/agents/maintenance-flow.md
+- [ ] TASK-004: Update aphelion-overview.md Agent Directory | Target file: src/.claude/rules/aphelion-overview.md
+- [ ] TASK-005: Update localization-dictionary.md Approval Gate | Target file: src/.claude/rules/localization-dictionary.md
 
 ## Recent Commits
-b45235f feat: integrate doc-reviewer into orchestrator rules (#91)
-070db57 feat: add doc-reviewer agent for cross-doc consistency review (#91)
-9100b39 docs: add design-notes for doc-reviewer agent introduction and architecture (#91)
+(none yet)
 
 ## Session Interruption Notes
 (none)
