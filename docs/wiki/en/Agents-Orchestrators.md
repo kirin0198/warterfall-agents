@@ -3,12 +3,13 @@
 > **Language**: [English](../en/Agents-Orchestrators.md) | [日本語](../ja/Agents-Orchestrators.md)
 > **Last updated**: 2026-04-30
 > **Update history**:
+>   - 2026-04-30: Add doc-flow as the 5th flow orchestrator (#54)
 >   - 2026-04-30: Add doc-reviewer (Quality Agents) per #91
 >   - 2026-04-26: Sync with #62, #66, #72, #74 (issue #77)
 >   - 2026-04-25: split from Agents-Reference.md; #42
 > **Audience**: Agent developers
 
-This page is one of five pages split from the original Agents-Reference.md (#42). It covers Flow Orchestrators, Safety Agents, Quality Agents, and Standalone Agents (cross-cutting agents). See the sibling pages for domain-specific agents: [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md).
+This page is one of six pages split from the original Agents-Reference.md (#42). It covers Flow Orchestrators, Safety Agents, Quality Agents, and Standalone Agents (cross-cutting agents). See the sibling pages for domain-specific agents: [Discovery](./Agents-Discovery.md), [Delivery](./Agents-Delivery.md), [Operations](./Agents-Operations.md), [Maintenance](./Agents-Maintenance.md), [Doc](./Agents-Doc.md).
 
 ## Table of Contents
 
@@ -18,6 +19,8 @@ This page is one of five pages split from the original Agents-Reference.md (#42)
 - [Standalone Agents](#standalone-agents)
 - [Related Pages](#related-pages)
 - [Canonical Sources](#canonical-sources)
+
+> **Note**: The 6 author agents launched by `doc-flow` are documented in the [Doc Domain page](./Agents-Doc.md).
 
 ---
 
@@ -66,6 +69,25 @@ Flow orchestrators manage entire domains. They are not triage-selected agents bu
 - **NEXT conditions**:
   - Patch / Minor completion → `done`
   - Major completion → `delivery-flow` (user runs `/delivery-flow` manually after reviewing `MAINTENANCE_RESULT.md`)
+
+### doc-flow
+
+- **Canonical**: [.claude/agents/doc-flow.md](../../.claude/agents/doc-flow.md)
+- **Domain**: Orchestrator (Doc — fifth flow)
+- **Responsibility**: Generates customer-deliverable documents (HLD / LLD / API reference / ops manual / end-user manual / handover) from existing Aphelion artifacts (SPEC.md, ARCHITECTURE.md, etc.). Performs doc-type triage, launches each of the 6 author agents in sequence with user approval gates, and produces `DOC_FLOW_RESULT.md`. No automatic chaining from other flows — user invokes via `/doc-flow` at any point after SPEC.md and ARCHITECTURE.md are available.
+- **Inputs**: SPEC.md, ARCHITECTURE.md (and optionally DISCOVERY_RESULT.md, UI_SPEC.md, infra artifacts, OPS_RESULT.md); arguments `--types`, `--lang`, `--slug`, `--target-project`
+- **Outputs**: `DOC_FLOW_RESULT.md`, `docs/deliverables/{slug}/*.md` (one file per selected doc type)
+- **AGENT_RESULT fields**: `STATUS`, `SLUG`, `OUTPUT_LANG`, `GENERATED_DELIVERABLES`, `SKIPPED_TYPES`, `TEMPLATE_VERSIONS`, `SUGGEST_DOC_REVIEW`
+- **NEXT conditions**:
+  - All selected doc types complete → `done`
+  - Any author agent blocked (template major bump) → AskUserQuestion for overwrite / backup / abort
+- **Triage**: Doc-type count based (not Minimal/Light/Standard/Full):
+  - Minimal: 1–2 doc types selected
+  - Light: 3–4 doc types selected
+  - Standard: 5–6 doc types selected
+  - Full: all 6 types + post-generation `template_version` verification
+- **Author agents**: See [Agents Reference: Doc Domain](./Agents-Doc.md) for the 6 author agents (`hld-author`, `lld-author`, `api-reference-author`, `ops-manual-author`, `user-manual-author`, `handover-author`)
+- **Slash command**: `/doc-flow` (see `.claude/commands/doc-flow.md` for argument spec)
 
 ---
 
@@ -148,6 +170,7 @@ These two agents operate outside the triage system, invoked directly by the user
 - [Agents Reference: Delivery Domain](./Agents-Delivery.md)
 - [Agents Reference: Operations Domain](./Agents-Operations.md)
 - [Agents Reference: Maintenance Domain](./Agents-Maintenance.md)
+- [Agents Reference: Doc Domain](./Agents-Doc.md)
 - [Architecture: Domain Model](./Architecture-Domain-Model.md)
 - [Triage System](./Triage-System.md)
 - [Rules Reference](./Rules-Reference.md)
