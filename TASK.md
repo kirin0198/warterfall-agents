@@ -18,7 +18,7 @@ Status: In progress
 - [x] TASK-006: settings.json template | Target file: src/.claude/settings.json
 - [x] TASK-007: bin/aphelion-agents.mjs extensions | Target file: bin/aphelion-agents.mjs
 - [x] TASK-008: package.json#files extensions | Target file: package.json
-- [ ] TASK-009: smoke-update.sh regression tests | Target file: scripts/smoke-update.sh
+- [x] TASK-009: smoke-update.sh regression tests | Target file: scripts/smoke-update.sh
 - [ ] TASK-010: PR 1a submission | (gh pr create)
 
 ## Recent Commits
