@@ -1,8 +1,9 @@
 # Rules Reference
 
 > **Language**: [English](../en/Rules-Reference.md) | [日本語](../ja/Rules-Reference.md)
-> **Last updated**: 2026-04-30
+> **Last updated**: 2026-05-01
 > **Update history**:
+>   - 2026-05-01: add hooks-policy entry, sync rule count 12 → 13 (#107)
 >   - 2026-04-30: add missing localization-dictionary entry, sync rule count to 12 (#105)
 >   - 2026-04-30: language-rules — add "Repo-root README sync convention" sub-section (#82)
 >   - 2026-04-29: language-rules — add "Hand-authored canonical narrative" section (#75)
@@ -10,7 +11,7 @@
 >   - 2026-04-25: added denial-categories rule, #31
 > **Audience**: Agent developers
 
-This page is a compact reference for all 12 behavioral rules in `.claude/rules/`. Each entry summarizes scope, auto-load behavior, interactions with other rules and agents, and the key constraint the rule enforces.
+This page is a compact reference for all 13 behavioral rules in `.claude/rules/`. Each entry summarizes scope, auto-load behavior, interactions with other rules and agents, and the key constraint the rule enforces.
 
 For full details, follow the **Canonical** link to the source file.
 
@@ -22,6 +23,7 @@ For full details, follow the **Canonical** link to the source file.
 - [document-versioning](#document-versioning)
 - [file-operation-principles](#file-operation-principles)
 - [git-rules](#git-rules)
+- [hooks-policy](#hooks-policy)
 - [language-rules](#language-rules)
 - [library-and-security-policy](#library-and-security-policy)
 - [localization-dictionary](#localization-dictionary)
@@ -93,6 +95,26 @@ For full details, follow the **Canonical** link to the source file.
   - `developer` owns branch creation, push, and PR submission per `## Branch & PR Strategy` and emits `BRANCH` / `PR_URL` in `AGENT_RESULT`.
   - `analyst` does **not** create branches or PRs; it only authors design notes and GitHub issues.
 - **Summary**: Defines (1) commit granularity, staging policy (`git add -A` is prohibited; use explicit file paths; never commit `.env`, `credentials.*`, `*.secret`), and commit message format (8 prefix types: feat, fix, refactor, test, docs, chore, ci, ops); (2) Co-Authored-By trailer policy; (3) `## Repository` — `Remote type` declaration in `project-rules.md` (`github` / `gitlab` / `gitea` / `local-only` / `none`); (4) `## Startup Probe` — once-per-session probe resolving `REPO_STATE`; (5) `## Branch & PR Strategy` — branch naming (`fix/` / `feat/` / `refactor/`), branch lifecycle (create → commit → push → PR with `Closes #N`), and `AGENT_RESULT` additions (`BRANCH`, `PR_URL`); (6) `## Behavior by Remote Type` — per-`REPO_STATE` matrix for branch / commit / push / PR ops.
+
+---
+
+## hooks-policy
+
+- **Canonical**: [.claude/rules/hooks-policy.md](../../.claude/rules/hooks-policy.md)
+- **Scope**: All agents that recommend or perform `git commit`, file write (`Write`/`Edit`), or dependency install commands; agents interacting with hook bypass markers.
+- **Auto-load behavior**: Auto-loaded by Claude Code on every session start
+- **Interactions**:
+  - Companion to `sandbox-policy.md` and `denial-categories.md`. Hooks form the **fourth** defense layer (proactive content scan) on top of `settings.local.json` deny (Layer 1), `sandbox-runner` (Layer 2), and `denial-categories` post-mortem (Layer 3).
+  - Hook A fires before `git commit`, integrating with the `library-and-security-policy.md` secret-detection mandate.
+  - Hook E fires after dependency installs, triggering the `/vuln-scan` workflow defined in `library-and-security-policy.md`.
+  - `developer` should inform users about the `[skip-secrets-check]` bypass when hook A fires on a known-safe placeholder.
+- **Hook inventory (MVP)**:
+  - **A** `aphelion-secrets-precommit.sh` — `PreToolUse Bash(git commit*)` — scans staged diff for 8 secret patterns (P1–P8); exits 2 on match. Bypass: append `[skip-secrets-check]` to commit message.
+  - **B** `aphelion-sensitive-file-guard.sh` — `PreToolUse Write|Edit` — blocks writes to conventional secret-file names (`.env*`, `*.pem`, `*.key`, etc.); allows `tests/`, `fixtures/`, and `.example`/`.template`/`.sample`/`.dist` suffixes. No bypass marker — edit `settings.json` to disable.
+  - **E** `aphelion-deps-postinstall.sh` — `PostToolUse Bash(npm install*|uv add*|pip install*|cargo add*|go get*)` — non-blocking advisory; recommends `/vuln-scan` after dependency changes.
+- **Failure safety**: All hooks wrap their body in `trap ERR → exit 0` so an internal script error never blocks user work (fail-open).
+- **Distribution**: `src/.claude/hooks/` (canonical) deployed via `npx aphelion-agents init/update`. `settings.json` is protected after init (user customisations preserved); `hooks/` scripts are overlay-copied on every update.
+- **Summary**: Establishes that Aphelion's three MVP hooks act as a proactive content-scanning layer. Agents must know the bypass rules (hook A: `[skip-secrets-check]`; hook B: no bypass, `settings.json` edit required; hook E: no bypass needed). All hooks are fail-open by design. The canonical pattern library (`secret-patterns.sh`, IDs P1–P8) is the single source of truth shared by hook A and the `/secrets-scan` slash command.
 
 ---
 
@@ -178,6 +200,7 @@ For full details, follow the **Canonical** link to the source file.
 
 ## Canonical Sources
 
-- [.claude/rules/](../../.claude/rules/) — All 12 rule files (authoritative source)
+- [.claude/rules/](../../.claude/rules/) — All 13 rule files (authoritative source)
 - [.claude/rules/aphelion-overview.md](../../.claude/rules/aphelion-overview.md) — Workflow overview (now part of the rules collection)
 - [.claude/orchestrator-rules.md](../../.claude/orchestrator-rules.md) — Orchestrator behavior that depends on agent-communication-protocol
+- [Hooks Reference](./Hooks-Reference.md) — User-facing guide for the hook set
