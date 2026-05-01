@@ -14,7 +14,7 @@ Status: In progress
 - [x] TASK-003: Create aphelion-md-sync.sh dogfooding hook | Target: src/.claude/hooks/aphelion-md-sync.sh
 - [x] TASK-004: Create aphelion-agent-count-check.sh (discretionary, implemented) | Target: src/.claude/hooks/aphelion-agent-count-check.sh
 - [x] TASK-005: Create aphelion-task-md-lifecycle.sh (discretionary, implemented) | Target: src/.claude/hooks/aphelion-task-md-lifecycle.sh
-- [ ] TASK-006: Create this repo's .claude/settings.json with 3 user hooks + 3 dogfooding hooks | Target: .claude/settings.json
+- [x] TASK-006: Create this repo's .claude/settings.json with 3 user hooks + 3 dogfooding hooks | Target: .claude/settings.json
 - [ ] TASK-007: Shellcheck all hooks | Target: src/.claude/hooks/*.sh
 - [ ] TASK-008: Run dogfooding pass (10 commits through hook A) and record false-positive rate | Target: measurement
 - [ ] TASK-009: Create PR 1c/4 | Target: GitHub PR
