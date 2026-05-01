@@ -20,7 +20,9 @@
     ".claude/commands",
     ".claude/orchestrator-rules.md",
     "src/.claude/rules",
-    "src/.claude/settings.local.json"
+    "src/.claude/settings.local.json",
+    "src/.claude/settings.json",
+    "src/.claude/hooks"
   ],
   "engines": {
     "node": ">=20"

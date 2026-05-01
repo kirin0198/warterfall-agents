@@ -54,3 +54,56 @@ if ! grep -q '"local":"keep"' "$TMP/.claude/settings.local.json"; then
 fi
 
 echo "PASS: rules/ refreshed and settings.local.json preserved"
+
+# ────────────────────────────────────────────────────────────────────
+# Hooks MVP regression tests (#107)
+# ────────────────────────────────────────────────────────────────────
+
+# Assert: hooks/ scripts installed by init
+for hook_file in aphelion-secrets-precommit.sh aphelion-sensitive-file-guard.sh aphelion-deps-postinstall.sh; do
+  if ! [ -f "$TMP/.claude/hooks/$hook_file" ]; then
+    echo "FAIL: init did not install .claude/hooks/$hook_file"
+    exit 1
+  fi
+done
+if ! [ -f "$TMP/.claude/hooks/lib/secret-patterns.sh" ]; then
+  echo "FAIL: init did not install .claude/hooks/lib/secret-patterns.sh"
+  exit 1
+fi
+echo "PASS: hooks/ scripts installed by init (3 hook scripts + lib)"
+
+# Assert: hooks/ scripts have execute permission (R8 mitigation)
+for hook_file in aphelion-secrets-precommit.sh aphelion-sensitive-file-guard.sh aphelion-deps-postinstall.sh; do
+  if ! [ -x "$TMP/.claude/hooks/$hook_file" ]; then
+    echo "FAIL: .claude/hooks/$hook_file is not executable"
+    exit 1
+  fi
+done
+echo "PASS: hooks/ scripts have execute permission (+x)"
+
+# Assert: settings.json installed by init
+if ! [ -f "$TMP/.claude/settings.json" ]; then
+  echo "FAIL: init did not install .claude/settings.json"
+  exit 1
+fi
+echo "PASS: settings.json installed by init"
+
+# Assert: settings.json is preserved on update (R1 mitigation)
+echo '{"custom":"hook_preserved"}' > "$TMP/.claude/settings.json"
+node "$REPO_ROOT/bin/aphelion-agents.mjs" update >/dev/null 2>&1
+if ! grep -q '"custom":"hook_preserved"' "$TMP/.claude/settings.json"; then
+  echo "FAIL: settings.json was not preserved on update"
+  exit 1
+fi
+echo "PASS: settings.json preserved on update (existing custom content kept)"
+
+# Assert: hooks/ is refreshed (overlay) on update even when settings.json is preserved
+echo "MUTATED_HOOK" > "$TMP/.claude/hooks/aphelion-secrets-precommit.sh"
+node "$REPO_ROOT/bin/aphelion-agents.mjs" update >/dev/null 2>&1
+if grep -qx "MUTATED_HOOK" "$TMP/.claude/hooks/aphelion-secrets-precommit.sh"; then
+  echo "FAIL: hooks/aphelion-secrets-precommit.sh was not refreshed by update"
+  exit 1
+fi
+echo "PASS: hooks/ overlay refreshed on update (canonical content restored)"
+
+echo "PASS: all hooks MVP regression tests passed"
