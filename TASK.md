@@ -12,7 +12,7 @@ Status: In progress
 
 - [x] TASK-001: branch creation + initial commit (design notes) | Target file: docs/design-notes/*.md
 - [x] TASK-002: secret-patterns.sh canonical lib | Target file: src/.claude/hooks/lib/secret-patterns.sh
-- [ ] TASK-003: hook A — secrets-precommit | Target file: src/.claude/hooks/aphelion-secrets-precommit.sh
+- [x] TASK-003: hook A — secrets-precommit | Target file: src/.claude/hooks/aphelion-secrets-precommit.sh
 - [ ] TASK-004: hook B — sensitive-file-guard | Target file: src/.claude/hooks/aphelion-sensitive-file-guard.sh
 - [ ] TASK-005: hook E — deps-postinstall | Target file: src/.claude/hooks/aphelion-deps-postinstall.sh
 - [ ] TASK-006: settings.json template | Target file: src/.claude/settings.json
