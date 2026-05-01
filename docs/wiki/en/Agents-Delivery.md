@@ -1,8 +1,9 @@
 # Agents Reference: Delivery Domain
 
 > **Language**: [English](../en/Agents-Delivery.md) | [日本語](../ja/Agents-Delivery.md)
-> **Last updated**: 2026-04-26
+> **Last updated**: 2026-05-01
 > **Update history**:
+>   - 2026-05-01: Add visual-designer (HAS_UI + Standard/Full only); update ux-designer NEXT (#109)
 >   - 2026-04-26: Sync with #72, #74 (issue #77)
 >   - 2026-04-25: split from Agents-Reference.md; #42
 > **Audience**: Agent developers
@@ -19,7 +20,7 @@ This page is one of five pages split from the original Agents-Reference.md (#42)
 
 ## Delivery Domain
 
-The Delivery domain (12 agents) handles design, implementation, testing, and release.
+The Delivery domain (13 agents) handles design, implementation, testing, and release.
 
 ### spec-designer
 
@@ -37,18 +38,30 @@ The Delivery domain (12 agents) handles design, implementation, testing, and rel
 
 - **Canonical**: [.claude/agents/ux-designer.md](../../.claude/agents/ux-designer.md)
 - **Domain**: Delivery
-- **Responsibility**: Reads SPEC.md and CONCEPT_VALIDATION.md to generate UI_SPEC.md with wireframes, screen flows, and component specs. Runs only when HAS_UI: true.
+- **Responsibility**: Reads SPEC.md and CONCEPT_VALIDATION.md to generate UI_SPEC.md with wireframes, screen flows, and component specs. Visual identity (color, typography, spacing, design system) is delegated to `visual-designer` on Standard/Full; on Minimal/Light, ux-designer applies a lightweight visual default and records it in UI_SPEC.md Section 1. Runs only when HAS_UI: true.
 - **Inputs**: SPEC.md, CONCEPT_VALIDATION.md (optional)
 - **Outputs**: UI_SPEC.md
-- **AGENT_RESULT fields**: `SCREENS`, `COMPONENTS`, `RESPONSIVE`, `ACCESSIBILITY`
+- **AGENT_RESULT fields**: `SCREENS`, `COMPONENTS`, `RESPONSIVE`, `ACCESSIBILITY`, `VISUAL_POLICY`
+- **NEXT conditions**:
+  - Standard / Full plan → `visual-designer`
+  - Minimal / Light plan → `architect`
+
+### visual-designer
+
+- **Canonical**: [.claude/agents/visual-designer.md](../../.claude/agents/visual-designer.md)
+- **Domain**: Delivery
+- **Responsibility**: Reads UI_SPEC.md (and CONCEPT_VALIDATION.md if present) and produces VISUAL_SPEC.md — the canonical visual specification: color palette, typography scale, spacing/radius/shadow tokens, design-token JSON export, component library selection with rationale, WCAG accessibility level, responsive breakpoints, tone & manner, iconography. Runs only when HAS_UI: true AND plan ≥ Standard. Skipped on Minimal/Light (ux-designer's lightweight default applies in that case).
+- **Inputs**: UI_SPEC.md, CONCEPT_VALIDATION.md (optional), SPEC.md (for non-functional constraints)
+- **Outputs**: VISUAL_SPEC.md
+- **AGENT_RESULT fields**: `DESIGN_SYSTEM`, `WCAG_LEVEL`, `DARK_MODE`, `TOKENS_EXPORTED`
 - **NEXT conditions**: `architect`
 
 ### architect
 
 - **Canonical**: [.claude/agents/architect.md](../../.claude/agents/architect.md)
 - **Domain**: Delivery
-- **Responsibility**: Reads SPEC.md (and UI_SPEC.md) to produce ARCHITECTURE.md with tech stack decisions, module design, data models, API design, test strategy, and implementation order.
-- **Inputs**: SPEC.md, UI_SPEC.md (if HAS_UI), DISCOVERY_RESULT.md (if available)
+- **Responsibility**: Reads SPEC.md (and UI_SPEC.md / VISUAL_SPEC.md) to produce ARCHITECTURE.md with tech stack decisions, module design, data models, API design, test strategy, and implementation order.
+- **Inputs**: SPEC.md, UI_SPEC.md (if HAS_UI), VISUAL_SPEC.md (if HAS_UI and plan ≥ Standard), DISCOVERY_RESULT.md (if available)
 - **Outputs**: ARCHITECTURE.md
 - **AGENT_RESULT fields**: `TECH_STACK`, `TECH_STACK_CHANGED`, `PHASES`
 - **NEXT conditions**:
@@ -70,7 +83,7 @@ The Delivery domain (12 agents) handles design, implementation, testing, and rel
 - **Canonical**: [.claude/agents/developer.md](../../.claude/agents/developer.md)
 - **Domain**: Delivery
 - **Responsibility**: Implements code following ARCHITECTURE.md implementation order. Owns branch creation, push, and PR submission per `git-rules.md` `## Branch & PR Strategy`. Manages progress via TASK.md (supports resume). Commits per task, runs lint/format checks after each task.
-- **Inputs**: SPEC.md, ARCHITECTURE.md, UI_SPEC.md (if HAS_UI), TASK.md (if resuming), `docs/design-notes/<slug>.md` (if invoked from analyst handoff)
+- **Inputs**: SPEC.md, ARCHITECTURE.md, UI_SPEC.md (if HAS_UI), VISUAL_SPEC.md (if HAS_UI and plan ≥ Standard), TASK.md (if resuming), `docs/design-notes/<slug>.md` (if invoked from analyst handoff)
 - **Outputs**: Implementation code, TASK.md, working branch, PR
 - **AGENT_RESULT fields**: `PHASE`, `TASKS_COMPLETED`, `LAST_COMMIT`, `LINT_CHECK`, `FILES_CHANGED`, `ACCEPTANCE_CHECK`, `BRANCH`, `PR_URL`
 - **NEXT conditions**:
