@@ -4,7 +4,7 @@
 
 ## Phase: PR-C — wiki / README / CHANGELOG / templates
 Last updated: 2026-05-12
-Status: In progress
+Status: Completed
 
 ## Task List
 
@@ -18,7 +18,11 @@ Status: In progress
 - [x] TASK-C06: Annotate handover.en.md + handover.ja.md Source artifacts table (WR-002 follow-up) | Target: .claude/templates/doc-flow/handover.en.md, .claude/templates/doc-flow/handover.ja.md
 
 ## Recent Commits
-(Record git log --oneline -3 each time a task is completed)
+- docs: add document-locations rule to wiki Rules-Reference (PR-C of #117)
+- docs: update Home.md rule count 13 → 14 for document-locations (PR-C of #117)
+- docs: update rules badge 13 → 14 in README.md / README.ja.md (PR-C of #117)
+- docs: add Issue #117 entry to CHANGELOG (PR-C of #117)
+- docs: annotate handover template Source artifacts with document-locations note (PR-C of #117 / WR-002 follow-up)
 
 ## Session Interruption Notes
 PR-A and PR-B fully completed. Starting PR-C wiki/docs updates on feature/issue-117-pr-c-wiki-readme-changelog branch.
