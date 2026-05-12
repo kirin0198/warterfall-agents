@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`docs/design-notes/README.md`** (active-side lifecycle guide): New file documenting
+  the design-notes directory lifecycle — header conventions, evergreen notes category,
+  lifecycle flow (proposals → active → archived), automated archive paths (reactive +
+  weekly safety-net), manual fallback, and directory purpose guide. Documents
+  `compliance-auditor.md` and `performance-optimizer.md` as evergreen notes (no GitHub
+  Issue header). Forward-references `proposals/README.md` (filled in by PR-3).
+  Agent exclusions for `proposals/` added to `doc-reviewer` (Read Order item 6) and
+  `handover-author` (Design notes scope + reading strategy). Optional `analyst` update
+  adds a proposals-promotion paragraph before Step A.
+  Wiki `Contributing.md` (EN + JA) updated with new "Design Notes Lifecycle" section
+  covering the full directory structure, header conventions, lifecycle diagram, both
+  automated archive paths, manual fallback, evergreen notes, and proposals lifecycle.
+  (#118, PR-2 of 3)
+
 - **`document-locations.md` rule** (rule #14): Centralized path-resolution rule for
   Aphelion-generated planning / design / handoff documents. Default output location
   moved from repository root to `docs/<NAME>.md`; existing projects continue to work
