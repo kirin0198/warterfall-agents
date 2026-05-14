@@ -12,7 +12,7 @@ Status: In progress
 - [x] TASK-001: Promote analyst to Planning-tier with commit-on-work-branch | Target file: .claude/agents/analyst.md
 - [x] TASK-002: Add Design Note Artifact section to architect | Target file: .claude/agents/architect.md
 - [x] TASK-003: Detect orphan planning docs in developer Startup Probe | Target file: .claude/agents/developer.md
-- [ ] TASK-004: Declare Planning-tier in git-rules + design-notes README + CHANGELOG | Target files: src/.claude/rules/git-rules.md, docs/design-notes/README.md, CHANGELOG.md
+- [x] TASK-004: Declare Planning-tier in git-rules + design-notes README + CHANGELOG | Target files: src/.claude/rules/git-rules.md, docs/design-notes/README.md, CHANGELOG.md
 
 ## Recent Commits
 (Record git log --oneline -3 after each task completion.)
