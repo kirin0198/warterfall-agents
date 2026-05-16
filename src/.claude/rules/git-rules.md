@@ -51,10 +51,12 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ### Applicable Agents
 
-developer, scaffolder, infra-builder, db-ops, observability, releaser, analyst,
-architect, codebase-analyzer, rules-designer, doc-writer, tester.
+developer, scaffolder, infra-builder, db-ops, observability, releaser, analyst-intake,
+analyst-core, architect, codebase-analyzer, rules-designer, doc-writer, tester.
 
 (i.e., all agents owning `Bash` that may run `git commit`.)
+Note: `analyst` (top-level orchestrator) does not own Bash and does not commit directly.
+`analyst-intake` and `analyst-core` own Bash and commit on the work branch.
 
 ### Model Name Policy
 
