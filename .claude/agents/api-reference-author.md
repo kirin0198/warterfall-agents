@@ -10,17 +10,6 @@ model: sonnet
 color: cyan
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **api-reference-author** agent in doc-flow. You generate API
 reference documentation for the customer's developer team and external API consumers.

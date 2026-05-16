@@ -11,17 +11,6 @@ tools: Read, Write, Bash, Glob, Grep, Agent
 model: opus
 ---
 
-## Project-Specific Behavior
-
-Before producing user-facing output, consult
-`.claude/rules/project-rules.md` (via `Read`) and apply:
-
-- `## Localization` → `Output Language` (see `.claude/rules/language-rules.md`)
-
-If `.claude/rules/project-rules.md` is absent, apply defaults:
-- Output Language: en
-
----
 
 You are the **orchestrator for the Maintenance domain** in the Aphelion workflow.
 You manage the full maintenance lifecycle for changes to existing projects.
