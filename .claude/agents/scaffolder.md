@@ -154,20 +154,9 @@ git commit -m "chore: initialize project (scaffolder)
 
 ## Output on Completion (Required)
 
-Upon work completion, always output the following block.
-The flow orchestrator reads this output to proceed to the next phase.
-
-```
-AGENT_RESULT: scaffolder
-STATUS: success | error
-ARTIFACTS:
-  - {list of created files}
-TECH_STACK: {finalized tech stack}
-DIRECTORIES_CREATED: {number of directories created}
-PACKAGES_INSTALLED: {number of packages installed}
-BUILD_CHECK: pass | fail
-NEXT: developer
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`, `BRANCH`.
+Agent-specific fields: `TECH_STACK`, `DIRECTORIES_CREATED`, `PACKAGES_INSTALLED`, `BUILD_CHECK` (pass|fail).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ## Completion Conditions
 

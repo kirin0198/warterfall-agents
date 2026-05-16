@@ -186,17 +186,9 @@ git commit -m "ops: add health check endpoint
 
 ## Completion Output (Required)
 
-```
-AGENT_RESULT: observability
-STATUS: success | error
-ARTIFACTS:
-  - OBSERVABILITY.md
-  - {health check implementation file}
-HEALTH_CHECKS: {number of check items}
-ALERT_RULES: {number of alert rules}
-METRICS: {number of metrics}
-NEXT: ops-planner
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `HEALTH_CHECKS`, `ALERT_RULES`, `METRICS`.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ## Completion Conditions
 

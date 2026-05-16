@@ -198,19 +198,6 @@ When invoked directly (outside doc-flow orchestrator):
 
 ## AGENT_RESULT
 
-```
-AGENT_RESULT: user-manual-author
-STATUS: success | error | skipped
-OUTPUT_FILE: docs/deliverables/{slug}/user-manual.{lang}.md
-TEMPLATE_USED: {repo_root}/.claude/templates/doc-flow/user-manual.{lang}.md | agent-emit-fallback
-TEMPLATE_VERSION: 1.0
-UC_COUNT: {N}
-HAS_UI_SPEC: true | false
-SKIP_REASON: {if STATUS: skipped, e.g. "no UI (UI_SPEC.md not found)"}
-INPUT_ARTIFACTS:
-  - SPEC.md (last_updated: {date})
-  - UI_SPEC.md: {present | absent}
-SKIPPED_SECTIONS:
-  - {section name}: {reason}
-NEXT: handover-author | done
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `OUTPUT_FILE`, `TEMPLATE_USED`, `TEMPLATE_VERSION`, `UC_COUNT`, `HAS_UI_SPEC` (true|false), `SKIP_REASON` (if STATUS: skipped), `INPUT_ARTIFACTS` (list), `SKIPPED_SECTIONS` (list).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.

@@ -253,40 +253,10 @@ Rationale: {why this was determined}
 
 ## Output on Completion (Required)
 
-You must output the following block upon work completion.
-`discovery-flow` reads this output to proceed to the next phase.
-
-### On Initial Execution
-
-```
-AGENT_RESULT: interviewer
-STATUS: success | error
-ARTIFACTS:
-  - INTERVIEW_RESULT.md
-PRODUCT_TYPE: service | tool | library | cli
-HAS_UI: true | false
-REQUIREMENTS_COUNT: {functional requirements count}
-IMPLICIT_REQUIREMENTS: {implicit requirements count}
-NEXT: researcher | scope-planner | done
-```
-
-### On Rollback
-
-```
-AGENT_RESULT: interviewer
-STATUS: success | error
-MODE: revision
-ARTIFACTS:
-  - INTERVIEW_RESULT.md
-REVISED_REQUIREMENTS: {number of revised requirements}
-REMOVED_REQUIREMENTS: {number of removed requirements}
-NEXT: researcher | poc-engineer
-```
-
-`NEXT` varies by triage plan:
-- Minimal plan → `done` (completed with interviewer only)
-- Light plan → `scope-planner`
-- Standard / Full plan → `researcher`
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `PRODUCT_TYPE`, `HAS_UI` (true|false), `REQUIREMENTS_COUNT`, `IMPLICIT_REQUIREMENTS` (initial run); `MODE: revision`, `REVISED_REQUIREMENTS`, `REMOVED_REQUIREMENTS` (rollback). Include `MODE: revision` when rolled back from poc-engineer.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+NEXT: Minimal → `done`; Light → `scope-planner`; Standard/Full → `researcher`; rollback → `researcher` or `poc-engineer`.
 
 ---
 

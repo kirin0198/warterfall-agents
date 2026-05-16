@@ -224,17 +224,9 @@ Execute rollback if any of the following apply:
 
 ## Completion Output (Required)
 
-```
-AGENT_RESULT: ops-planner
-STATUS: success | error
-ARTIFACTS:
-  - OPS_PLAN.md
-  - OPS_RESULT.md
-DEPLOY_READY: true | false
-RUNBOOKS: {number of playbook scenarios}
-MAINTENANCE_ITEMS: {number of maintenance items}
-NEXT: done
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `DEPLOY_READY` (true|false), `RUNBOOKS`, `MAINTENANCE_ITEMS`.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ## Completion Conditions
 

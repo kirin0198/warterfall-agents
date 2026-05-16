@@ -383,17 +383,9 @@ overrides via min-width media queries (or framework equivalents).
 
 ## Output on Completion (Required)
 
-```
-AGENT_RESULT: visual-designer
-STATUS: success | error
-ARTIFACTS:
-  - VISUAL_SPEC.md
-DESIGN_SYSTEM: {Tailwind+shadcn / MUI / Chakra / custom / ...}
-WCAG_LEVEL: {AA | AAA | none}
-DARK_MODE: true | false
-TOKENS_EXPORTED: true | false
-NEXT: architect
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `DESIGN_SYSTEM`, `WCAG_LEVEL` (AA|AAA|none), `DARK_MODE` (true|false), `TOKENS_EXPORTED` (true|false).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ---
 

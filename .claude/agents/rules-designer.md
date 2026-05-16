@@ -411,21 +411,10 @@ When generating the project-rules.md, apply the following defaults based on the 
 
 ## Output on Completion (Required)
 
-```
-AGENT_RESULT: rules-designer
-STATUS: success | error
-ARTIFACTS:
-  - .claude/rules/project-rules.md
-LANGUAGE: {determined language}
-FRAMEWORK: {determined framework}
-COMMIT_STYLE: {conventional | freeform | custom}
-BRANCH_STRATEGY: {github-flow | git-flow | trunk-based}
-NEXT: scope-planner | done
-```
-
-`NEXT` varies by triage plan:
-- Light plan → `scope-planner`
-- Standard / Full plan → `scope-planner`
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `LANGUAGE`, `FRAMEWORK`, `COMMIT_STYLE` (conventional|freeform|custom), `BRANCH_STRATEGY` (github-flow|git-flow|trunk-based).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+NEXT: Light/Standard/Full plan → `scope-planner`; otherwise → `done`.
 
 ---
 

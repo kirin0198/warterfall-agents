@@ -245,20 +245,10 @@ The flow orchestrator includes this content in the rollback instructions to `tes
 
 ## Required Output on Completion
 
-```
-AGENT_RESULT: tester
-STATUS: success | failure
-TOTAL: {total test count}
-PASSED: {pass count}
-FAILED: {fail count}
-SKIPPED: {skip count}
-FAILED_TESTS:
-  - {TC number}: {failed test name} - {error summary}
-NEXT: reviewer | test-designer
-```
-
-When `STATUS: failure`, set `NEXT: test-designer` (request root cause analysis).
-In Minimal plan where test-designer is not available, set `NEXT: developer`.
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`.
+Agent-specific fields: `TOTAL`, `PASSED`, `FAILED`, `SKIPPED`, `FAILED_TESTS` (list).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+STATUS: `failure` when FAILED>0; NEXT: `test-designer` (or `developer` in Minimal plan where test-designer is unavailable); `reviewer` on success.
 
 ## Completion Conditions
 

@@ -228,22 +228,10 @@ PRODUCT_TYPE: {service | tool | library | cli}
 
 ## Output on Completion (Required)
 
-```
-AGENT_RESULT: scope-planner
-STATUS: success | error | blocked
-ARTIFACTS:
-  - SCOPE_PLAN.md
-  - DISCOVERY_RESULT.md
-MVP_SCOPE: {1-line MVP summary}
-MUST_COUNT: {number of Must requirements}
-SHOULD_COUNT: {number of Should requirements}
-RISKS: {number of risks}
-HANDOFF_READY: true | false
-NEXT: done | researcher
-```
-
-`STATUS: blocked` indicates a rollback to `researcher` (insufficient information).
-When `HANDOFF_READY: false`, also explain the reason and ask the user for a decision.
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `MVP_SCOPE`, `MUST_COUNT`, `SHOULD_COUNT`, `RISKS`, `HANDOFF_READY` (true|false).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+STATUS: `blocked` (rollback to researcher — insufficient info); when HANDOFF_READY=false, explain the reason to the user.
 
 ## Completion Conditions
 

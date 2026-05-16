@@ -383,27 +383,9 @@ git add docs/design-notes/${slug}.md             # promoted destination
 
 ## Required Output on Completion
 
-```
-AGENT_RESULT: analyst
-STATUS: success | error
-ISSUE_TYPE: bug | feature | refactor
-ISSUE_SUMMARY: {one-line summary}
-DOCS_UPDATED:
-  - SPEC.md: updated | no_change
-  - UI_SPEC.md: updated | no_change | not_exists
-ARTIFACT_PATHS:
-  - SPEC: {resolved path, e.g. docs/SPEC.md or SPEC.md}
-  - UI_SPEC: {resolved path, e.g. docs/UI_SPEC.md or UI_SPEC.md}
-GITHUB_ISSUE: {issue URL | skipped}
-BRANCH: {branch name}
-HANDOFF_TO: architect
-ARCHITECT_BRIEF: |
-  {Instructions for design changes to pass to architect. Describe specifically what should be changed or added}
-NEXT: architect
-```
-
-`BRANCH` is **MUST** when `STATUS: success`. It tells `architect` and `developer`
-which branch to reuse so they do not create a duplicate.
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`, `BRANCH`, `HANDOFF_TO`, `GITHUB_ISSUE`.
+Agent-specific fields: `ISSUE_TYPE` (bug|feature|refactor), `ISSUE_SUMMARY`, `DOCS_UPDATED` (per-artifact updated|no_change|not_exists), `ARCHITECT_BRIEF` (multi-line YAML literal describing design changes for architect).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics. `BRANCH` MUST be populated when `STATUS: success` so architect/developer reuse the same branch.
 
 ## Completion Conditions
 

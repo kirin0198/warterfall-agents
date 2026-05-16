@@ -187,18 +187,9 @@ If gh CLI is not available, skip and provide manual creation instructions.
 
 ## Required Output on Completion
 
-```
-AGENT_RESULT: releaser
-STATUS: success | error
-ARTIFACTS:
-  - RELEASE_NOTES.md
-  - CHANGELOG.md (updated)
-VERSION: {version number}
-TAG: v{version number}
-PACKAGE_BUILT: true | false
-GH_RELEASE_DRAFT: true | false | skipped
-NEXT: done
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `VERSION`, `TAG`, `PACKAGE_BUILT` (true|false), `GH_RELEASE_DRAFT` (true|false|skipped).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ## Completion Conditions
 

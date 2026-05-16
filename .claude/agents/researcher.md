@@ -199,38 +199,10 @@ When rolled back from `scope-planner` due to insufficient information:
 
 ## Output on Completion (Required)
 
-You must output the following block upon work completion.
-`discovery-flow` reads this output to proceed to the next phase.
-
-### On Initial Execution
-
-```
-AGENT_RESULT: researcher
-STATUS: success | error
-ARTIFACTS:
-  - RESEARCH_RESULT.md
-RISKS_FOUND: {number of technical risks}
-EXTERNAL_DEPS: {number of external dependencies (APIs + libraries)}
-COMPETITORS_ANALYZED: {number of services analyzed}
-UBIQUITOUS_TERMS: {number of ubiquitous language terms}
-NEXT: poc-engineer | scope-planner
-```
-
-### On Rollback
-
-```
-AGENT_RESULT: researcher
-STATUS: success | error
-MODE: revision
-ARTIFACTS:
-  - RESEARCH_RESULT.md
-ADDED_INFORMATION: {summary of added research items}
-NEXT: scope-planner
-```
-
-`NEXT` varies by triage plan:
-- Standard / Full plan → `poc-engineer`
-- When rolled back from scope-planner → `scope-planner`
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `RISKS_FOUND`, `EXTERNAL_DEPS`, `COMPETITORS_ANALYZED`, `UBIQUITOUS_TERMS` (initial run); `MODE: revision`, `ADDED_INFORMATION` (rollback). Include `MODE: revision` when rolled back from scope-planner.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+NEXT: Standard/Full plan → `poc-engineer`; rolled back from scope-planner → `scope-planner`.
 
 ---
 

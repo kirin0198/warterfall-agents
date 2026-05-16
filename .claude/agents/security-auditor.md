@@ -230,25 +230,10 @@ Select and inspect CWE (Common Weakness Enumeration) items appropriate for the t
 
 ## Required Output on Completion
 
-Upon completion, you must output the following block.
-The flow orchestrator reads this output to determine the next step in the flow.
-
-```
-AGENT_RESULT: security-auditor
-STATUS: success | error
-ARTIFACTS:
-  - SECURITY_AUDIT.md
-CRITICAL_COUNT: {CRITICAL count}
-WARNING_COUNT: {WARNING count}
-INFO_COUNT: {INFO count}
-CRITICAL_ITEMS:
-  - {SEC number}: {file path} - {summary}
-DEPENDENCY_VULNS: {dependency vulnerability count}
-NEXT: done | developer
-```
-
-When there is 1 or more CRITICAL, set `NEXT: developer` (remediation required).
-When there are no CRITICALs, set `NEXT: done`.
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `CRITICAL_COUNT`, `WARNING_COUNT`, `INFO_COUNT`, `CRITICAL_ITEMS` (list), `DEPENDENCY_VULNS`.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+NEXT: `developer` when ≥1 CRITICAL (remediation required); `done` when no CRITICALs.
 
 ## Completion Conditions
 

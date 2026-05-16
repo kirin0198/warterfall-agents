@@ -161,19 +161,9 @@ git commit -m "docs: create project documentation
 
 ## Required Output on Completion
 
-Upon completion, you must output the following block.
-The flow orchestrator reads this output to proceed to the next phase.
-
-```
-AGENT_RESULT: doc-writer
-STATUS: success | error
-ARTIFACTS:
-  - README.md
-  - CHANGELOG.md
-  - {other created documents}
-DOCS_COUNT: {number of documents created}
-NEXT: releaser | done
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `DOCS_COUNT`.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ## Completion Conditions
 

@@ -141,26 +141,9 @@ Omit sections 4–6 when they have no entries.
 
 ## AGENT_RESULT Contract
 
-```
-AGENT_RESULT: doc-reviewer
-STATUS: success | failure | error
-DOC_REVIEW_RESULT: pass | fail
-INCONSISTENCY_COUNT: {N}
-ADVISORY_COUNT: {N}
-INFO_COUNT: {N}
-TARGET_ARTIFACTS:
-  - {file path}: {Last updated date}
-INCONSISTENCY_ITEMS:
-  - {DR-XXX}: {short summary}
-TRIGGERED_BY: spec-designer | ux-designer | architect | scope-planner | analyst | standalone
-NEXT: {triggering agent on FAIL | done}
-```
-
-| STATUS | DOC_REVIEW_RESULT | Condition |
-|--------|------------------|-----------|
-| `success` | `pass` | INCONSISTENCY_COUNT == 0 |
-| `failure` | `fail` | INCONSISTENCY_COUNT >= 1 |
-| `error` | (n/a) | doc-reviewer exception (file read failure, insufficient input, etc.) |
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `DOC_REVIEW_RESULT` (pass|fail), `INCONSISTENCY_COUNT`, `ADVISORY_COUNT`, `INFO_COUNT`, `TARGET_ARTIFACTS` (list), `INCONSISTENCY_ITEMS` (list), `TRIGGERED_BY`.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ---
 

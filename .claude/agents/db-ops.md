@@ -248,20 +248,9 @@ Generate `DB_OPS.md` from the above analysis results following the template belo
 
 ## Completion Output (Required)
 
-You must output the following block upon work completion.
-`operations-flow` reads this output to proceed to the next phase.
-
-```
-AGENT_RESULT: db-ops
-STATUS: success | error
-ARTIFACTS:
-  - DB_OPS.md
-MIGRATIONS: {number of migrations}
-DESTRUCTIVE_CHANGES: {number of destructive changes}
-DB_TYPE: {PostgreSQL | MySQL | SQLite | etc.}
-BACKUP_STRATEGY: {daily | weekly | continuous}
-NEXT: observability | ops-planner
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `MIGRATIONS`, `DESTRUCTIVE_CHANGES`, `DB_TYPE`, `BACKUP_STRATEGY` (daily|weekly|continuous).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ---
 

@@ -289,34 +289,10 @@ When `tester` reports E2E test failures, perform root cause analysis:
 
 ## Output on Completion (Required)
 
-### Initial Execution
-
-```
-AGENT_RESULT: e2e-test-designer
-STATUS: success | error
-ARTIFACTS:
-  - TEST_PLAN.md (E2E section appended)
-E2E_TOOL: {Playwright | pywinauto | pyautogui}
-TOTAL_E2E_CASES: {total number of E2E test cases}
-SCREEN_COVERAGE: {number of screens covered} / {total screens in UI_SPEC.md}
-NEXT: tester
-```
-
-### Rollback Mode (E2E Failure Analysis)
-
-```
-AGENT_RESULT: e2e-test-designer
-STATUS: success | error
-MODE: e2e-failure-analysis
-ANALYZED_FAILURES: {number of analyzed failed E2E tests}
-ROOT_CAUSES:
-  - {TC number}: {root cause classification} - {summary}
-TEST_PLAN_UPDATED: true | false
-NEXT: developer | tester
-```
-
-`NEXT: tester` when it is a test code bug that e2e-test-designer fixed.
-`NEXT: developer` when it is a UI implementation bug or environment issue.
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `E2E_TOOL`, `TOTAL_E2E_CASES`, `SCREEN_COVERAGE` (initial run); `MODE: e2e-failure-analysis`, `ANALYZED_FAILURES`, `ROOT_CAUSES` (list), `TEST_PLAN_UPDATED` (true|false) (rollback). Include `MODE: e2e-failure-analysis` when performing root cause analysis.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+NEXT: initial run → `tester`; rollback test code fix → `tester`; UI implementation bug → `developer`.
 
 ## Completion Conditions
 

@@ -167,17 +167,6 @@ When invoked directly (outside doc-flow orchestrator):
 
 ## AGENT_RESULT
 
-```
-AGENT_RESULT: lld-author
-STATUS: success | error | blocked
-OUTPUT_FILE: docs/deliverables/{slug}/lld.{lang}.md
-TEMPLATE_USED: {repo_root}/.claude/templates/doc-flow/lld.{lang}.md | agent-emit-fallback
-TEMPLATE_VERSION: 1.0
-INPUT_ARTIFACTS:
-  - ARCHITECTURE.md (last_updated: {date})
-  - src/* ({N} files scanned)
-SKIPPED_SECTIONS:
-  - {section name}: {reason}
-NEXT: api-reference-author | done
-BLOCKED_REASON: {if STATUS: blocked, e.g. template_major_bump}
-```
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `OUTPUT_FILE`, `TEMPLATE_USED`, `TEMPLATE_VERSION`, `INPUT_ARTIFACTS` (list), `SKIPPED_SECTIONS` (list), `BLOCKED_REASON` (if STATUS: blocked).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.

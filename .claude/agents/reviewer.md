@@ -171,20 +171,10 @@ Areas that could be improved / refactoring proposals
 
 ## Required Output on Completion
 
-```
-AGENT_RESULT: reviewer
-STATUS: approved | conditional | rejected
-CRITICAL_COUNT: {CRITICAL count}
-WARNING_COUNT: {WARNING count}
-SUGGESTION_COUNT: {SUGGESTION count}
-CRITICAL_ITEMS:
-  - {finding ID}: {file path} - {summary}
-NEXT: done | developer
-```
-
-`STATUS: rejected` when there is 1 or more CRITICAL. `NEXT: developer`.
-`STATUS: conditional` when there are only WARNINGs. Remediation recommended but at user's discretion.
-`STATUS: approved` when there are only SUGGESTIONs or no findings.
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`.
+Agent-specific fields: `CRITICAL_COUNT`, `WARNING_COUNT`, `SUGGESTION_COUNT`, `CRITICAL_ITEMS` (list).
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
+STATUS: `rejected` (≥1 CRITICAL, NEXT: developer) | `conditional` (warnings only) | `approved` (suggestions or no findings).
 
 ## Completion Conditions
 

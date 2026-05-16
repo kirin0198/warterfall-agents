@@ -313,28 +313,10 @@ Record the determined `PRODUCT_TYPE` in SPEC.md.
 
 ## Output on Completion (Required)
 
-**Output path determination:** Before writing, ask the user where to place the output files:
-- Default (new project, no prior files): `docs/SPEC.md` and `docs/ARCHITECTURE.md`
-- If `.aphelion-auto-approve` is present (auto-approve mode), skip the question and use `docs/` as default
-
-```
-AGENT_RESULT: codebase-analyzer
-STATUS: success | error
-ARTIFACTS:
-  - SPEC.md
-  - ARCHITECTURE.md
-ARTIFACT_PATHS:
-  - SPEC: docs/SPEC.md              # or SPEC.md if user selected root
-  - ARCHITECTURE: docs/ARCHITECTURE.md
-HAS_UI: true | false
-PRODUCT_TYPE: service | tool | library | cli
-LANGUAGE: {primary language}
-FRAMEWORK: {primary framework}
-UC_COUNT: {number of extracted use cases}
-ENTITY_COUNT: {number of extracted entities}
-TBD_COUNT: {number of unresolved items}
-NEXT: done
-```
+Before writing, ask the user where to place output files (default `docs/`; skip if `.aphelion-auto-approve` exists).
+Emit an `AGENT_RESULT` block. Required fields: `STATUS`, `NEXT`, `ARTIFACT_PATHS`.
+Agent-specific fields: `HAS_UI` (true|false), `PRODUCT_TYPE` (service|tool|library|cli), `LANGUAGE`, `FRAMEWORK`, `UC_COUNT`, `ENTITY_COUNT`, `TBD_COUNT`.
+See `.claude/rules/agent-communication-protocol.md` §"Field Reference" for canonical field semantics.
 
 ## Completion Conditions
 
