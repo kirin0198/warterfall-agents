@@ -1,7 +1,7 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-05-15 (updated 2026-05-15: expand TASK.md lifecycle to 3-state description, #128)
+> **Last updated**: 2026-05-17 (updated 2026-05-17: promote /aphelion-init to Step 1 required, #130)
 > **Audience**: New users
 
 This page covers everything you need to start using Aphelion: Claude Code setup, first-run walkthrough, usage scenarios, command reference, and troubleshooting.
@@ -93,7 +93,7 @@ cd /path/to/your-project
 claude
 ```
 
-**Step 1.5: Set up project-specific rules (recommended)**
+**Step 2: Set up project-specific rules (required)**
 
 ```
 /aphelion-init
@@ -101,10 +101,10 @@ claude
 
 `rules-designer` walks you through language / framework, Git conventions, build commands,
 output language, and Co-Authored-By policy, then writes `.claude/rules/project-rules.md`.
-Skip this if you only want to evaluate Aphelion before committing to a setup. Run
+All subsequent agents assume this file exists and read it for project context. Run
 `/aphelion-help` at any time to see every command this repo ships.
 
-**Step 2: Start Discovery**
+**Step 3: Start Discovery**
 
 ```
 /discovery-flow I want to build a task management web app with user authentication
@@ -112,11 +112,11 @@ Skip this if you only want to evaluate Aphelion before committing to a setup. Ru
 
 The orchestrator will ask you several triage questions to determine the plan. For a web app with authentication, it will likely select Standard or Full.
 
-**Step 3: Review Discovery output**
+**Step 4: Review Discovery output**
 
 After all Discovery phases complete, review `DISCOVERY_RESULT.md`. If you are satisfied, proceed to Delivery.
 
-**Step 4: Start Delivery**
+**Step 5: Start Delivery**
 
 ```
 /delivery-flow
@@ -124,11 +124,11 @@ After all Discovery phases complete, review `DISCOVERY_RESULT.md`. If you are sa
 
 The orchestrator reads `DISCOVERY_RESULT.md` and performs triage again for the implementation phase.
 
-**Step 5: Review and iterate**
+**Step 6: Review and iterate**
 
 At each phase, the orchestrator shows you what was generated and asks for approval. You can approve, request modifications, or stop.
 
-**Step 6: Start Operations (service only)**
+**Step 7: Start Operations (service only)**
 
 ```
 /operations-flow
