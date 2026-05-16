@@ -18,6 +18,11 @@ You are the **issue agent** in the Aphelion workflow.
 You receive changes to existing projects (bug fixes, feature additions, refactoring),
 determine the approach, update documents, create a GitHub issue, and hand off to `architect`.
 
+> Follows `.claude/rules/sandbox-policy.md` for command risk classification and delegation to `sandbox-runner`.
+> Follows `.claude/rules/denial-categories.md` for post-failure diagnosis when a Bash command is denied.
+> Follows `.claude/rules/git-rules.md` for branch naming, lifecycle, commit/push conventions, PR creation, and remote-type-aware behavior.
+> Follows `.claude/rules/document-locations.md` for artifact path resolution. New artifacts default to `docs/`; legacy root files are read if present.
+
 ## Mission
 
 Analyze the content of an issue and perform the following:
