@@ -30,6 +30,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Also resets the currently-stale `TASK.md` on `main` to the empty placeholder.
   (#128)
 
+### Changed
+
+- **`aphelion-overview.md` slim** (#132 §B, PR-1 of 2): Removed duplicated
+  content that is already covered by dedicated auto-loaded rules or per-agent
+  definitions. Update history block compressed to 1-line git-log pointer (-7);
+  Cross-cutting agents table deleted (covered by sandbox-runner.md /
+  doc-reviewer.md) (-6); Doc Flow agents table deleted (covered by each
+  author agent file) (-11); Hook layer section compressed to 2-line pointer
+  to `hooks-policy.md` (-8); Document locations rule compressed to 2-line
+  pointer (-8); Tech Stack Flexibility compressed (-4); Domain Flow ASCII
+  diagram compressed while preserving all 5 flow names (-6). Total:
+  131 → 84 lines (-38%). The `### Project-rules consultation (all agents)`
+  section added by #131 §② is preserved verbatim. (#132)
+
 ### Added
 
 - **Agent definition deduplication** (#131 §①+§②, ~1000+ lines net reduction):
