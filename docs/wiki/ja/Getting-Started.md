@@ -1,8 +1,8 @@
 # Getting Started
 
 > **Language**: [English](../en/Getting-Started.md) | [日本語](../ja/Getting-Started.md)
-> **Last updated**: 2026-05-15 (updated 2026-05-15: TASK.md ライフサイクルを3段階記述に拡張, #128)
-> **EN canonical**: 2026-05-15 (updated 2026-05-15) of wiki/en/Getting-Started.md
+> **Last updated**: 2026-05-17 (updated 2026-05-17: /aphelion-init をステップ2必須に格上げ, #130)
+> **EN canonical**: 2026-05-17 (updated 2026-05-17) of wiki/en/Getting-Started.md
 > **Audience**: 新規ユーザー
 
 このページはAphelionを使い始めるために必要なすべてをカバーします：Claude Code のセットアップ、初回実行のウォークスルー、利用シナリオ、コマンドリファレンス、トラブルシューティング。
@@ -66,6 +66,7 @@ npx github:kirin0198/aphelion-agents update --user
 cp -r .claude /path/to/your-project/
 cd /path/to/your-project && claude
 
+/aphelion-init
 /discovery-flow TODOアプリを作りたい
 ```
 
@@ -83,15 +84,15 @@ cd /path/to/your-project
 claude
 ```
 
-**ステップ1.5：プロジェクト固有ルールのセットアップ（推奨）**
+**ステップ2：プロジェクト固有ルールのセットアップ（必須）**
 
 ```
 /aphelion-init
 ```
 
-`rules-designer` が言語 / フレームワーク、Git 慣行、ビルドコマンド、出力言語、Co-Authored-By ポリシーを対話で確認し、`.claude/rules/project-rules.md` に書き込みます。Aphelion を試すだけならスキップしても構いません。提供されているコマンドの一覧が必要な場合は `/aphelion-help` をいつでも実行できます。
+`rules-designer` が言語 / フレームワーク、Git 慣行、ビルドコマンド、出力言語、Co-Authored-By ポリシーを対話で確認し、`.claude/rules/project-rules.md` に書き込みます。以降のすべてのエージェントはこのファイルが存在することを前提にプロジェクトコンテキストを読み取ります。提供されているコマンドの一覧が必要な場合は `/aphelion-help` をいつでも実行できます。
 
-**ステップ2：Discoveryを開始**
+**ステップ3：Discoveryを開始**
 
 ```
 /discovery-flow ユーザー認証付きのタスク管理Webアプリを作りたい
@@ -99,11 +100,11 @@ claude
 
 Flow Orchestrator（フローオーケストレーター）がプランを決定するためにいくつかのトリアージ質問をします。認証付き Web アプリの場合、Standard または Full が選択されます。
 
-**ステップ3：Discovery出力のレビュー**
+**ステップ4：Discovery出力のレビュー**
 
 すべてのDiscoveryフェーズが完了したら、`DISCOVERY_RESULT.md` をレビューします。満足したらDeliveryに進みます。
 
-**ステップ4：Deliveryを開始**
+**ステップ5：Deliveryを開始**
 
 ```
 /delivery-flow
@@ -111,11 +112,11 @@ Flow Orchestrator（フローオーケストレーター）がプランを決定
 
 Flow Orchestrator が `DISCOVERY_RESULT.md` を読み込み、実装フェーズのトリアージを再度行います。
 
-**ステップ5：レビューと反復**
+**ステップ6：レビューと反復**
 
 各フェーズ後、Flow Orchestrator が生成物を表示して承認を求めます。承認・修正依頼・停止を選択できます。
 
-**ステップ6：Operationsを開始（serviceのみ）**
+**ステップ7：Operationsを開始（serviceのみ）**
 
 ```
 /operations-flow

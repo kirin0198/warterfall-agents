@@ -1,9 +1,10 @@
 Launch the Rules Designer agent for first-run project setup.
 
-Use this immediately after `npx aphelion-agents init` to populate
-`.claude/rules/project-rules.md` interactively. The agent asks about language /
-framework, Git conventions, build commands, output language, and Co-Authored-By
-policy, then writes the rules file used by every subsequent agent.
+Run immediately after `npx aphelion-agents init`. This is a required step —
+all subsequent agents read `.claude/rules/project-rules.md` for project context
+(language / framework, Git conventions, build commands, output language,
+Co-Authored-By policy). Skipping this step causes agents to fall back to
+defaults, which may not match your project.
 
 If `.claude/rules/project-rules.md` already exists, the agent will detect it and
 ask whether to amend or recreate. INTERVIEW_RESULT.md is optional; running this
