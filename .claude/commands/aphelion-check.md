@@ -120,7 +120,7 @@ After running all checks, produce a Markdown table in this exact format:
 **Result: X passed, Y warned, Z failed**
 ```
 
-Replace placeholder status values with actual results. Use `✅ pass`, `⚠️ warn`, or `❌ fail` exactly as shown. Replace `—` with an actionable remediation hint if the check did not pass. Show the actual total agent count in parentheses after the agent list in row 1, e.g. "(developer, reviewer, tester, analyst, analyst-intake, analyst-core, architect) — 42 files total".
+Replace placeholder status values with actual results. Use `✅ pass`, `⚠️ warn`, or `❌ fail` exactly as shown. Replace `—` with an actionable remediation hint if the check did not pass. Show the actual total agent count in parentheses after the agent list in row 1, e.g. "(developer, reviewer, tester, analyst, analyst-intake, analyst-core, architect) — N files total" where N is the count detected at runtime.
 
 After the table, if any checks failed (❌), output a brief "Next steps" section listing the most urgent remediation actions.
 
